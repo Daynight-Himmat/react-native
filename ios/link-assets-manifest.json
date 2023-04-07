@@ -1,0 +1,329 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/bumble_bee_captions.vtt.txt",
+      "sha1": "e7c564f603c53d7c270c656fdfee1e4bdd8bb5b6"
+    },
+    {
+      "path": "assets/fonts/Poppins-Black.ttf",
+      "sha1": "645e04c53c6b5b35bce654a811ebce16af8aa721"
+    },
+    {
+      "path": "assets/fonts/Poppins-BlackItalic.ttf",
+      "sha1": "be4ef2aac7775a4b0179c0ecfce6cea8f7783f63"
+    },
+    {
+      "path": "assets/fonts/Poppins-Bold.ttf",
+      "sha1": "875cf0cecd647bcf22e79d633d868c1b1ec98dfa"
+    },
+    {
+      "path": "assets/fonts/Poppins-BoldItalic.ttf",
+      "sha1": "6de8952ca08d27ee77f57347d2cef4b4e26aa78f"
+    },
+    {
+      "path": "assets/fonts/Poppins-ExtraBold.ttf",
+      "sha1": "4b5c0750f073abd576413a0898d3b95adaf199c8"
+    },
+    {
+      "path": "assets/fonts/Poppins-ExtraBoldItalic.ttf",
+      "sha1": "94d3ee3acdbd00e37a715a25f2b5237666b5b8a3"
+    },
+    {
+      "path": "assets/fonts/Poppins-ExtraLight.ttf",
+      "sha1": "85af6582a7e6155917c605f9d3fed68c02b23b06"
+    },
+    {
+      "path": "assets/fonts/Poppins-ExtraLightItalic.ttf",
+      "sha1": "6fa0418f91032680d2d8fe4843009f2c80faa61d"
+    },
+    {
+      "path": "assets/fonts/Poppins-Italic.ttf",
+      "sha1": "e2bfcd56016c3c915221ef1c5fc1a17b0776eb91"
+    },
+    {
+      "path": "assets/fonts/Poppins-Light.ttf",
+      "sha1": "e247a92158e112f8bf7b638c8d95381d66b00dbb"
+    },
+    {
+      "path": "assets/fonts/Poppins-LightItalic.ttf",
+      "sha1": "f76102b361e705751a83b7b22fe954daf1f27dd4"
+    },
+    {
+      "path": "assets/fonts/Poppins-Medium.ttf",
+      "sha1": "283f21b44efbdbf276ba802be2d949a36bbc4233"
+    },
+    {
+      "path": "assets/fonts/Poppins-MediumItalic.ttf",
+      "sha1": "b592c62fdf88c40cfd0f031bba6423b1d4430472"
+    },
+    {
+      "path": "assets/fonts/Poppins-Regular.ttf",
+      "sha1": "fdd3002e7d814ee47c1c1b8487c72c6bbb3a2d00"
+    },
+    {
+      "path": "assets/fonts/Poppins-SemiBold.ttf",
+      "sha1": "8a4ace9392d06bcb7f8ea2f5169b07e4c383a90d"
+    },
+    {
+      "path": "assets/fonts/Poppins-SemiBoldItalic.ttf",
+      "sha1": "0c8bed0a5942b2388d36b11c115685d9f01700b0"
+    },
+    {
+      "path": "assets/fonts/Poppins-Thin.ttf",
+      "sha1": "09ba4dcd5509c8085bf88c665dcc51cbdfced27b"
+    },
+    {
+      "path": "assets/fonts/Poppins-ThinItalic.ttf",
+      "sha1": "fb8fccca21550e71135f92bbaf8a2e8a12c90465"
+    },
+    {
+      "path": "assets/images/add_user.svg",
+      "sha1": "87ac6d3da54592760ca9a941353e62bab8186743"
+    },
+    {
+      "path": "assets/images/approved.png",
+      "sha1": "9fe5e9b9eeacee707b0965ba65cf6f528a72b6b5"
+    },
+    {
+      "path": "assets/images/approved_task.svg",
+      "sha1": "44b7fc802aa199f08c22e0810fe3b1b465c364ee"
+    },
+    {
+      "path": "assets/images/app_icon.png",
+      "sha1": "6a1da53f4d0a8bc98d01ced2e0ffd27b3c88ef02"
+    },
+    {
+      "path": "assets/images/assignee.svg",
+      "sha1": "960bd07b18e527fabbb5c193f336fba918d2e6f6"
+    },
+    {
+      "path": "assets/images/bell.svg",
+      "sha1": "bf308f956bf0edcfa82e1340a952928a522a0a03"
+    },
+    {
+      "path": "assets/images/business.png",
+      "sha1": "a6bc0412511318d7254ef375d3a0e16d29323143"
+    },
+    {
+      "path": "assets/images/bx_bxs-user.svg",
+      "sha1": "bd142c9866725aa91b51768c787afff53bec42f4"
+    },
+    {
+      "path": "assets/images/comments_icon.svg",
+      "sha1": "7ed14ab32e74844e9e0fa87ffae20e7fb45757c7"
+    },
+    {
+      "path": "assets/images/company-2.svg",
+      "sha1": "c8a6c449a9aff8a67edac4bbdd76c90d35e0f259"
+    },
+    {
+      "path": "assets/images/company.svg",
+      "sha1": "10ebd93a67074ec607dc7fde788e55041364759f"
+    },
+    {
+      "path": "assets/images/complete.svg",
+      "sha1": "ba0d545b421d2ff0fd585de029d6e6413cbeac4b"
+    },
+    {
+      "path": "assets/images/completeTask.svg",
+      "sha1": "7816b1cfa25c3e37f3f23855e38fce446be5fe59"
+    },
+    {
+      "path": "assets/images/create.svg",
+      "sha1": "d518a2744e0235e841efe9ce003dbdb3c7b9b10a"
+    },
+    {
+      "path": "assets/images/createPass.png",
+      "sha1": "15978d41a96b71c837e1ac50590885a1706f2285"
+    },
+    {
+      "path": "assets/images/date.svg",
+      "sha1": "0247c08b3d8a165b1597009fe9e50d2e71169804"
+    },
+    {
+      "path": "assets/images/date_create.svg",
+      "sha1": "52121c82350cc5e97fcc71f0555c393a9d02864a"
+    },
+    {
+      "path": "assets/images/delete.svg",
+      "sha1": "72e8e3a47be9af7a65a42e740d95810a9d0b8c2c"
+    },
+    {
+      "path": "assets/images/deletes.svg",
+      "sha1": "044a8ea4df338f4a70d5ea69913520bef647bfd9"
+    },
+    {
+      "path": "assets/images/deletes2.svg",
+      "sha1": "c653b8d5d806544140d0a7d2514c3fc7861d9898"
+    },
+    {
+      "path": "assets/images/designation.png",
+      "sha1": "d251a6003505ed82d71de0792461f94ea757b495"
+    },
+    {
+      "path": "assets/images/designation.svg",
+      "sha1": "15f2e965c68b5fb4985b669023adef88a3b040a2"
+    },
+    {
+      "path": "assets/images/edit.png",
+      "sha1": "cad71d07c4114a8398de6802cb5cf1c39a39a42c"
+    },
+    {
+      "path": "assets/images/edit.svg",
+      "sha1": "bc1abc0768cd42f907af0ce4343303037cb9933d"
+    },
+    {
+      "path": "assets/images/edits.svg",
+      "sha1": "34f44d3ffb4b1d688199f1c5cc952e7d349af0e3"
+    },
+    {
+      "path": "assets/images/email.svg",
+      "sha1": "9749b52ce483757f5ab44a654fae3fe478564e98"
+    },
+    {
+      "path": "assets/images/emails.png",
+      "sha1": "b0fb0384fe825a158967a62fb9bfd3c3496f7f59"
+    },
+    {
+      "path": "assets/images/filter.svg",
+      "sha1": "aaf620459338395c50abc1316d53618c4803819e"
+    },
+    {
+      "path": "assets/images/forgetPass.png",
+      "sha1": "5074becae11a2116c524883eb8ad294d5d3c7e7e"
+    },
+    {
+      "path": "assets/images/Frame 21.svg",
+      "sha1": "70a82ae2efc7ae097ff7f9f5d5687ce923cac137"
+    },
+    {
+      "path": "assets/images/grid_view_black_24dp.svg",
+      "sha1": "e727525da426f623c3de38fe41471506bed38f8c"
+    },
+    {
+      "path": "assets/images/high_to_low.svg",
+      "sha1": "37178ba7c1f0c47569fc7a14c2b3c0666f64210c"
+    },
+    {
+      "path": "assets/images/home.svg",
+      "sha1": "05aee94b0f2f1371231ad23e962484db5b0660eb"
+    },
+    {
+      "path": "assets/images/home_page.svg",
+      "sha1": "6d2fd950c94cf2bedf889bf16ea236e5e938f8bd"
+    },
+    {
+      "path": "assets/images/icons.png",
+      "sha1": "b3ae584f4b7ee37fcdc29fb682e8a4b44bb660da"
+    },
+    {
+      "path": "assets/images/icons.svg",
+      "sha1": "9dabf2baba8fd7a8b5aec8db650c6d265edccf32"
+    },
+    {
+      "path": "assets/images/info.svg",
+      "sha1": "b3965796cbe498ccbd50c410ea20773cfd9772c5"
+    },
+    {
+      "path": "assets/images/jj.svg",
+      "sha1": "70a82ae2efc7ae097ff7f9f5d5687ce923cac137"
+    },
+    {
+      "path": "assets/images/low_to_high.svg",
+      "sha1": "0944dabe6e80292b4a80e75a8f4bf894f2afe84b"
+    },
+    {
+      "path": "assets/images/name.svg",
+      "sha1": "8215a0802d6e41016d6c1135617e286800a94fa0"
+    },
+    {
+      "path": "assets/images/new_add.svg",
+      "sha1": "d518a2744e0235e841efe9ce003dbdb3c7b9b10a"
+    },
+    {
+      "path": "assets/images/notification.svg",
+      "sha1": "bf308f956bf0edcfa82e1340a952928a522a0a03"
+    },
+    {
+      "path": "assets/images/otp.png",
+      "sha1": "98cf67b0770721ffb5ed7d1f2e602846381a431f"
+    },
+    {
+      "path": "assets/images/pdf.png",
+      "sha1": "269bd9976081da7f84d40ac81a6b1ffdf0ff211c"
+    },
+    {
+      "path": "assets/images/people_black_24dp.svg",
+      "sha1": "1a60dd5222a4637823881d8c67eb032ff4187e9d"
+    },
+    {
+      "path": "assets/images/phone.png",
+      "sha1": "d09a81eb6ab43555e6ee56492c55bb2d7e9027a3"
+    },
+    {
+      "path": "assets/images/phone.svg",
+      "sha1": "e5dd84675b5a69af1d5bb7e30354174f07da5157"
+    },
+    {
+      "path": "assets/images/priority.svg",
+      "sha1": "a11bc25277691e0eb55e61959a1926177469a0d6"
+    },
+    {
+      "path": "assets/images/profileEdit.png",
+      "sha1": "cad71d07c4114a8398de6802cb5cf1c39a39a42c"
+    },
+    {
+      "path": "assets/images/profiles.png",
+      "sha1": "942edbf9cbca159549acbd1f04d7b810b1538475"
+    },
+    {
+      "path": "assets/images/projects.svg",
+      "sha1": "70a82ae2efc7ae097ff7f9f5d5687ce923cac137"
+    },
+    {
+      "path": "assets/images/project_icon.svg",
+      "sha1": "3519718a4b549519dde925607dd1f2832a7fd2e7"
+    },
+    {
+      "path": "assets/images/project_view.svg",
+      "sha1": "77eb392b53bc1d21dd05edd94cc3ae3e1f28f417"
+    },
+    {
+      "path": "assets/images/reopen.svg",
+      "sha1": "40766da300f8177009aeb20c04699cff60a44b6e"
+    },
+    {
+      "path": "assets/images/search.png",
+      "sha1": "6d4fdf43aa7b11bbbf2d63b1c8c6819492ef4bb0"
+    },
+    {
+      "path": "assets/images/search.svg",
+      "sha1": "89b715f6dc800c47c6e8bfd487ff296511a69ea5"
+    },
+    {
+      "path": "assets/images/sign_in.png",
+      "sha1": "e23b4606d03fb0581a6e89d4887938e4a3c023e7"
+    },
+    {
+      "path": "assets/images/sign_up.png",
+      "sha1": "e4db7fa619dee2174f7c21175742a96066cd670f"
+    },
+    {
+      "path": "assets/images/sort.svg",
+      "sha1": "b7702d3d36ff75a8b8b977af857bed365307bf63"
+    },
+    {
+      "path": "assets/images/splash.png",
+      "sha1": "1307b17596eec23895e28d756948bc1a7096231f"
+    },
+    {
+      "path": "assets/images/task_complete.svg",
+      "sha1": "1bb7dd72ccb2801af2ee210993f617c8ddfcfa69"
+    },
+    {
+      "path": "assets/images/team.svg",
+      "sha1": "425dc80e6f778900249cd8ff6db63b60d866e1ad"
+    }
+  ]
+}
