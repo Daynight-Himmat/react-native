@@ -1,24 +1,17 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  SafeAreaView,
-  Dimensions,
-  TouchableOpacity,
-} from 'react-native';
+import {View, Image, StyleSheet, SafeAreaView, Dimensions} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import AppIntroSlider from 'react-native-app-intro-slider';
 import AppButton from '../components/app_button';
 import ColorConstants from '../constants/color_constants';
-import {Label, HighLightLabel, LightText} from '../components/label';
+import {HighLightLabel, LightText} from '../components/label';
 import Swiper from 'react-native-swiper';
 import AppSize from '../components/size';
 
 const SplashSreen = ({navigation}) => {
   const {height, width} = Dimensions.get('screen');
   const [getIndex, setIndex] = useState();
+
   const goHome = async () => {
     var userId = await AsyncStorage.getItem('user_id');
     if (userId !== null) {
@@ -28,9 +21,8 @@ const SplashSreen = ({navigation}) => {
   };
 
   useEffect(() => {
-    console.log(height, width);
-    // goHome();
-  }, []);
+    goHome();
+  }, [goHome, height, width]);
 
   const slides = [
     {
@@ -62,8 +54,6 @@ const SplashSreen = ({navigation}) => {
         style={[
           styles.container,
           {
-            // height: height,
-            // width: width,
             flexDirection: 'column',
             justifyContent: 'center',
             alignContent: 'center',
@@ -134,47 +124,24 @@ const SplashSreen = ({navigation}) => {
             );
           })}
         </Swiper>
-        <View
-          style={{
-            // position: 'absolute',
-            // bottom: 0,
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 10,
-            flexDirection: 'row',
-            backgroundColor: ColorConstants.primaryWhite,
-          }}>
+        <View style={styles.registerContainer}>
           <AppButton
             text={'Register'}
-            style={{
-              flex: 1,
-              backgroundColor: ColorConstants.primaryWhite,
-              borderColor: ColorConstants.primaryColor,
-              borderWidth: 2,
-              borderRadius: 5,
-              alignContent: 'center',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+            style={styles.registerbutton}
             textStyle={{
               color: ColorConstants.primaryColor,
             }}
-            onPress={
-              () => {
-                navigation.navigate('sign_up');
-              }
-            }
+            onPress={() => {
+              navigation.navigate('sign_up');
+            }}
           />
           <AppSize width={20} />
-          <AppButton 
-            text={'Log In'} 
-            style={{flex: 1}} 
-            onPress={
-              () => {
-                navigation.navigate('sign_in');
-              }
-            }
-          
+          <AppButton
+            text={'Log In'}
+            style={{flex: 1}}
+            onPress={() => {
+              navigation.navigate('sign_in');
+            }}
           />
         </View>
       </View>
@@ -237,5 +204,22 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  registerContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+    flexDirection: 'row',
+    backgroundColor: ColorConstants.primaryWhite,
+  },
+  registerbutton: {
+    flex: 1,
+    backgroundColor: ColorConstants.primaryWhite,
+    borderColor: ColorConstants.primaryColor,
+    borderWidth: 2,
+    borderRadius: 5,
+    alignContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

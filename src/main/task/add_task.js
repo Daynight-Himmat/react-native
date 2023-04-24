@@ -12,7 +12,9 @@ import {
   ScrollView,
   Dimensions,
   TouchableOpacity,
-  DatePickerIOSBase,
+  Pressable,
+  Modal,
+  Alert,
 } from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Label} from '../../components/label';
@@ -22,12 +24,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AppButton from '../../components/app_button';
 import AppSize from '../../components/size';
-import {RadioButton, Modal, Checkbox} from 'react-native-paper';
+import {RadioButton, Checkbox} from 'react-native-paper';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import SearchBox from '../../components/search_box';
 import {Loading, NoData} from '../../components/no_data_found';
 import {MaterialIcons} from '../../components/icons';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {Calendar} from 'react-native-calendars';
+import moment from 'moment';
 
 const AddTask = ({navigation}) => {
   const [checked, setChecked] = useState('first');
@@ -48,11 +52,13 @@ const AddTask = ({navigation}) => {
   const [assigneeSelected, setSelectedAssignee] = useState([]);
   const {height, width} = Dimensions.get('screen');
   const selectUser = [];
+  const [modalVisible, setModalVisible] = useState(false);
 
   const url = BaseUrl(ApiConstants.myProjectList);
   const url1 = BaseUrl(ApiConstants.projectWiseMember);
   const addTask = BaseUrl1(ApiConstants.addTask);
   const refRBSheet = useRef();
+  var date = moment().utcOffset('+05:30').format('YYYY-MM-DD');
 
   const checking = async () => {
     try {
@@ -114,14 +120,14 @@ const AddTask = ({navigation}) => {
       console.log({userId: user_Id, token: token});
       const response = await axios.post(addTask, {
         token: token,
-        task_title: '',
+        task_title: title,
         priority: '',
         task_deadline: '',
         client_view: '',
         task_image: '',
         assigned_status: '',
         self: '',
-        description: '',
+        description: description,
         assined_ids: '',
         project_id: getProjectId,
         user_id: user_Id,
@@ -217,11 +223,103 @@ const AddTask = ({navigation}) => {
   return (
     <SafeAreaView>
       <View style={styles.container}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+            setModalVisible(!modalVisible);
+          }}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Calendar
+                // disableArrowLeft={true}
+                minDate={date}
+                initialDate={date}
+                onDayPress={day => {
+                  console.log('selected day', day.dateString);
+                }}
+                // Handler which gets executed on day long press. Default = undefined
+                onDayLongPress={day => {
+                  console.log('selected day', day);
+                }}
+                markedDates={{
+                  '2023-04-16': {
+                    selected: true,
+                    marked: true,
+                    selectedColor: ColorConstants.primaryColor,
+                  },
+                  '2012-05-17': {marked: true},
+                  '2012-05-18': {
+                    marked: true,
+                    dotColor: 'red',
+                    activeOpacity: 0,
+                  },
+                  '2012-05-19': {disabled: true, disableTouchEvent: true},
+                }}
+                theme={{
+                  backgroundColor: ColorConstants.primaryColor,
+                  calendarBackground: '#ffffff',
+                  textSectionTitleColor: '#b6c1cd',
+                  textSectionTitleDisabledColor: '#d9e1e8',
+                  selectedDayBackgroundColor: ColorConstants.primaryColor,
+                  selectedDayTextColor: ColorConstants.primaryColor,
+                  todayTextColor: ColorConstants.primaryColor,
+                  dayTextColor: '#2d4150',
+                  textDisabledColor: '#d9e1e8',
+                  dotColor: '#00adf5',
+                  selectedDotColor: '#ffffff',
+                  arrowColor: 'orange',
+                  disabledArrowColor: '#d9e1e8',
+                  monthTextColor: ColorConstants.primaryColor,
+                  indicatorColor: 'blue',
+                  textDayFontFamily: 'monospace',
+                  textMonthFontFamily: 'monospace',
+                  textDayHeaderFontFamily: 'monospace',
+                  textDayFontWeight: '300',
+                  // textMonthFontWeight: 'bold',
+                  textDayHeaderFontWeight: '300',
+                  textDayFontSize: 16,
+                  textMonthFontSize: 16,
+                  textDayHeaderFontSize: 16,
+                }}
+              />
+              <View style={styles.bottomButtonRow}>
+                <AppButton
+                  text={'Cancel'}
+                  style={styles.cencal}
+                  textStyle={{
+                    color: ColorConstants.primaryColor,
+                  }}
+                  onPress={() => {
+                    setModalVisible(!modalVisible);
+                  }}
+                />
+                <AppSize width={20} />
+                <AppButton
+                  text={'Select'}
+                  style={{flex: 1}}
+                  onPress={() => {
+                    console.log(searchUser);
+                    refRBSheet.current.close();
+                  }}
+                />
+              </View>
+              {/* <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={styles.textStyle}>Hide Modal</Text>
+              </Pressable> */}
+            </View>
+          </View>
+        </Modal>
         <Label name={'Title'} />
         <TextInput
           placeholder="Enter task title"
           placeholderTextColor={ColorConstants.textLightBlack1}
           style={styles.inputText}
+          onChangeText={text => setTitle(text)}
         />
         <Label name={'Description'} />
         <TextInput
@@ -229,6 +327,7 @@ const AddTask = ({navigation}) => {
           multiline={true}
           placeholderTextColor={ColorConstants.textLightBlack1}
           style={styles.inputText}
+          onChangeText={text => setDescription(text)}
         />
 
         <Label name={'Project'} />
@@ -493,7 +592,11 @@ const AddTask = ({navigation}) => {
           <View style={styles.flex}>
             <Label name={'DeadLine'} />
           </View>
-          <TouchableOpacity style={styles.date_picker} onPress={() => {}}>
+          <TouchableOpacity
+            style={styles.date_picker}
+            onPress={() => {
+              setModalVisible(true);
+            }}>
             <Ionicons
               name={'calendar'}
               color={ColorConstants.textLightBlack1}
@@ -660,6 +763,48 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 5,
+    padding: 3,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 10,
+      height: 12,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 4,
+    elevation: 100,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    color: ColorConstants.primaryBlack,
   },
 });
 

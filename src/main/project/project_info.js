@@ -1,17 +1,14 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, ScrollView, StyleSheet} from 'react-native';
+import {View, ScrollView, StyleSheet} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Appbar} from 'react-native-paper';
 import {ApiConstants, BaseUrl} from '../../constants/api_constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Loading} from '../../components/no_data_found';
-import {InnerTab} from '../../components/tabs';
-import {Label, LightText, LightText1} from '../../components/label';
-import {Ionicons} from '../../components/icons';
-import AppSize from '../../components/size';
+import {Label, LightText1} from '../../components/label';
 import moment from 'moment';
-import {PersonTile, TimeTile} from '../../components/person_tile';
+import {TimeTile} from '../../components/person_tile';
 
 const ProjectInfo = ({navigation, route}) => {
   const {project_id} = route.params;
@@ -20,7 +17,6 @@ const ProjectInfo = ({navigation, route}) => {
   const [getUserData, setUserData] = useState([]);
   const projectInfoUrl = BaseUrl(ApiConstants.projectDetails);
   const get_user = BaseUrl(ApiConstants.getUserList);
-  var showTaskAssignee;
 
   const getProjectInfo = async () => {
     try {
@@ -37,10 +33,7 @@ const ProjectInfo = ({navigation, route}) => {
             setLoading(false);
             console.log(response.data?.data);
             setProjectInfo(response.data?.data);
-            const date = projectInfo[0]?.deadline;
-            if (date !== '') {
-              showDeadline = moment(date).format('MMM dd, yyyy');
-            }
+            // const date = projectInfo[0]?.deadline;
           }
         })
         .catch(error => {
@@ -58,7 +51,6 @@ const ProjectInfo = ({navigation, route}) => {
             for (var i = 0; i < getUserData.length; i++) {
               if (projectInfo[0]?.team_cordinator !== '') {
                 if (projectInfo[0]?.team_cordinator === getUserData[i].id) {
-                  showTaskAssignee = getUserData[i].name;
                   console.log(getUserData[i].name);
                 }
               } else {
@@ -83,11 +75,7 @@ const ProjectInfo = ({navigation, route}) => {
 
   return (
     <View style={styles(ColorConstants.primaryWhite).container}>
-      <Appbar.Header
-        style={{
-          width: '100%',
-          backgroundColor: ColorConstants.primaryWhite
-        }}>
+      <Appbar.Header style={styles.app_bar_header}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content
           title={''}
@@ -205,6 +193,10 @@ const styles = color =>
       borderRadius: 100,
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    app_bar_header: {
+      width: '100%',
+      backgroundColor: ColorConstants.primaryWhite,
     },
   });
 

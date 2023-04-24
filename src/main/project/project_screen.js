@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {View, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Appbar, Text} from 'react-native-paper';
@@ -19,8 +19,7 @@ const ProjectPageScreen = ({navigation, route}) => {
   const projectTaskListUrl = BaseUrl(ApiConstants.projectTaskList);
   var currentDate = new movement().format('MMM DD, yyyy');
 
-  const getProjectsTaskList = async ({type}) => {
-    
+  const getProjectsTaskList = useCallback(async () => {
     try {
       setLoading(true);
       const token = await AsyncStorage.getItem('token');
@@ -36,10 +35,10 @@ const ProjectPageScreen = ({navigation, route}) => {
       setLoading(false);
       console.log(error);
     }
-  };
+  }, [data.id, projectTaskListUrl]);
   useEffect(() => {
     getProjectsTaskList();
-  }, []);
+  }, [getProjectsTaskList]);
 
   return (
     <View style={styles.container}>
@@ -82,7 +81,7 @@ const ProjectPageScreen = ({navigation, route}) => {
           }
           onPress={() => {
             setInnerSide('All');
-            getProjectsTaskList('All');
+            getProjectsTaskList();
           }}
         />
 
@@ -100,7 +99,7 @@ const ProjectPageScreen = ({navigation, route}) => {
           }
           onPress={() => {
             setInnerSide('today');
-            getProjectsTaskList('today');
+            getProjectsTaskList();
           }}
         />
 
@@ -118,7 +117,7 @@ const ProjectPageScreen = ({navigation, route}) => {
           }
           onPress={() => {
             setInnerSide('due');
-            getProjectsTaskList('due');
+            getProjectsTaskList();
           }}
         />
         <InnerTab
@@ -135,7 +134,7 @@ const ProjectPageScreen = ({navigation, route}) => {
           }
           onPress={() => {
             setInnerSide('complete');
-            getProjectsTaskList('complete');
+            getProjectsTaskList();
           }}
         />
       </View>
@@ -148,32 +147,33 @@ const ProjectPageScreen = ({navigation, route}) => {
             contentContainerStyle={{
               flexGrow: 1,
             }}>
-            {projectsTaskList.map((data, index) =>
+            {projectsTaskList.map((projectItems, index) =>
               innerSide === 'All' ? (
-                data.task_status === 'Active' ? (
+                projectItems.task_status === 'Active' ? (
                   <TaskTile
-                    key={data.title}
-                    data={data}
+                    key={projectItems.title}
+                    data={projectItems}
                     index={index}
                     onPress={() => {
                       navigation.navigate('task_details_screen', {
-                        data: data,
+                        data: projectItems,
                       });
                     }}
                   />
                 ) : (
-                  <View />
+                  <View key={index} />
                 )
               ) : innerSide === 'today' ? (
-                movement(data.actual_deadline).format('MMM DD, yyyy') ===
-                  currentDate && data.task_status === 'Active' ? (
+                movement(projectItems.actual_deadline).format(
+                  'MMM DD, yyyy',
+                ) === currentDate && projectItems.task_status === 'Active' ? (
                   <TaskTile
-                    key={data.title}
-                    data={data}
+                    key={projectItems.title}
+                    data={projectItems}
                     index={index}
                     onPress={() => {
                       navigation.navigate('task_details_screen', {
-                        data: data,
+                        data: projectItems,
                       });
                     }}
                   />
@@ -181,15 +181,16 @@ const ProjectPageScreen = ({navigation, route}) => {
                   <View />
                 )
               ) : innerSide === 'due' ? (
-                movement(data.actual_deadline).format('MMM DD, yyyy') !==
-                  currentDate && data.task_status === 'Active' ? (
+                movement(projectItems.actual_deadline).format(
+                  'MMM DD, yyyy',
+                ) !== currentDate && projectItems.task_status === 'Active' ? (
                   <TaskTile
-                    key={data.title}
-                    data={data}
+                    key={projectItems.title}
+                    data={projectItems}
                     index={index}
                     onPress={() => {
                       navigation.navigate('task_details_screen', {
-                        data: data,
+                        data: projectItems,
                       });
                     }}
                   />
@@ -197,14 +198,14 @@ const ProjectPageScreen = ({navigation, route}) => {
                   <View />
                 )
               ) : innerSide === 'complete' ? (
-                data.task_status === 'Completed' ? (
+                projectItems.task_status === 'Completed' ? (
                   <TaskTile
-                    key={data.title}
-                    data={data}
+                    key={projectItems.title}
+                    data={projectItems}
                     index={index}
                     onPress={() => {
                       navigation.navigate('task_details_screen', {
-                        data: data,
+                        data: projectItems,
                       });
                     }}
                   />
@@ -212,19 +213,21 @@ const ProjectPageScreen = ({navigation, route}) => {
                   <View />
                 )
               ) : (
-                <View key={data.title}>
+                <View key={projectItems.title}>
                   <Text
                     style={{
                       color: ColorConstants.primaryBlack,
                     }}>
-                    {movement(data.actual_deadline).format('MMM DD, yyyy')}
+                    {movement(projectItems.actual_deadline).format(
+                      'MMM DD, yyyy',
+                    )}
                   </Text>
                 </View>
               ),
             )}
           </ScrollView>
         ) : (
-          <NoData />
+          <NoData key={data} />
         )}
       </View>
       {isLoading && <Loading />}

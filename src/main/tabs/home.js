@@ -1,26 +1,14 @@
 import React, {useState, useEffect} from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
+import {View, StyleSheet, Text, ScrollView} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {ApiConstants, BaseUrl, BaseUrl1} from '../../constants/api_constants';
+import {ApiConstants, BaseUrl} from '../../constants/api_constants';
 import {InnerTab, TabContainer} from '../../components/tabs';
-import Feather from 'react-native-vector-icons/Feather';
 import {Loading, NoData} from '../../components/no_data_found';
-import {SpinnerCircular} from 'spinners-react';
 import TaskTile from '../../components/task_tile';
 import movement from 'moment';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {MyTask, Assignee} from './my_task';
-import {Foundation} from '../../components/icons';
 
 const HomeScreen = ({navigation}) => {
   const [token, setToken] = useState([]);
@@ -28,7 +16,6 @@ const HomeScreen = ({navigation}) => {
   const [side, setSide] = useState('My Task');
   const [innerSide, setInnerSide] = useState('All');
   const [getTaskData, setTaskData] = useState([]);
-  const [getTaskDate, setTaskDate] = useState([]);
   const [getAssigneeTaskData, setAssigneeTaskData] = useState([]);
   var currentDate = new movement().format('MMM DD, yyyy');
 
