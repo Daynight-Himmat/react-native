@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ColorConstants from '../constants/color_constants';
 

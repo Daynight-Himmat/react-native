@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {View, ScrollView, TextInput, Image, StyleSheet} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Loading} from '../../components/no_data_found';
@@ -6,19 +6,18 @@ import {Label} from '../../components/label';
 import {Ionicons} from '../../components/icons';
 import AppSize from '../../components/size';
 import {ViewProfileButton} from '../../components/text_button';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppButton from '../../components/app_button';
 import {ApiConstants, BaseUrl1} from '../../constants/api_constants';
 
 const CreateProfile = () => {
   const [isLoading, setLoading] = useState(false);
-  const createMember = BaseUrl1(ApiConstants.signUp);
-  const verifyOtp = BaseUrl1(ApiConstants.verifyOtp);
-  const register = BaseUrl1(ApiConstants.registration);
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
   const [email, setEmail] = useState('');
   const [designation, setDesignation] = useState('');
+  const createMember = BaseUrl1(ApiConstants.signUp);
+  const verifyOtp = BaseUrl1(ApiConstants.verifyOtp);
+  const register = BaseUrl1(ApiConstants.registration);
 
   const createNewMember = () => {
     try {
@@ -29,7 +28,6 @@ const CreateProfile = () => {
         designation: designation,
       });
     } catch (error) {
-      console.log(error);
       setLoading(false);
     }
   };

@@ -18,7 +18,6 @@ const CompanyScreen = ({navigation}) => {
 
   const url = BaseUrl1(ApiConstants.companyList);
 
-  const focused = useIsFocused();
 
   const getCompanyData = useCallback(async () => {
     try {
@@ -35,16 +34,13 @@ const CompanyScreen = ({navigation}) => {
             setCompanyData(response.data.data?.data);
             setSearchQuery(response.data.data?.data);
             setLoading(false);
-            console.log(response.data.data?.data);
           }
         })
         .catch(error => {
           setLoading(false);
-          console.log(error);
         });
     } catch (error) {
       setLoading(false);
-      console.log(error);
     }
   });
 
@@ -66,7 +62,6 @@ const CompanyScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       <SearchBox onChangeText={handleSearch} />
-      <View style={{padding: 5}} />
       {getSearchQuery.length > 0 ? (
         <ScrollView
           contentContainerStyle={{

@@ -99,7 +99,6 @@ const screens = [
     name: 'notification',
     component: NotificationPage,
   },
-
   {
     name: 'search',
     component: SearchScreen,

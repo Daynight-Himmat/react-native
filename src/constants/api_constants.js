@@ -2,8 +2,7 @@ const BaseUrl = end_Point => `http://143.110.190.217/api/${end_Point}`;
 
 const BaseUrl1 = end_Point => `https://pm.ankitsisodiya.com/api/${end_Point}`;
 
-const CompanyProfileImage = () =>
-  'http://143.110.190.217/Company/profile_pictures/';
+const CompanyProfileImage = end_Point => `http://143.110.190.217/Company/profile_pictures/${end_Point}`;
 
 class ApiConstants {
   static signUp = 'sendOtp';

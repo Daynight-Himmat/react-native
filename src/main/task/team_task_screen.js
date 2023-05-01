@@ -1,20 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
+import {View, StyleSheet, Text, ScrollView} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {ApiConstants, BaseUrl, BaseUrl1} from '../../constants/api_constants';
-import {InnerTab, TabContainer} from '../../components/tabs';
-import Feather from 'react-native-vector-icons/Feather';
+import {ApiConstants, BaseUrl} from '../../constants/api_constants';
+import {InnerTab} from '../../components/tabs';
 import {Loading, NoData} from '../../components/no_data_found';
-import {SpinnerCircular} from 'spinners-react';
 import TaskTile from '../../components/task_tile';
 import {Appbar} from 'react-native-paper';
 import movement from 'moment';
@@ -34,7 +25,6 @@ const TeamTaskScreen = ({navigation, route}) => {
     setLoading(true);
     try {
       console.log('this data---', type);
-      var userId = await AsyncStorage.getItem('user_id');
       var token = await AsyncStorage.getItem('token');
       await axios
         .post(taskListUrl, {
@@ -46,16 +36,13 @@ const TeamTaskScreen = ({navigation, route}) => {
           if (response.status === 200) {
             setTaskData(response.data?.data?.data);
             setLoading(false);
-            console.log(response.data.data?.data.slice(0, 1));
           }
         })
-        .catch(error => {
+        .catch(() => {
           setLoading(false);
-          console.log(error);
         });
     } catch (error) {
       setLoading(false);
-      console.log(`this data ${error}`);
     }
   };
 
@@ -80,7 +67,6 @@ const TeamTaskScreen = ({navigation, route}) => {
           }}
         />
       </Appbar.Header>
-      <View style={{padding: 5}} />
       <View
         style={{
           height: 30,
@@ -160,7 +146,6 @@ const TeamTaskScreen = ({navigation, route}) => {
           }}
         />
       </View>
-      <View style={{padding: 2}} />
       <View
         style={{
           width: '100%',
@@ -171,32 +156,32 @@ const TeamTaskScreen = ({navigation, route}) => {
       {loading === false ? (
         getTaskData.length > 0 ? (
           <ScrollView>
-            {getTaskData.map((data, index) =>
+            {getTaskData.map((taskData, index) =>
               innerSide === 'All' ? (
-                data.task_status === 'Active' ? (
+                taskData.task_status === 'Active' ? (
                   <TaskTile
-                  key={data.title}
-                  data={data}
-                  index={index}
-                  onPress={() => {
-                    navigation.navigate('task_details_screen', {
-                      data: data,
-                    });
-                  }}
-                />
+                    key={taskData.title}
+                    data={taskData}
+                    index={index}
+                    onPress={() => {
+                      navigation.navigate('task_details_screen', {
+                        data: taskData,
+                      });
+                    }}
+                  />
                 ) : (
                   <View />
                 )
               ) : innerSide === 'today' ? (
-                movement(data.actual_deadline).format('MMM DD, yyyy') ===
-                  currentDate && data.task_status === 'Active' ? (
-                    <TaskTile
-                    key={data.title}
-                    data={data}
+                movement(taskData.actual_deadline).format('MMM DD, yyyy') ===
+                  currentDate && taskData.task_status === 'Active' ? (
+                  <TaskTile
+                    key={taskData.title}
+                    data={taskData}
                     index={index}
                     onPress={() => {
                       navigation.navigate('task_details_screen', {
-                        data: data,
+                        data: taskData,
                       });
                     }}
                   />
@@ -204,15 +189,15 @@ const TeamTaskScreen = ({navigation, route}) => {
                   <View />
                 )
               ) : innerSide === 'due' ? (
-                movement(data.actual_deadline).format('MMM DD, yyyy') !==
-                  currentDate && data.task_status === 'Active' ? (
-                    <TaskTile
-                    key={data.title}
-                    data={data}
+                movement(taskData.actual_deadline).format('MMM DD, yyyy') !==
+                  currentDate && taskData.task_status === 'Active' ? (
+                  <TaskTile
+                    key={taskData.title}
+                    data={taskData}
                     index={index}
                     onPress={() => {
                       navigation.navigate('task_details_screen', {
-                        data: data,
+                        data: taskData,
                       });
                     }}
                   />
@@ -220,27 +205,27 @@ const TeamTaskScreen = ({navigation, route}) => {
                   <View />
                 )
               ) : innerSide === 'complete' ? (
-                data.task_status === 'Completed' ? (
+                taskData.task_status === 'Completed' ? (
                   <TaskTile
-                  key={data.title}
-                  data={data}
-                  index={index}
-                  onPress={() => {
-                    navigation.navigate('task_details_screen', {
-                      data: data,
-                    });
-                  }}
-                />
+                    key={taskData.title}
+                    data={taskData}
+                    index={index}
+                    onPress={() => {
+                      navigation.navigate('task_details_screen', {
+                        data: taskData,
+                      });
+                    }}
+                  />
                 ) : (
                   <View />
                 )
               ) : (
-                <View key={data.title}>
+                <View key={taskData.title}>
                   <Text
                     style={{
                       color: ColorConstants.primaryBlack,
                     }}>
-                    {movement(data.actual_deadline).format('MMM DD, yyyy')}
+                    {movement(taskData.actual_deadline).format('MMM DD, yyyy')}
                   </Text>
                 </View>
               ),
@@ -276,7 +261,7 @@ const styles = StyleSheet.create({
   },
   app_bar_header: {
     width: '100%',
-    backgroundColor: ColorConstants.primaryWhite
+    backgroundColor: ColorConstants.primaryWhite,
   },
   app_bar_title: {
     fontWeight: '700',

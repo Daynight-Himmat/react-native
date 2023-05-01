@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, ScrollView, Text, Image, StyleSheet} from 'react-native';
+import {View, ScrollView, Image, StyleSheet} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Loading} from '../../components/no_data_found';
 import {Label} from '../../components/label';
@@ -29,20 +29,16 @@ const CompanyInfo = ({navigation, route}) => {
     try {
       setLoading(true);
       var token = await AsyncStorage.getItem('token');
-      var userId = await AsyncStorage.getItem('user_id');
-      console.log({token: token, userId: userId, company_id: company_id});
       const response = await axios.post(getCompanyUrl, {
         token: token,
         id: company_id,
       });
       if (response.status === 200) {
         setLoading(false);
-        console.log({data: response.data.data});
         setCompanyData(response.data?.data);
         getProjectDetails();
       }
     } catch (error) {
-      console.log(error);
       setLoading(false);
     }
   };
@@ -51,25 +47,20 @@ const CompanyInfo = ({navigation, route}) => {
     try {
       setLoading(true);
       var token = await AsyncStorage.getItem('token');
-      var userId = await AsyncStorage.getItem('user_id');
-      console.log({token: token, userId: userId, company_id: company_id});
       const response = await axios.post(getCompanyProjectUrl, {
         token: token,
         id: company_id,
       });
       if (response.status === 200) {
         setLoading(false);
-        console.log({data: response.data.data});
         setProjectListData(response.data?.data);
       }
     } catch (error) {
-      console.log(error);
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    console.log(company_id);
     getCompanyDetails();
   });
 

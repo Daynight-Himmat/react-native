@@ -5,7 +5,7 @@ import ColorConstants from '../constants/color_constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {ApiConstants, BaseUrl} from '../constants/api_constants';
-import {Loading, NoData} from '../components/no_data_found';
+import {Loading} from '../components/no_data_found';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const NotificationPage = () => {
@@ -21,11 +21,6 @@ const NotificationPage = () => {
     setLoading(true);
     return await AsyncStorage.getItem('token').then(async asyncStorageRes => {
       setToken(asyncStorageRes);
-      console.log(
-        'this is the data',
-        JSON.parse(JSON.stringify(asyncStorageRes)),
-      );
-      console.log('token', token);
       await axios
         .post(url, {
           token: asyncStorageRes,
@@ -34,7 +29,6 @@ const NotificationPage = () => {
         .then(response => {
           if (response.status === 200) {
             setNotification(response.data?.data);
-            console.log(getNotifiy.slice(0, 1));
             setLoading(false);
           }
         });
@@ -67,10 +61,9 @@ const NotificationPage = () => {
               <View style={styles.imageContainer}>
                 <Ionicons name={'person'} color={ColorConstants.primaryWhite} />
               </View>
-              <View style={{padding: 5}} />
               <Text
                 style={{
-                  flex:1,
+                  flex: 1,
                   color: ColorConstants.primaryBlack,
                 }}>
                 {data.user_notification}

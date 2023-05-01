@@ -1,20 +1,12 @@
 import React from 'react';
 import {View, Image, StyleSheet, Dimensions} from 'react-native';
 
+const {height, width} = Dimensions.get('screen');
+
 const AuthImage = ({image}) => {
-  const {height, width} = Dimensions.get('screen');
   return (
     <View style={styles.container}>
-      <Image
-        style={[
-          styles.image,
-          {
-            height: height / 4,
-            width: width,
-          },
-        ]}
-        source={image}
-      />
+      <Image style={styles.image} source={image} />
     </View>
   );
 };
@@ -27,8 +19,8 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   image: {
-    height: 300,
-    width: 300,
+    height: height / 4,
+    width: width,
     resizeMode: 'contain',
   },
 });

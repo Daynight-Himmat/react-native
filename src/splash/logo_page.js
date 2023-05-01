@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
 import Icons from '../../assets/images/icons.svg';
 import ColorConstants from '../constants/color_constants';
@@ -10,11 +10,9 @@ const LogoPage = ({navigation}) => {
     var isFirstTime = await AsyncStorage.getItem('isFirstTime');
     if (isFirstTime === 'true') {
       navigation.navigate('splash');
-      console.log(`this is if part ${isFirstTime}`);
     } else if (userId !== null) {
       navigation.navigate('dashboard');
     } else {
-      console.log(`this is else part ${isFirstTime}`);
       navigation.navigate('splash');
     }
   };

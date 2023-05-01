@@ -1,28 +1,14 @@
-import React, {useState, useEffect} from 'react';
-import {View, StyleSheet, Text, Image} from 'react-native';
+import React from 'react';
+import {View, StyleSheet, Image} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Tile} from '../../components/person_tile';
 
 const TeamProfile = ({navigation, route}) => {
-  const {index, data} = route.params;
-
-  const [getData, setData] = useState([]);
-
-  // setData(data);
-
-  const check = () => {
-    // setData(index);
-    console.log(data);
-  };
-
-  useEffect(() => {
-    check();
-  }, []);
+  const {data} = route.params;
 
   return (
     <View style={styles.container}>
-      <View style={{padding: 10}} />
       <View style={styles.imageContainer}>
         {data.profile_image != null &&
         data.profile_image.split('.').pop() === 'jpg' ? (
@@ -34,7 +20,6 @@ const TeamProfile = ({navigation, route}) => {
           <Ionicons name={'person-sharp'} size={35} style={styles.image} />
         )}
       </View>
-      <View style={{padding: 10}} />
       <View style={styles.tile_column}>
         <Tile
           image={require('../../../assets/images/business.png')}

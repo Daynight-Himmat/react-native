@@ -13,7 +13,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import {ApiConstants, BaseUrl} from '../../constants/api_constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Loading } from '../../components/no_data_found';
+import {Loading} from '../../components/no_data_found';
+import AppHeader from '../../components/app_header';
 
 const MyAccount = ({navigation, route}) => {
   const {data} = route.params;
@@ -62,6 +63,7 @@ const MyAccount = ({navigation, route}) => {
 
   return (
     <View style={styles.container}>
+      <AppHeader text={'My Profile'} navigate={navigation} />
       <View
         style={{
           padding: 10,

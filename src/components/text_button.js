@@ -1,12 +1,13 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {Text, TouchableOpacity, StyleSheet} from 'react-native';
 import ColorConstants from '../constants/color_constants';
+import AppSize from './size';
 
 const TexTButton = ({infoText, align, onPressText, callBack}) => {
   return (
     <TouchableOpacity onPress={callBack} style={styles(align).textButtonStyle}>
       <Text style={styles(align).infoTextStyle}>{infoText}</Text>
-      <View style={{width: 5}} />
+      <AppSize width={10} />
       <Text style={styles(align).onPressTextStyle}>{onPressText}</Text>
     </TouchableOpacity>
   );

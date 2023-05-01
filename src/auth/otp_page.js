@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, Text, ScrollView, StyleSheet} from 'react-native';
+import {View, ScrollView, StyleSheet} from 'react-native';
 import ColorConstants from '../constants/color_constants';
 import AuthImage from '../components/auth_image';
 import AppSize from '../components/size';
@@ -18,7 +18,6 @@ const OtpPage = ({navigation, route}) => {
   const verifyOtp = BaseUrl1(ApiConstants.verifyOtp);
 
   const getVerifyOtp = async () => {
-    console.log(otp, email, mobile, name);
     try {
       if (getOtp === '') {
         ToastMessage.showMessage(`Otp Invalid ${getOtp} ${otp}`);
@@ -32,9 +31,7 @@ const OtpPage = ({navigation, route}) => {
           })
           .then(response => {
             if (response.status === 200) {
-              console.log(response.data);
               setLoading(false);
-              console.log(email, name, mobile, comeFrom);
               navigation.navigate('create_pass', {
                 email: email,
                 name: name,
@@ -44,12 +41,11 @@ const OtpPage = ({navigation, route}) => {
             }
           })
           .catch(error => {
-            console.log(error);
             setLoading(false);
           });
       }
     } catch (err) {
-      console.log(err);
+      setLoading(false);
     }
   };
 
@@ -77,7 +73,6 @@ const OtpPage = ({navigation, route}) => {
               inputStyle={styles.inputStyle}
               onChange={code => {
                 setOtp(code);
-                console.log(code);
               }}
             />
           </View>
@@ -86,7 +81,6 @@ const OtpPage = ({navigation, route}) => {
             text={'Verify'}
             onPress={() => {
               getVerifyOtp();
-              // navigation.navigate('create_pass');
             }}
           />
         </View>
@@ -120,10 +114,6 @@ const styles = StyleSheet.create({
   otpStyles: {
     width: '100%',
     height: 100,
-    // flexDirection: 'column',
-    // justifyContent: 'center',
-    // alignItems: 'center',
-    // alignContent: 'center',
   },
   introTextView: {
     width: '90%',

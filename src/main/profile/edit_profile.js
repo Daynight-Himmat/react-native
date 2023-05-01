@@ -10,6 +10,8 @@ import {
 import ColorConstants from '../../constants/color_constants';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import AppHeader from '../../components/app_header';
+import {ViewProfileButton} from '../../components/text_button';
 
 const EditProfile = ({navigation, route}) => {
   const {data} = route.params;
@@ -50,6 +52,7 @@ const EditProfile = ({navigation, route}) => {
             alignContent: 'center',
             alignItems: 'center',
             paddingHorizontal: 10,
+            marginBottom: 10,
           }}>
           <Text
             style={{
@@ -73,11 +76,7 @@ const EditProfile = ({navigation, route}) => {
 
   return (
     <View style={styles.container}>
-      <View
-        style={{
-          padding: 10,
-        }}
-      />
+      <AppHeader text={'Edit Profile'} navigate={navigation} />
       <View style={styles.imageContainer}>
         {data.profile_image !== null &&
         data.profile_image.split('.').pop() === 'jpg' ? (
@@ -89,18 +88,7 @@ const EditProfile = ({navigation, route}) => {
           <Ionicons name={'person-sharp'} size={35} style={styles.image} />
         )}
       </View>
-      <View style={{padding: 5}} />
-      <TouchableOpacity onPress={() => {}} activeOpacity={0.3}>
-        <Text
-          style={{
-            padding: 10,
-            color: ColorConstants.editColor,
-            fontWeight: '400',
-          }}>
-          Change Profile
-        </Text>
-      </TouchableOpacity>
-      <View style={{padding: 10}} />
+      <ViewProfileButton text={'Change Profile'} onPress={() => {}} />
       <EditProfileForm name={data.name ?? 'Enter the name'} label={'Name'} />
       <EditProfileForm
         name={data.mobile ?? 'Enter the mobile number'}
@@ -117,9 +105,7 @@ const EditProfile = ({navigation, route}) => {
 const styles = StyleSheet.create({
   container: {
     height: '100%',
-    width: '100%',
     paddingHorizontal: 10,
-    flexDirection: 'column',
     alignItems: 'center',
     backgroundColor: ColorConstants.primaryWhite,
   },

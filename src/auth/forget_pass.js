@@ -1,12 +1,12 @@
-import React, {useState, useEffect} from 'react';
-import {View, Text, StyleSheet, TextInput} from 'react-native';
+import React, {useState} from 'react';
+import {View, StyleSheet, TextInput} from 'react-native';
 import ColorConstants from '../constants/color_constants';
 import AuthImage from '../components/auth_image';
 import AppSize from '../components/size';
 import AppButton from '../components/app_button';
 import {HighLightLabel, LightText} from '../components/label';
 import axios from 'axios';
-import {ApiConstants, BaseUrl1, BaseUrl} from '../constants/api_constants';
+import {ApiConstants, BaseUrl1} from '../constants/api_constants';
 import ToastMessage from '../components/toast_message';
 import {Loading} from '../components/no_data_found';
 
@@ -48,17 +48,14 @@ const ForgetPassword = ({navigation}) => {
                 });
               }
             }
-            console.log(response.data);
             setIsLoading(false);
           })
           .catch(error => {
             setIsLoading(false);
-            console.log(error);
           });
       }
     } catch (error) {
       setIsLoading(false);
-      console.log(error);
     }
   };
 
@@ -69,7 +66,9 @@ const ForgetPassword = ({navigation}) => {
       <AppSize height={10} />
       <LightText
         lightText={
-          'Don’t worry it happents. Please enter the' +  '\n' +'email address associated with your account.'
+          'Don’t worry it happents. Please enter the' +
+          '\n' +
+          'email address associated with your account.'
         }
       />
       <AppSize height={20} />

@@ -32,12 +32,10 @@ const SearchScreen = ({navigation}) => {
             setLoading(false);
             setsearchData(response.data?.data);
             getSearchTask.slice(0, 20);
-            console.log({data: response.data, params: `${search}`});
           });
       }
     } catch (error) {
       setLoading(false);
-      console.log(error);
     }
   };
 

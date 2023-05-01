@@ -17,8 +17,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppButton from '../../components/app_button';
 import {ApiConstants, BaseUrl1} from '../../constants/api_constants';
 import axios from 'axios';
+import ToastMessage from '../../components/toast_message';
 
-const CreateCompany = ({navigation}) => {
+const CreateCompany = () => {
   const [addMore, setAddMore] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [companyName, setCompanyName] = useState('');
@@ -35,8 +36,6 @@ const CreateCompany = ({navigation}) => {
   const getCompanyDetails = async () => {
     try {
       var token = await AsyncStorage.getItem('token');
-      var userId = await AsyncStorage.getItem('user_id');
-      console.log({token: token, userId: userId});
       console.log({
         addmore: addMore,
         companyName: companyName,
@@ -55,11 +54,13 @@ const CreateCompany = ({navigation}) => {
         })
         .then(resposne => {
           if (resposne.status === 200) {
-            console.log(resposne.data);
+            if (resposne.data?.status) {
+              ToastMessage.showMessage(resposne.data?.message);
+            }
           }
         });
     } catch (err) {
-      console.log(err);
+      setLoading(false);
     }
   };
 

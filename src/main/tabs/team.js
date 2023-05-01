@@ -29,16 +29,13 @@ const TeamScreen = ({navigation}) => {
             setData(response.data?.data);
             setSearchData(response.data?.data);
             setLoading(false);
-            console.log(response.data?.data);
           }
         })
         .catch(error => {
           setLoading(false);
-          console.log({error: error});
         });
     } catch (error) {
       setLoading(false);
-      console.log(error);
     }
   };
 
@@ -62,8 +59,7 @@ const TeamScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <SearchBox onChangeText={handleSearch} />
-      <View style={{padding: 5}} />
+      <SearchBox onChangeText={handleSearch} />      
       {isLoading === false ? (
         searchUser.length > 0 ? (
           <ScrollView>

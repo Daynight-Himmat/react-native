@@ -1,19 +1,12 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {
-  View,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import {View, StyleSheet, TextInput, ScrollView} from 'react-native';
 import ColorConstants from '../constants/color_constants';
 import AuthImage from '../components/auth_image';
-import {HighLightLabel, Label, LightText} from '../components/label';
+import {HighLightLabel} from '../components/label';
 import AppSize from '../components/size';
 import AppButton from '../components/app_button';
 import {TexTButton} from '../components/text_button';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ApiConstants, BaseUrl1} from '../constants/api_constants';
 import {Loading} from '../components/no_data_found';
 import ToastMessage from '../components/toast_message';
@@ -71,7 +64,6 @@ const SignUpScreen = ({navigation}) => {
                   comeFrom: 'register',
                 });
               }
-              console.log(response.data);
               setIsLoading(false);
             }
           })
@@ -81,7 +73,6 @@ const SignUpScreen = ({navigation}) => {
       }
     } catch (error) {
       setIsLoading(false);
-      console.log(error);
     }
   };
 
@@ -146,7 +137,6 @@ const SignUpScreen = ({navigation}) => {
           <AppButton
             text={'Register'}
             onPress={() => {
-              console.log({name: name, email: email, mobile: mobile});
               getRegister();
             }}
           />

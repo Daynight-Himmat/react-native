@@ -1,27 +1,20 @@
 import React, {useEffect, useState, useRef} from 'react';
-import {
-  SelectList,
-  MultipleSelectList,
-} from 'react-native-dropdown-select-list';
+import {SelectList} from 'react-native-dropdown-select-list';
 import {
   View,
   TextInput,
   Text,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
 } from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Label} from '../../components/label';
-import {ApiConstants, BaseUrl1, BaseUrl} from '../../constants/api_constants';
+import {ApiConstants, BaseUrl} from '../../constants/api_constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ProjectTile from '../../components/project_tile';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AppButton from '../../components/app_button';
 import AppSize from '../../components/size';
-import {RadioButton, Modal} from 'react-native-paper';
-import {BottomSheet} from 'react-native-gesture-handler';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import TeamScreen from '../tabs/team';
 
@@ -50,7 +43,6 @@ const CreateProject = () => {
         id: user_Id,
       });
       setProject(response.data.data?.data);
-      console.log(response.data.data?.data);
     } catch (error) {
       console.log(error);
     }
@@ -59,14 +51,11 @@ const CreateProject = () => {
   const getAssignee = async ({id: project_id}) => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const user_Id = await AsyncStorage.getItem('user_id');
-      console.log({userId: user_Id, token: token, project_id: project_id});
       const response = await axios.post(url1, {
         token: token,
         project_id: project_id,
       });
       setAssignee(response.data?.data);
-      console.log(response.data);
     } catch (error) {
       console.log(error);
     }

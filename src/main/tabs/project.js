@@ -1,18 +1,9 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
-import CompanyScreen from './company';
+import {View, StyleSheet, ScrollView} from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ColorConstants from '../../constants/color_constants';
 import ProjectTile from '../../components/project_tile';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import {BaseUrl, ApiConstants} from '../../constants/api_constants';
 import SearchBox from '../../components/search_box';
 import {Loading, NoData} from '../../components/no_data_found';
@@ -32,7 +23,6 @@ const ProjectScreen = ({navigation}) => {
       setLoading(true);
       var userId = await AsyncStorage.getItem('user_id');
       var tokenValue = await AsyncStorage.getItem('token');
-      console.log({userId: userId, token: tokenValue});
       await axios
         .post(url, {
           token: tokenValue,
@@ -43,7 +33,6 @@ const ProjectScreen = ({navigation}) => {
             setProjectData(response.data.data?.data);
             setSearchValue(response.data.data?.data);
             setLoading(false);
-            console.log(response.data.data?.data);
           }
         });
     } catch (error) {

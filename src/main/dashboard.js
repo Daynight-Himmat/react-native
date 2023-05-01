@@ -1,9 +1,5 @@
-/* eslint-disable react/no-unstable-nested-components */
-/* eslint-disable react-native/no-inline-styles */
-/* eslint-disable react-hooks/exhaustive-deps */
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {useRoute} from '@react-navigation/native';
-import React, {useState, useCallback, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import ColorConstants from '../constants/color_constants';
 import HomeScreen from './tabs/home';
@@ -56,42 +52,11 @@ const DashBoard = ({navigation}) => {
     }
   };
 
-  const route = useRoute();
-
   useEffect(() => {
     setTimeout(() => {
       checking();
     }, 10);
   }, []);
-
-  const image = '';
-
-  const FabButton = ({navigation}) => {
-    return (
-      <FAB
-        icon="plus"
-        color="#FFFFFF"
-        onPress={() => {
-          if (Tab.Screen.name === 'home_page') {
-            navigation.navigate('add_task');
-          }
-        }}
-        style={{
-          backgroundColor: ColorConstants.primaryColor,
-          borderRadius: 100,
-          position: 'absolute',
-          justifyContent: 'center',
-          alignItems: 'center',
-          alignSelf: 'center',
-          bottom: 1,
-          left: 1,
-          right: 1,
-          zIndex: 999,
-          color: ColorConstants.primaryWhite,
-        }}
-      />
-    );
-  };
 
   return (
     <View
@@ -116,6 +81,7 @@ const DashBoard = ({navigation}) => {
           options={{
             headerShown: true,
             headerTitle: `Hi ${get_user.name}`,
+            headerTitleStyle: styles.headerTitleStyle,
             headerBackTitle: 'Back',
             headerRight: () => (
               <View style={styles.iconList}>
@@ -190,6 +156,7 @@ const DashBoard = ({navigation}) => {
             title: ({color}) => <Text style={{color: color}}> Project </Text>,
             headerShown: true,
             headerTitle: 'Project',
+            headerTitleStyle: styles.headerTitleStyle,
             tabBarIcon: ({color, size}) => (
               <Ionicons name={'ios-grid'} size={size} color={color} />
             ),
@@ -198,13 +165,13 @@ const DashBoard = ({navigation}) => {
         <Tab.Screen
           name="add_task"
           component={AddTask}
+          Listeners={{
+            state: e => {
+              setIndex(e.data.state.index);
+              console.log('state changed', e.data.state.index);
+            },
+          }}
           options={{
-            title: ({color}) => <Text style={{color: color}}> Project </Text>,
-            headerShown: true,
-            headerTitle: 'Project',
-            tabBarIcon: ({color, size}) => (
-              <Ionicons name={'ios-grid'} size={size} color={color} />
-            ),
             tabBarButton: () => (
               <FAB
                 icon="plus"
@@ -222,7 +189,6 @@ const DashBoard = ({navigation}) => {
                     default:
                       console.log('this data');
                   }
-                  console.log('this data', index);
                 }}
                 style={styles.fab_style}
               />
@@ -237,6 +203,7 @@ const DashBoard = ({navigation}) => {
             title: ({color}) => <Text style={{color: color}}> Team </Text>,
             headerShown: true,
             headerTitle: 'Company',
+            headerTitleStyle: styles.headerTitleStyle,
             tabBarIcon: ({color, size}) => (
               <Ionicons name={'business'} size={size} color={color} />
             ),
@@ -248,6 +215,7 @@ const DashBoard = ({navigation}) => {
           options={{
             headerShown: true,
             headerTitle: 'Team',
+            headerTitleStyle: styles.headerTitleStyle,
             tabBarIcon: ({color, size}) => (
               <MaterialIcons name={'group'} size={size} color={color} />
             ),
@@ -265,11 +233,10 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     elevation: 10,
   },
-
+  headerTitleStyle: {fontSize: 17, fontWeight: '600'},
   lite: {
     height: 60,
     width: '100%',
-    // paddingHorizontal: 10,
     backgroundColor: ColorConstants.primaryWhite,
     flexDirection: 'row',
     justifyContent: 'flex-start',

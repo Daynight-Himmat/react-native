@@ -32,6 +32,7 @@ import {MaterialIcons} from '../../components/icons';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Calendar} from 'react-native-calendars';
 import moment from 'moment';
+import AppHeader from '../../components/app_header';
 
 const AddTask = ({navigation}) => {
   const [checked, setChecked] = useState('first');
@@ -222,6 +223,7 @@ const AddTask = ({navigation}) => {
 
   return (
     <SafeAreaView>
+      <AppHeader text={'Add Task'} navigate={navigation} />
       <View style={styles.container}>
         <Modal
           animationType="slide"

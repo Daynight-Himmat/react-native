@@ -4,10 +4,7 @@ import {
   StyleSheet,
   ScrollView,
   TextInput,
-  Text,
   TouchableOpacity,
-  Dimensions,
-  Image,
 } from 'react-native';
 import axios from 'axios';
 import {TexTButton} from '../components/text_button';
@@ -24,7 +21,6 @@ import {ApiConstants, BaseUrl} from '../constants/api_constants';
 import {Loading} from '../components/no_data_found';
 
 const SignInScreen = ({navigation}) => {
-  const {height, width} = Dimensions.get('screen');
   const [name, setName] = useState('');
   const [isLoading, setLoading] = useState('');
   const [password, setpassword] = useState('');
@@ -50,7 +46,7 @@ const SignInScreen = ({navigation}) => {
       } else if (email === '') {
         ToastMessage.showMessage('Please Enter the email');
       } else if (validateEmail(email) === false) {
-        ToastMessage.showMessage('Please Enter the email');
+        ToastMessage.showMessage('Please Enter Valid the email');
       } else if (password === '') {
         ToastMessage.showMessage('Please Enter the Password');
       } else {
@@ -65,7 +61,6 @@ const SignInScreen = ({navigation}) => {
 
         if (response.status === 200) {
           if (response.data.success === true) {
-            console.log(response.data);
             DataManager.token = response.data.token;
             AsyncStorage.setItem('token', response.data.token);
             setLoading(false);
@@ -75,17 +70,14 @@ const SignInScreen = ({navigation}) => {
           } else {
             setLoading(false);
             ToastMessage.showMessage('Something went wrong, please try again');
-            console.log(response);
           }
         } else if (response.status === 400) {
           setLoading(false);
-          console.log(response);
           ToastMessage.showMessage('Something went wrong');
         }
       }
     } catch (error) {
       setLoading(false);
-      console.log('error', error);
       ToastMessage.showMessage('Something went wrong');
     }
   };

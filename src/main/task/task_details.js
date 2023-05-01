@@ -3,31 +3,25 @@ import {
   View,
   ScrollView,
   Text,
-  Image,
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  Modal,
 } from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Loading, NoData} from '../../components/no_data_found';
-import {Label, LightText, LightText1} from '../../components/label';
+import {Label, LightText1} from '../../components/label';
 import AppSize from '../../components/size';
-import {Tile, TimeContainer} from '../../components/person_tile';
-import CompanyTile from '../../components/company_tile';
+import {TimeContainer} from '../../components/person_tile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {
   ApiConstants,
   BaseUrl,
-  CompanyProfileImage,
 } from '../../constants/api_constants';
 import {Ionicons, Octicons} from '../../components/icons';
 import {Appbar} from 'react-native-paper';
-import {project} from '../../../react-native.config';
 import Comment from '../../../assets/images/comments_icon.svg';
 import ToastMessage from '../../components/toast_message';
-import {Calendar} from 'react-native-calendars';
 import movement from 'moment';
 
 const TaskDetailsScreen = ({navigation, route}) => {
@@ -52,7 +46,6 @@ const TaskDetailsScreen = ({navigation, route}) => {
   const getTaskDetails = async () => {
     try {
       setLoading(true);
-      console.log(data.id);
       var token = await AsyncStorage.getItem('token');
       var userID = await AsyncStorage.getItem('user_id');
       await axios
@@ -63,7 +56,6 @@ const TaskDetailsScreen = ({navigation, route}) => {
         })
         .then(response => {
           setTaskDetails(response.data?.data);
-          console.log('response.data?.data', response.data?.data);
           setLoading(false);
         })
         .catch(error => {
@@ -77,7 +69,6 @@ const TaskDetailsScreen = ({navigation, route}) => {
         })
         .then(response => {
           setProjectData(response.data?.data?.data);
-          console.log('response.data?.data', response.data?.data?.data);
           setLoading(false);
         })
         .catch(error => {
@@ -91,7 +82,6 @@ const TaskDetailsScreen = ({navigation, route}) => {
         })
         .then(response => {
           setTaskComments(response.data?.data);
-          console.log('response.data?.data', response.data?.data);
           setLoading(false);
         })
         .catch(error => {
@@ -105,16 +95,13 @@ const TaskDetailsScreen = ({navigation, route}) => {
           if (response.status === 200) {
             setUserData(response.data?.data);
             setLoading(false);
-            console.log(response.data?.data);
           }
         })
         .catch(error => {
           setLoading(false);
-          console.log({error: error});
         });
     } catch (error) {
       setLoading(false);
-      console.log({error: error});
     }
   };
 
@@ -130,7 +117,6 @@ const TaskDetailsScreen = ({navigation, route}) => {
         comments: comment,
       })
       .then(response => {
-        console.log('response.data == Comments', response.data);
         ToastMessage.showMessage(response.data.message);
         getTaskDetails();
         setComment('');
@@ -181,9 +167,7 @@ const TaskDetailsScreen = ({navigation, route}) => {
           onPress={() => {
             getPermission().then(response => {
               setLoading(false);
-              console.log(response.data);
             });
-            // navigation.navigate('add_task');
           }}
         />
         <Appbar.Action
@@ -500,7 +484,6 @@ const styles = StyleSheet.create({
   },
   scroll_styles: {
     flexGrow: 1,
-    // flex: 1,
   },
   row: {flexDirection: 'row'},
   column: {flexDirection: 'column'},

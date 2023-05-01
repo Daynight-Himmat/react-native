@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import {
   View,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   ScrollView,
@@ -15,7 +14,7 @@ import AppButton from '../components/app_button';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {Loading} from '../components/no_data_found';
 import axios from 'axios';
-import {ApiConstants, BaseUrl, BaseUrl1} from '../constants/api_constants';
+import {ApiConstants, BaseUrl1} from '../constants/api_constants';
 import ToastMessage from '../components/toast_message';
 
 const CreatePassword = ({navigation, route}) => {
@@ -48,26 +47,20 @@ const CreatePassword = ({navigation, route}) => {
                 password: password,
               })
               .then(response => {
-                console.log(response.data);
                 if (response.status === 200) {
                   if (response.data.error === 0) {
-                    console.log(response.data);
                     setLoading(false);
                     ToastMessage.showMessage(response.data?.message);
                     navigation.navigate('sign_in');
-                    console.log('part error === 0 ', response.data);
                   } else {
                     setLoading(false);
                   }
                 } else {
                   setLoading(false);
                   ToastMessage.showMessage(response.data?.error?.email);
-                  console.log(response.data);
-                  console.log('else part status !== 200 ', response.data);
                 }
               })
               .catch(error => {
-                console.log(error);
                 setLoading(false);
               })
           : await axios
@@ -80,20 +73,17 @@ const CreatePassword = ({navigation, route}) => {
                 if (response.status === 200) {
                   if (response.data.error === 0) {
                     setLoading(false);
-                    console.log(response.data);
                     ToastMessage.showMessage(response.data?.message);
                     navigation.navigate('sign_in');
                   }
                 }
               })
               .catch(error => {
-                console.log(error);
                 setLoading(false);
               });
       }
     } catch (error) {
       setLoading(false);
-      console.log(error);
     }
   };
 

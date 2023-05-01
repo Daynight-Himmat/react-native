@@ -1,6 +1,5 @@
 import React from 'react';
 import {TouchableOpacity, StyleSheet, View, Text} from 'react-native';
-import ColorConstants from '../constants/color_constants';
 
 const TabContainer = ({onPress, condition, textCondition, buttonName}) => {
   return (

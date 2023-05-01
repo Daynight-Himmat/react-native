@@ -3,7 +3,7 @@ import {View, TouchableOpacity, Image, StyleSheet, Text} from 'react-native';
 import ColorConstants from '../constants/color_constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AppSize from './size';
-import {Label, HighLightLabel, LightText1} from './label';
+import {Label, LightText1} from './label';
 
 const PersonTile = ({index, image, title, subTitle, tilePress, imagePress}) => {
   return (
@@ -45,7 +45,6 @@ const Tile = ({image, title}) => {
         style={styles.tile_leading_icon}
         resizeMode="contain"
       />
-      <View style={{paddingHorizontal: 10}} />
       <Text style={styles.tile_text_style}>{title}</Text>
     </View>
   );

@@ -28,7 +28,6 @@ const HomeScreen = ({navigation}) => {
       setLoading(true);
       var userId = await AsyncStorage.getItem('user_id');
       var asyncStorageRes = await AsyncStorage.getItem('token');
-      console.log('this data---', type);
       axios
         .post(taskListUrl, {
           token: asyncStorageRes,
@@ -39,18 +38,10 @@ const HomeScreen = ({navigation}) => {
           if (response.status === 200) {
             setTaskData(response.data.data?.data);
             setLoading(false);
-            console.log(response.data.data?.data.slice(0, 1));
-            for (var i = 0; i < getTaskData?.length; i++) {
-              setTaskDate(getTaskData[i]?.created_at);
-              // console.log(
-              //   movement(getTaskData[i]?.created_at).format('MMM DD, yyyy'),
-              // );
-            }
           }
         })
         .catch(error => {
           setLoading(false);
-          console.log(error);
         });
 
       axios
@@ -63,16 +54,13 @@ const HomeScreen = ({navigation}) => {
           if (response.status === 200) {
             setAssigneeTaskData(response.data.data?.data);
             setLoading(false);
-            console.log(response.data.data?.data.slice(0, 1));
           }
         })
         .catch(error => {
           setLoading(false);
-          console.log(error);
         });
     } catch (error) {
       setLoading(false);
-      console.log(`this data ${error}`);
     }
   };
 
