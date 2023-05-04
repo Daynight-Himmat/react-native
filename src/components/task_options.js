@@ -1,0 +1,95 @@
+import React from 'react';
+import {View, ScrollView, StyleSheet} from 'react-native';
+import ColorConstants from '../constants/color_constants';
+import {Label} from './label';
+import {Tile} from './person_tile';
+import DeleteSvg from '../../assets/images/delete.svg';
+import Priority from '../../assets/images/priority.svg';
+import Approved from '../../assets/images/approved_task.svg';
+import Reopen from '../../assets/images/reopen.svg';
+import CompleteTaskIcon from '../../assets/images/complete.svg';
+import Assignee from '../../assets/images/assignee.svg';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import BottomSheet from './bottom_sheet';
+
+const TaskOption = ({
+  status,
+  scrollHandlers,
+  navigation,
+  onPressPriority,
+  onPressChangeAssignee,
+  onPressComplete,
+  onPressDelete,
+  onPressReopen,
+  onPressApproved,
+}) => {
+  return (
+    <View>
+      <Label name={'Task Options'} />
+      {status !== 'Completed' && (
+        <Tile
+          widget={<Priority height={15} widget={15} />}
+          title={'Change Priority'}
+          divider={0.5}
+          tailer={'ios-chevron-forward-outline'}
+          onPress={onPressPriority}
+        />
+      )}
+
+      {status !== 'Completed' ? (
+        <Tile
+          widget={<CompleteTaskIcon height={15} widget={15} />}
+          title={'Mark as Complete'}
+          divider={0.5}
+          tailer={'ios-chevron-forward-outline'}
+          onPress={onPressComplete}
+        />
+      ) : (
+        <Tile
+          widget={<Approved height={15} widget={15} />}
+          title={'Mark as Approve'}
+          divider={0.5}
+          tailer={'ios-chevron-forward-outline'}
+          onPress={onPressApproved}
+        />
+      )}
+      {status !== 'Completed' ? (
+        <Tile
+          widget={<Assignee height={15} widget={15} />}
+          title={'Change Assignee'}
+          divider={0.5}
+          tailer={'ios-chevron-forward-outline'}
+          onPress={onPressChangeAssignee}
+        />
+      ) : (
+        <Tile
+          widget={<Reopen height={15} widget={15} />}
+          title={'Mask as Reopen'}
+          divider={0.5}
+          tailer={'ios-chevron-forward-outline'}
+          onPress={onPressReopen}
+        />
+      )}
+
+      <Tile
+        widget={<DeleteSvg height={15} widget={15} />}
+        title={'Delete Task'}
+        textStyle={{color: ColorConstants.highLightColor}}
+        divider={0.5}
+        tailer={'ios-chevron-forward-outline'}
+        color={ColorConstants.highLightColor}
+        onPress={onPressDelete}
+      />
+    </View>
+  );
+};
+
+export default TaskOption;
+
+const styles = StyleSheet.create({
+  scrollview: {
+    width: '100%',
+    padding: 12,
+    paddingBottom: 20,
+  },
+});

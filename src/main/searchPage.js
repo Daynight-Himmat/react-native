@@ -20,6 +20,7 @@ const SearchScreen = ({navigation}) => {
     try {
       if (search === '' || search.length < 2) {
         setsearchData([]);
+        console.log('no search yet');
       } else {
         setLoading(true);
         const token = await AsyncStorage.getItem('token');
@@ -30,6 +31,7 @@ const SearchScreen = ({navigation}) => {
           })
           .then(response => {
             setLoading(false);
+            console.log(response.data?.data);
             setsearchData(response.data?.data);
             getSearchTask.slice(0, 20);
           });
@@ -39,7 +41,6 @@ const SearchScreen = ({navigation}) => {
     }
   };
 
-  useEffect(() => {}, []);
 
   return (
     <View style={styles.container}>
@@ -60,9 +61,8 @@ const SearchScreen = ({navigation}) => {
             flex: 1,
           }}>
           <SearchBox
-            onPress={() => {
-              getSearchTask(searchText);
-            }}
+            value={searchText}
+            searchPress={() => getSearchTask(searchText)}
             onChangeText={value => {
               setsearchText(value);
             }}

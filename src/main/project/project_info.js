@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
 import {View, ScrollView, StyleSheet} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
@@ -9,6 +10,7 @@ import {Loading} from '../../components/no_data_found';
 import {Label, LightText1} from '../../components/label';
 import moment from 'moment';
 import {TimeTile} from '../../components/person_tile';
+import AppHeader from '../../components/app_header';
 
 const ProjectInfo = ({navigation, route}) => {
   const {project_id} = route.params;
@@ -75,29 +77,7 @@ const ProjectInfo = ({navigation, route}) => {
 
   return (
     <View style={styles(ColorConstants.primaryWhite).container}>
-      <Appbar.Header style={styles.app_bar_header}>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content
-          title={''}
-          color={ColorConstants.primaryBlack}
-          titleStyle={{
-            fontWeight: '700',
-            fontSize: 17,
-          }}
-        />
-        <Appbar.Action
-          icon="pencil"
-          size={20}
-          color={ColorConstants.primaryBlack}
-          onPress={() => {}}
-        />
-        <Appbar.Action
-          icon="delete-outline"
-          size={20}
-          color={ColorConstants.highLightColor}
-          onPress={() => {}}
-        />
-      </Appbar.Header>
+      <AppHeader text={''} navigate={navigation} />
       <ScrollView
         style={{
           paddingHorizontal: 10,
@@ -195,7 +175,7 @@ const styles = color =>
       alignItems: 'center',
     },
     app_bar_header: {
-      width: '100%',
+      flex: 1,
       backgroundColor: ColorConstants.primaryWhite,
     },
   });

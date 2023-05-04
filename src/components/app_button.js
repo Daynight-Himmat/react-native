@@ -1,6 +1,7 @@
 import React from 'react';
 import {TouchableOpacity, Text, StyleSheet} from 'react-native';
 import ColorConstants from '../constants/color_constants';
+import FontConstants from '../constants/fonts';
 
 const AppButton = ({
   text: buttonName,
@@ -34,6 +35,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: ColorConstants.primaryWhite,
     textAlign: 'center',
+    fontFamily: FontConstants.semiBold
   },
 });
 

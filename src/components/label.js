@@ -1,11 +1,12 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import ColorConstants from '../constants/color_constants';
+import FontConstants from '../constants/fonts';
 
-const Label = ({name}) => {
+const Label = ({name, style}) => {
   return (
     <View style={styles().label_container}>
-      <Text style={styles().label_text}>{name}</Text>
+      <Text style={[styles().label_text,{...style}]}>{name}</Text>
     </View>
   );
 };
@@ -55,6 +56,7 @@ const styles = color =>
     label_text: {
       fontSize: 14,
       color: ColorConstants.primaryBlack,
+      fontFamily: FontConstants.semiBold,
       justifyContent: 'flex-start',
       alignItems: 'center',
       fontWeight: '500',

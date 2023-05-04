@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React, {useState, useEffect} from 'react';
 import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
@@ -43,7 +44,7 @@ const DashBoard = ({navigation}) => {
             setUserData(response.data?.user);
             AsyncStorage.setItem('user_id', `${response.data?.user.id}`);
             setLoading(false);
-            console.log(response.data);
+            // console.log(response.data);
           }
         });
     } catch (error) {
@@ -72,7 +73,7 @@ const DashBoard = ({navigation}) => {
         screenListeners={{
           state: e => {
             setIndex(e.data.state.index);
-            console.log('state changed', e.data.state.index);
+            // console.log('state changed', e.data.state.index);
           },
         }}>
         <Tab.Screen
@@ -168,7 +169,6 @@ const DashBoard = ({navigation}) => {
           Listeners={{
             state: e => {
               setIndex(e.data.state.index);
-              console.log('state changed', e.data.state.index);
             },
           }}
           options={{

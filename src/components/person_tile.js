@@ -4,6 +4,8 @@ import ColorConstants from '../constants/color_constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AppSize from './size';
 import {Label, LightText1} from './label';
+import {Divider} from 'react-native-paper';
+import FontConstants from '../constants/fonts';
 
 const PersonTile = ({index, image, title, subTitle, tilePress, imagePress}) => {
   return (
@@ -37,16 +39,38 @@ const PersonTile = ({index, image, title, subTitle, tilePress, imagePress}) => {
   );
 };
 
-const Tile = ({image, title}) => {
+const Tile = ({
+  image,
+  title,
+  widget: leading,
+  tailer: tailerWidget,
+  divider,
+  textStyle,
+  color,
+  onPress,
+}) => {
   return (
-    <View style={styles.tile_container}>
-      <Image
-        source={image}
-        style={styles.tile_leading_icon}
-        resizeMode="contain"
-      />
-      <Text style={styles.tile_text_style}>{title}</Text>
-    </View>
+    <TouchableOpacity activeOpacity={0.5} onPress={onPress}>
+      <View style={styles.tile_container}>
+        {leading}
+        {image && (
+          <Image
+            source={image}
+            style={styles.tile_leading_icon}
+            resizeMode="contain"
+          />
+        )}
+        <AppSize width={10} />
+        <Text style={[styles.tile_text_style, {...textStyle}]}>{title}</Text>
+        {tailerWidget && (
+          <Ionicons
+            name={tailerWidget}
+            color={color ?? ColorConstants.primaryBlack}
+          />
+        )}
+      </View>
+      {divider && <Divider style={{height: divider}} />}
+    </TouchableOpacity>
   );
 };
 
@@ -233,15 +257,16 @@ const styles = StyleSheet.create({
   tile_container: {
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignContent: 'flex-start',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     padding: 10,
+    paddingVertical: 15,
   },
   tile_text_style: {
+    flex: 1,
     color: ColorConstants.primaryBlack,
     fontSize: 14,
     fontWeight: '400',
+    fontFamily: FontConstants.semiBold,
   },
   tile_leading_icon: {
     height: 24,

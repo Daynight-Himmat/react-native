@@ -1,12 +1,32 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import ColorConstants from '../constants/color_constants';
 import Feather from 'react-native-vector-icons/Feather';
 import {Ionicons} from './icons';
 import movement from 'moment';
+import {IconButton} from 'react-native-paper';
 
-const TaskTile = ({index, data, onPress}) => {
+const getColor = data => {
+  switch (data.task_status) {
+    case 'Completed':
+      return ColorConstants.yellowCompleteColor;
+    case 'Active':
+      return data.priority === 'High'
+        ? ColorConstants.highPriorityColor
+        : ColorConstants.lowPriorityColor;
+    case 'Reopen':
+      return data.priority === 'High'
+        ? ColorConstants.highPriorityColor
+        : ColorConstants.lowPriorityColor;
+    case 'Approved':
+      return ColorConstants.buttonGreenColor;
+  }
+};
+
+const TaskTile = ({index, data, onPress, iconPress}) => {
   var currentDate = new movement().format('MMM DD, yyyy');
+
+  
 
   return (
     <TouchableOpacity key={data.title} onPress={onPress}>
@@ -83,11 +103,13 @@ const TaskTile = ({index, data, onPress}) => {
           </View>
         )}
         <View style={{padding: 5}} />
-        <Feather
-          name={'more-vertical'}
-          color={ColorConstants.textDarkBlack}
-          size={18}
-        />
+        <TouchableOpacity onPress={iconPress} style={styles.iconButton}>
+          <Feather
+            name={'more-vertical'}
+            color={ColorConstants.textDarkBlack}
+            size={18}
+          />
+        </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
@@ -110,14 +132,15 @@ const styles = data =>
       justifyContent: 'center',
       alignItems: 'center',
       alignContent: 'center',
-      backgroundColor:
-        data.task_status === 'Active'
-          ? data.priority === 'High'
-            ? ColorConstants.highPriorityColor
-            : ColorConstants.highPriorityColor
-          : data.task_status === 'Completed'
-          ? ColorConstants.buttonGreenColor
-          : ColorConstants.buttonGreenColor,
+      backgroundColor: getColor(data),
+      // backgroundColor:
+      //   data.task_status === 'Active'
+      //     ? data.priority === 'High'
+      //       ? ColorConstants.highPriorityColor
+      //       : ColorConstants.lowPriorityColor
+      //     : data.task_status === 'Completed'
+      //     ? ColorConstants.buttonGreenColor
+      //     : ColorConstants.buttonGreenColor,
     },
     indicator_task_pedding: {
       height: 5,
@@ -152,6 +175,11 @@ const styles = data =>
     },
     row: {
       flexDirection: 'row',
+    },
+    iconButton: {
+      width: 30,
+      justifyContent: 'flex-end',
+      alignItems: 'flex-end',
     },
   });
 

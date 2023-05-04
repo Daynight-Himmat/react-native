@@ -1,5 +1,6 @@
 import React from 'react';
 import {TouchableOpacity, StyleSheet, View, Text} from 'react-native';
+import FontConstants from '../constants/fonts';
 
 const TabContainer = ({onPress, condition, textCondition, buttonName}) => {
   return (
@@ -35,22 +36,21 @@ const InnerTab = ({
 const styles = (condition, textCondition) =>
   StyleSheet.create({
     tabContainer: {
-      height: 43,
+      height: 45,
       flexDirection: 'row',
-      fontFamily: 'poppins',
       width: '50%',
       justifyContent: 'center',
-      alignContent: 'center',
-      alignItems: 'center',
       alignSelf: 'center',
-      borderRadius: 1,
+      alignItems: 'center',
+      borderRadius: 3,
       borderColor: textCondition,
       backgroundColor: condition,
     },
     tabText: {
       color: textCondition,
-      fontSize: 20,
-      fontWeight: '600',
+      fontFamily: FontConstants.ragular,
+      fontSize: 14,
+      fontWeight: '700',
     },
     inner_container: {
       flex: 1,

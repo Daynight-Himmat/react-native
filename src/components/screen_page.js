@@ -7,7 +7,7 @@ import CreatePassword from '../auth/create_pass';
 import OtpPage from '../auth/otp_page';
 import DashBoard from '../main/dashboard';
 import HomeScreen from '../main/tabs/home';
-import {Assignee, MyTask} from '../main/tabs/my_task';
+import {MyAssignee, MyTask} from '../main/tabs/my_task';
 import ProjectScreen from '../main/tabs/project';
 import CompanyScreen from '../main/tabs/company';
 import TeamScreen from '../main/tabs/team';
@@ -25,6 +25,7 @@ import CreateProfile from '../main/profile/create_new_user';
 import TeamTaskScreen from '../main/task/team_task_screen';
 import ProjectPageScreen from '../main/project/project_screen';
 import TaskDetailsScreen from '../main/task/task_details';
+import Approved from './approve';
 
 const screens = [
   {
@@ -69,7 +70,7 @@ const screens = [
   },
   {
     name: 'assignee',
-    component: Assignee,
+    component: MyAssignee,
   },
   {
     name: 'project_page',
@@ -138,6 +139,10 @@ const screens = [
   {
     name: 'task_details_screen',
     component: TaskDetailsScreen,
+  },
+  {
+    name: 'approve',
+    component: Approved,
   },
 ];
 
