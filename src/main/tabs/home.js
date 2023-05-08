@@ -5,7 +5,7 @@ import {View, StyleSheet, Text, ScrollView} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {ApiConstants, BaseUrl} from '../../constants/api_constants';
+import {ApiConstants, BaseUrl, BaseUrl1} from '../../constants/api_constants';
 import {InnerTab, TabContainer} from '../../components/tabs';
 import {Loading, NoData} from '../../components/no_data_found';
 import TaskTile from '../../components/task_tile';
@@ -42,11 +42,11 @@ const HomeScreen = ({navigation}) => {
   const assigneeOptionRef = useRef(null);
   const changePriorityRef = useRef(null);
 
-  const taskListUrl = BaseUrl(ApiConstants.myTaskList);
-  const taskAssigneeListUrl = BaseUrl(ApiConstants.taskAssignList);
-  const changePriorityUrl = BaseUrl(ApiConstants.changePriority);
-  const completeTaskUrl = BaseUrl(ApiConstants.changeTaskStatus);
-  const deleteTaskUrl = BaseUrl(ApiConstants.changeTaskDelete);
+  const taskListUrl = BaseUrl1(ApiConstants.myTaskList);
+  const taskAssigneeListUrl = BaseUrl1(ApiConstants.taskAssignList);
+  const changePriorityUrl = BaseUrl1(ApiConstants.changePriority);
+  const completeTaskUrl = BaseUrl1(ApiConstants.changeTaskStatus);
+  const deleteTaskUrl = BaseUrl1(ApiConstants.changeTaskDelete);
 
   const scrollHandlers = useScrollHandlers < ScrollView > ('1', taskOptionsRef);
 
@@ -161,6 +161,37 @@ const HomeScreen = ({navigation}) => {
               taskStatus: 'Priority',
             });
             changePriorityRef.current.hide();
+            ToastMessage.showMessage(response.data?.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          setLoading(false);
+        });
+    } catch (error) {
+      setLoading(false);
+    }
+  };
+
+  const getDeleteTask = async () => {
+    try {
+      setLoading(true);
+      var asyncStorage = await AsyncStorage.getItem('token');
+      var user_id = await AsyncStorage.getItem('user_id');
+      await axios
+        .post(deleteTaskUrl, {
+          token: asyncStorage,
+          id: user_id,
+          task_id: taskId,
+        })
+        .then(response => {
+          if (response.status === 200) {
+            console.log(response.data?.message);
+            setLoading(false);
+            checking({type: 'All'});
+            navigation.navigate('approve', {
+              taskStatus: 'Delete',
+            });
             ToastMessage.showMessage(response.data?.message);
           }
         })
@@ -557,6 +588,10 @@ const HomeScreen = ({navigation}) => {
             buttonLabel={'Delete'}
             style={{backgroundColor: ColorConstants.highLightColor}}
             onBack={() => deleteOptionRef.current.hide()}
+            onPress={() => {
+              getDeleteTask();
+              deleteOptionRef.current.hide();
+            }}
           />
         }
       />

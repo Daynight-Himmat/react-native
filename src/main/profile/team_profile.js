@@ -1,25 +1,47 @@
 import React from 'react';
-import {View, StyleSheet, Image} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Tile} from '../../components/person_tile';
+import AppHeader from '../../components/app_header';
+import {Avatar} from '@rneui/themed';
+import ProfileDemo from '../../components/profile_image_demo';
 
 const TeamProfile = ({navigation, route}) => {
   const {data} = route.params;
 
   return (
     <View style={styles.container}>
-      <View style={styles.imageContainer}>
+      <AppHeader text={data?.name} navigate={() => navigation.goBack()} />
+      <TouchableOpacity
+        style={styles.imageContainer}
+        onPress={() =>
+          navigation.navigate('profile_image', {
+            data: data,
+          })
+        }>
         {data.profile_image != null &&
         data.profile_image.split('.').pop() === 'jpg' ? (
-          <Image
-            style={styles.imageContainer}
-            source={{uri: data.profile_image}}
-          />
+          <Avatar
+            size={100}
+            rounded
+            renderPlaceholderContent={<ActivityIndicator />}
+            placeholderStyle={{backgroundColor: ColorConstants.primaryWhite}}
+            source={{
+              uri: data.profile_image,
+            }}/>
+
         ) : (
-          <Ionicons name={'person-sharp'} size={35} style={styles.image} />
+          <ProfileDemo />
         )}
-      </View>
+      </TouchableOpacity>
+
       <View style={styles.tile_column}>
         <Tile
           image={require('../../../assets/images/business.png')}
@@ -48,7 +70,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'column',
     paddingHorizontal: 10,
-    paddingVertical: 10,
     justifyContent: 'flex-start',
     backgroundColor: ColorConstants.primaryWhite,
   },
@@ -69,11 +90,11 @@ const styles = StyleSheet.create({
   },
 
   tile_column: {
+    marginTop: 20,
     height: '100%',
     width: '100%',
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    alignContent: 'flex-start',
     alignItems: 'flex-start',
   },
 

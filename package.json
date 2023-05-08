@@ -23,6 +23,7 @@
     "react-native": "^0.71.6",
     "react-native-actions-sheet": "^0.8.29",
     "react-native-app-intro-slider": "^4.0.4",
+    "react-native-calendar-picker": "^7.1.4",
     "react-native-calendars": "^1.1294.0",
     "react-native-dropdown-select-list": "^2.0.4",
     "react-native-elements": "^3.4.3",
@@ -41,7 +42,8 @@
     "react-native-tab-view": "^3.5.1",
     "react-native-vector-icons": "^9.2.0",
     "react-native-viewpager": "^0.2.13",
-    "spinners-react": "^1.0.7"
+    "spinners-react": "^1.0.7",
+    "react-native-image-crop-picker": "^0.39.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

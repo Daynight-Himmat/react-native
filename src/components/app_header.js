@@ -7,7 +7,7 @@ const {width} = Dimensions.get('screen');
 const AppHeader = ({text: title, navigate: navigation}) => {
   return (
     <Appbar.Header style={styles.headerStyles}>
-      <Appbar.BackAction onPress={() => navigation.goBack()} />
+      <Appbar.BackAction onPress={navigation} style={styles.backButton} />
       <Appbar.Content
         title={title}
         color={ColorConstants.primaryBlack}
@@ -20,7 +20,10 @@ const AppHeader = ({text: title, navigate: navigation}) => {
 const styles = StyleSheet.create({
   headerStyles: {
     width: width,
-    backgroundColor: ColorConstants.primaryWhite
+    backgroundColor: ColorConstants.primaryWhite,
+  },
+  backButton: {
+    marginLeft: 0,
   },
   headerText: {
     fontSize: 17,

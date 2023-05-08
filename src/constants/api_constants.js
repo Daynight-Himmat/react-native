@@ -2,7 +2,11 @@ const BaseUrl = end_Point => `http://143.110.190.217/api/${end_Point}`;
 
 const BaseUrl1 = end_Point => `https://pm.ankitsisodiya.com/api/${end_Point}`;
 
-const CompanyProfileImage = end_Point => `http://143.110.190.217/Company/profile_pictures/${end_Point}`;
+const CompanyProfileImage = end_Point =>
+  `http://143.110.190.217/Company/profile_pictures/${end_Point}`;
+
+const ProfileImage = end_Point =>
+  `http://143.110.190.217/public/storage/${end_Point}`;
 
 class ApiConstants {
   static signUp = 'sendOtp';
@@ -14,7 +18,7 @@ class ApiConstants {
   static myTaskList = 'TaskList';
   static myTeamTaskList = 'userTasks';
   static myProjectList = 'ProjectList';
-  static addList = 'AddTask';
+  static addTask = 'AddTask';
   static taskAssignList = 'TaskListAssignee';
   static changePriority = 'ChangePriority';
   static changeTaskStatus = 'ChangeTaskStatus';
@@ -57,4 +61,4 @@ class ApiConstants {
   static appVersion = 'app_verion';
 }
 
-export {BaseUrl, BaseUrl1, CompanyProfileImage, ApiConstants};
+export {BaseUrl, BaseUrl1, CompanyProfileImage, ApiConstants, ProfileImage};

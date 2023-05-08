@@ -37,7 +37,7 @@ const NotificationPage = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <AppHeader text={'Notification'} navigate={navigation} />
+      <AppHeader text={'Notification'} navigate={()=> navigation.goBack()} />
       <ScrollView>
         {getNotifiy.slice(0, 50).map((data, index) => (
           <View key={index} style={styles.notificationContainer}>

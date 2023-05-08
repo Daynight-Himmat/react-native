@@ -63,13 +63,20 @@ const MyAccount = ({navigation, route}) => {
 
   return (
     <View style={styles.container}>
-      <AppHeader text={'My Profile'} navigate={navigation} />
+      <AppHeader text={'My Profile'} navigate={() => navigation.goBack()} />
+
       <View
         style={{
           padding: 10,
         }}
       />
-      <View style={styles.imageContainer}>
+      <TouchableOpacity
+        style={styles.imageContainer}
+        onPress={() =>
+          navigation.navigate('profile_image', {
+            data: data,
+          })
+        }>
         {data.profile_image !== null &&
         data.profile_image.split('.').pop() === 'jpg' ? (
           <Image
@@ -79,7 +86,7 @@ const MyAccount = ({navigation, route}) => {
         ) : (
           <Ionicons name={'person-sharp'} size={35} style={styles.image} />
         )}
-      </View>
+      </TouchableOpacity>
       <View style={{padding: 5}} />
       <TouchableOpacity
         onPress={() => {

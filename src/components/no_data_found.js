@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
 import ColorConstants from '../constants/color_constants';
+import FontConstants from '../constants/fonts';
 
 const NoData = () => {
   return (
@@ -31,6 +32,7 @@ const styles = StyleSheet.create({
   noDataText: {
     fontSize: 14,
     fontWeight: '400',
+    fontFamily: FontConstants.semiBold,
     color: ColorConstants.primaryBlack,
   },
   loading: {

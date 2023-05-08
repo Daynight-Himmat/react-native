@@ -15,51 +15,129 @@ import AppSize from '../../components/size';
 import {ViewProfileButton} from '../../components/text_button';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppButton from '../../components/app_button';
-import {ApiConstants, BaseUrl1} from '../../constants/api_constants';
+import {ApiConstants, BaseUrl} from '../../constants/api_constants';
 import axios from 'axios';
 import ToastMessage from '../../components/toast_message';
+import AppHeader from '../../components/app_header';
 
-const CreateCompany = () => {
+const CreateCompany = ({navigation}) => {
   const [addMore, setAddMore] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [companyName, setCompanyName] = useState('');
   const [companyContactPerson, setContactPerson] = useState('');
   const [companyContactEmail, setContactEmail] = useState('');
   const [companyContactPhone, setContactPhone] = useState('');
-  const [company1ContactPerson, set1ContactPerson] = useState('');
+  const [company1ContactPerson, set1ContactPerson] = useState('No Name');
   const [company1ContactEmail, set1ContactEmail] = useState('');
   const [company1ContactPhone, set1ContactPhone] = useState('');
   const [companyLogo, setCompanyLogo] = useState('');
+  const name =
+    addMore === false
+      ? [companyContactPerson]
+      : [companyContactPerson, company1ContactPerson];
+  const number =
+    addMore === false
+      ? [companyContactPhone]
+      : [companyContactPhone, company1ContactPhone];
+  const email =
+    addMore === false
+      ? [companyContactEmail]
+      : [companyContactEmail, company1ContactEmail];
 
-  const createCompanyUrl = BaseUrl1(ApiConstants.companyEdit);
+  const createCompanyUrl = BaseUrl(ApiConstants.companyEdit);
+
+  const validateEmail = validEmail => {
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    return emailRegex.test(validEmail);
+  };
+
+  const validation = () => {
+    if (!addMore) {
+      if (!companyName) {
+        ToastMessage.showMessage('Company Name is required');
+        return false;
+      } else if (!companyContactPerson) {
+        ToastMessage.showMessage('Name is required');
+        return false;
+      } else if (!companyContactPhone) {
+        ToastMessage.showMessage('Number is required');
+        return false;
+      } else if (companyContactPhone.length !== 10) {
+        ToastMessage.showMessage('Number is Invalid');
+        return false;
+      } else if (!companyContactEmail) {
+        ToastMessage.showMessage('Email is required');
+        return false;
+      } else if (validateEmail(companyContactEmail) === false) {
+        ToastMessage.showMessage('Email is Invalid');
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      if (!companyName) {
+        ToastMessage.showMessage('Company Name is required');
+        return false;
+      } else if (!companyContactPerson) {
+        ToastMessage.showMessage('Name is required');
+        return false;
+      } else if (!companyContactPhone) {
+        ToastMessage.showMessage('Number is required');
+        return false;
+      } else if (companyContactPhone.length !== 10) {
+        ToastMessage.showMessage('Number is Invalid');
+        return false;
+      } else if (!companyContactEmail) {
+        ToastMessage.showMessage('Email is required');
+        return false;
+      } else if (validateEmail(companyContactEmail) === false) {
+        ToastMessage.showMessage('Email is Invalid');
+        return false;
+      } else if (!company1ContactPerson) {
+        ToastMessage.showMessage('Contact person 2 Name is required');
+        return false;
+      } else if (!company1ContactPhone) {
+        ToastMessage.showMessage('Contact person 2 Number is required');
+        return false;
+      } else if (company1ContactPhone.length !== 10) {
+        ToastMessage.showMessage('Contact person 2 Number is Invalid');
+        return false;
+      } else if (!company1ContactEmail) {
+        ToastMessage.showMessage('Contact person 2 Email is required');
+        return false;
+      } else if (validateEmail(company1ContactEmail) === false) {
+        ToastMessage.showMessage('Contact person 2 Email is Invalid');
+        return false;
+      } else {
+        return true;
+      }
+    }
+  };
 
   const getCompanyDetails = async () => {
     try {
-      var token = await AsyncStorage.getItem('token');
-      console.log({
-        addmore: addMore,
-        companyName: companyName,
-        companyContactPerson: companyContactPerson,
-        companyContactEmail: companyContactEmail,
-        companyContactPhone: companyContactPhone,
-      });
-      await axios
-        .post(createCompanyUrl, {
-          token: token,
-          company_name: companyName,
-          contact_name: [companyContactPerson, company1ContactPerson],
-          contact_number: [companyContactPhone, company1ContactPhone],
-          contact_email: [companyContactEmail, companyContactEmail],
-          profile_picture: '',
-        })
-        .then(resposne => {
-          if (resposne.status === 200) {
-            if (resposne.data?.status) {
+      if (validation()) {
+        var token = await AsyncStorage.getItem('token');
+        setLoading(true);
+        await axios
+          .post(createCompanyUrl, {
+            token: token,
+            company_name: companyName,
+            contact_name: name,
+            contact_number: number,
+            contact_email: email,
+            profile_picture: '',
+          })
+          .then(resposne => {
+            if (resposne.status === 200) {
+              setLoading(false);
               ToastMessage.showMessage(resposne.data?.message);
+              navigation.goBack();
             }
-          }
-        });
+          });
+      }
     } catch (err) {
+      console.log({error: err});
       setLoading(false);
     }
   };
@@ -68,12 +146,10 @@ const CreateCompany = () => {
 
   return (
     <View style={styles.container}>
+      <AppHeader text={'Create Company'} navigate={()=> navigation.goBack()} />
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
-          justifyContent: 'flex-start',
-          alignItems: 'center',
-          alignContent: 'center',
         }}>
         <AppSize height={20} />
         <View
@@ -98,15 +174,7 @@ const CreateCompany = () => {
         </View>
         <AppSize height={10} />
 
-        <View
-          style={{
-            width: '100%',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            alignContent: 'center',
-            flexDirection: 'row',
-          }}>
+        <View style={styles.addLogo}>
           <ViewProfileButton text={'Add Logo'} />
         </View>
         <AppSize height={20} />
@@ -253,6 +321,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center',
     alignItems: 'center',
+  },
+  addLogo: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
   },
   contactName: {
     width: '100%',

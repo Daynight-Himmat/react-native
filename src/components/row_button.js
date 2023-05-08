@@ -43,11 +43,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   bottomButtonRow: {
-    position: 'relative',
-    bottom: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 10,
     flexDirection: 'row',
     backgroundColor: ColorConstants.primaryWhite,
   },

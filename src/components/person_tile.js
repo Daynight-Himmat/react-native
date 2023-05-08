@@ -1,11 +1,20 @@
 import React from 'react';
-import {View, TouchableOpacity, Image, StyleSheet, Text} from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Text,
+  ActivityIndicator,
+} from 'react-native';
 import ColorConstants from '../constants/color_constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AppSize from './size';
 import {Label, LightText1} from './label';
 import {Divider} from 'react-native-paper';
 import FontConstants from '../constants/fonts';
+import {Avatar} from '@rneui/themed';
+import ProfileDemo from './profile_image_demo';
 
 const PersonTile = ({index, image, title, subTitle, tilePress, imagePress}) => {
   return (
@@ -13,18 +22,26 @@ const PersonTile = ({index, image, title, subTitle, tilePress, imagePress}) => {
       <View key={index} style={styles.container}>
         <View style={styles.lite}>
           <TouchableOpacity onPress={imagePress}>
-            <View style={styles.imageContainer}>
-              {image != null && image.split('.').pop() === 'jpg' ? (
-                <Image style={styles.imageContainer} source={{uri: image}} />
-              ) : (
-                // <Image source={{uri: image}} resizeMode="center" />
-                <Ionicons
-                  name={'person-sharp'}
-                  size={14}
-                  style={styles.image}
-                />
-              )}
-            </View>
+            {image != null && image.split('.').pop() === 'jpg' ? (
+              <Avatar
+                size={30}
+                rounded
+                renderPlaceholderContent={<ActivityIndicator />}
+                placeholderStyle={{
+                  backgroundColor: ColorConstants.primaryWhite,
+                }}
+                source={{
+                  uri: image,
+                }}
+              />
+            ) : (
+              <ProfileDemo
+                containerSize={{
+                  height: 35,
+                  width: 35,
+                }}
+              />
+            )}
           </TouchableOpacity>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{title}</Text>

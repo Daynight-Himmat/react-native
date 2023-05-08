@@ -10,7 +10,7 @@ import ActionSheet from 'react-native-actions-sheet';
 import ColorConstants from '../constants/color_constants';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
-const BottomSheet = ({widget, refer, backButton}) => {
+const BottomSheet = ({widget, refer, backButton, buttonButton}) => {
   return (
     <SafeAreaView>
       <ActionSheet ref={refer}>
@@ -22,6 +22,7 @@ const BottomSheet = ({widget, refer, backButton}) => {
           }}>
           {widget}
         </ScrollView>
+        {buttonButton}
       </ActionSheet>
     </SafeAreaView>
   );

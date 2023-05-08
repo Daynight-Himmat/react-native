@@ -8,6 +8,7 @@ import AppSize from '../../components/size';
 import {ViewProfileButton} from '../../components/text_button';
 import AppButton from '../../components/app_button';
 import {ApiConstants, BaseUrl1} from '../../constants/api_constants';
+import AppHeader from '../../components/app_header';
 
 const CreateProfile = () => {
   const [isLoading, setLoading] = useState(false);
@@ -34,21 +35,15 @@ const CreateProfile = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: 'flex-start',
-          alignItems: 'center',
-          alignContent: 'center',
-        }}>
+      <AppHeader text={'Create Team Member'} />
+      <ScrollView>
         <AppSize height={20} />
         <View
           style={{
             width: '100%',
             flexDirection: 'row',
             justifyContent: 'center',
-            alignItems: 'center',
-            alignContent: 'center',
+
           }}>
           <View style={styles.imageContainer}>
             {/* {data.profile_image !== null &&

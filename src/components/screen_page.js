@@ -26,6 +26,7 @@ import TeamTaskScreen from '../main/task/team_task_screen';
 import ProjectPageScreen from '../main/project/project_screen';
 import TaskDetailsScreen from '../main/task/task_details';
 import Approved from './approve';
+import ProfileImage from './profile_image';
 
 const screens = [
   {
@@ -91,6 +92,10 @@ const screens = [
   {
     name: 'my_account',
     component: MyAccount,
+  },
+  {
+    name: 'profile_image',
+    component: ProfileImage,
   },
   {
     name: 'edit_profile',
