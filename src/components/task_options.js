@@ -34,6 +34,7 @@ const TaskOption = ({
           divider={0.5}
           tailer={true}
           onPress={onPressPriority}
+          textStyle={styles.labelstyles}
         />
       )}
 
@@ -44,6 +45,7 @@ const TaskOption = ({
           divider={0.5}
           tailer={true}
           onPress={onPressComplete}
+          textStyle={styles.labelstyles}
         />
       ) : (
         <Tile
@@ -52,6 +54,8 @@ const TaskOption = ({
           divider={0.5}
           tailer={true}
           onPress={onPressApproved}
+          textStyle={styles.labelstyles}
+
         />
       )}
       {status !== 'Completed' ? (
@@ -61,6 +65,7 @@ const TaskOption = ({
           divider={0.5}
           tailer={true}
           onPress={onPressChangeAssignee}
+          textStyle={styles.labelstyles}
         />
       ) : (
         <Tile
@@ -69,6 +74,7 @@ const TaskOption = ({
           divider={0.5}
           tailer={true}
           onPress={onPressReopen}
+          textStyle={styles.labelstyles}
         />
       )}
 
@@ -80,6 +86,7 @@ const TaskOption = ({
         tailer={true}
         color={ColorConstants.highLightColor}
         onPress={onPressDelete}
+        textStyle={styles.labelstyles}
       />
     </View>
   );
@@ -93,4 +100,7 @@ const styles = StyleSheet.create({
     padding: 12,
     paddingBottom: 20,
   },
+  labelstyles: {
+    flex: 1
+  }
 });

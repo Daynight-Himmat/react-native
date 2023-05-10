@@ -179,7 +179,10 @@ const DashBoard = ({navigation}) => {
                 onPress={() => {
                   switch (index) {
                     case 0:
-                      return navigation.navigate('add_task');
+                      return navigation.navigate('add_task', {
+                        data: [],
+                        comeFrom : 'create_Task'
+                      });
                     case 1:
                       return navigation.navigate('create_project');
                     case 3:

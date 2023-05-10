@@ -97,9 +97,7 @@ const styles = StyleSheet.create({
 
   tile_column: {
     marginTop: 20,
-    height: '100%',
     width: '100%',
-    flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
   },

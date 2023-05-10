@@ -36,7 +36,7 @@ const InnerTab = ({
 const styles = (condition, textCondition) =>
   StyleSheet.create({
     tabContainer: {
-      height: 44,
+      height: '100%',
       flexDirection: 'row',
       width: '50%',
       justifyContent: 'center',

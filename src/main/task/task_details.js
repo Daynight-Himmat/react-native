@@ -3,9 +3,11 @@ import {
   View,
   ScrollView,
   Text,
+  Alert,
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Modal,
 } from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Loading, NoData} from '../../components/no_data_found';
@@ -14,15 +16,18 @@ import AppSize from '../../components/size';
 import {TimeContainer} from '../../components/person_tile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {
-  ApiConstants,
-  BaseUrl,
-} from '../../constants/api_constants';
+import {ApiConstants, BaseUrl} from '../../constants/api_constants';
 import {Ionicons, Octicons} from '../../components/icons';
 import {Appbar} from 'react-native-paper';
 import Comment from '../../../assets/images/comments_icon.svg';
 import ToastMessage from '../../components/toast_message';
 import movement from 'moment';
+import AppButton from '../../components/app_button';
+import BottomSheetConditions from '../../components/bottom_sheet_with_condition';
+import BottomSheet from '../../components/bottom_sheet';
+import TaskAlert from '../../components/task_alert';
+import CommanFunctions from '../../components/comman_functions';
+import CalenderContainer from '../../components/calender';
 
 const TaskDetailsScreen = ({navigation, route}) => {
   const {data} = route.params;
@@ -34,6 +39,8 @@ const TaskDetailsScreen = ({navigation, route}) => {
   const [taskComments, setTaskComments] = useState([]);
   const [comment, setComment] = useState('');
   const commentBox = useRef();
+  const completeOptionRef = useRef(null);
+  const reopenOptionRef = useRef(null);
 
   const taskDetailsUrl = BaseUrl(ApiConstants.taskDetails);
   const projectDataUrl = BaseUrl(ApiConstants.myProjectList);
@@ -41,7 +48,17 @@ const TaskDetailsScreen = ({navigation, route}) => {
   const commentUrl = BaseUrl(ApiConstants.taskComments);
   const getUserUrl = BaseUrl(ApiConstants.getUserList);
   const getPermissionUrl = BaseUrl(ApiConstants.taskEditPermission);
+  const getTaskDeadline = BaseUrl(ApiConstants.revisedTaskDeadline);
+  const changePriorityUrl = BaseUrl(ApiConstants.changePriority);
+  const completeTaskUrl = BaseUrl(ApiConstants.changeTaskStatus);
+  const deleteTaskUrl = BaseUrl(ApiConstants.changeTaskDelete);
+  const taskListUrl = BaseUrl(ApiConstants.myTeamTaskList);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [getDeadline, setTaskDeadline] = useState(
+    movement().utcOffset('+05:30').format('YYYY-MM-DD'),
+  );
   var currentDate = new movement().format('MMM DD, yyyy');
+  var date = movement().utcOffset('+05:30').format('YYYY-MM-DD');
 
   const getTaskDetails = async () => {
     try {
@@ -105,6 +122,37 @@ const TaskDetailsScreen = ({navigation, route}) => {
     }
   };
 
+  const getCompleteTask = async task_status => {
+    try {
+      setLoading(true);
+      var asyncStorage = await AsyncStorage.getItem('token');
+      var user_id = await AsyncStorage.getItem('user_id');
+      await axios
+        .post(completeTaskUrl, {
+          token: asyncStorage,
+          id: user_id,
+          task_id: data.id,
+          task_status: task_status,
+        })
+        .then(response => {
+          if (response.status === 200) {
+            setLoading(false);
+            navigation.navigate('approve', {
+              taskStatus: task_status,
+            });
+            getTaskDetails();
+            ToastMessage.showMessage(response.data?.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          setLoading(false);
+        });
+    } catch (error) {
+      setLoading(false);
+    }
+  };
+
   const sendComment = async () => {
     setLoading(true);
     var token = await AsyncStorage.getItem('token');
@@ -147,6 +195,27 @@ const TaskDetailsScreen = ({navigation, route}) => {
     }
   };
 
+  const getUpdateDate = async () => {
+    try {
+      setLoading(true);
+      var token = await AsyncStorage.getItem('token');
+      var userID = await AsyncStorage.getItem('user_id');
+      return await axios
+        .post(getTaskDeadline, {
+          token: token,
+          id: userID,
+          task_id: data.id,
+          task_deadline: getDeadline,
+        })
+        .catch(error => {
+          setLoading(false);
+        });
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getTaskDetails();
     return () => {};
@@ -161,26 +230,83 @@ const TaskDetailsScreen = ({navigation, route}) => {
           onPress={() => navigation.goBack()}
         />
         <Appbar.Content title="" color={ColorConstants.primaryBlack} />
-        <Appbar.Action
-          icon="pencil"
-          size={22}
-          onPress={() => {
-            getPermission().then(response => {
-              setLoading(false);
-            });
-          }}
-        />
-        <Appbar.Action
-          icon="check"
-          size={24}
-          color={ColorConstants.primaryBlack}
-          onPress={() => {}}
-          style={{
-            marginLeft: -5,
-            marginRight: -10,
-          }}
-        />
+        {taskDetails[0]?.task_status !== 'Completed' && (
+          <Appbar.Action
+            icon="pencil"
+            size={18}
+            onPress={() => {
+              getPermission().then(response => {
+                setLoading(false);
+                console.log(response.data);
+                if (response.data?.data) {
+                  console.log('get Permission not null', response.data?.data);
+                  ToastMessage.showMessage(response.data?.message);
+                  navigation.navigate('add_task', {
+                    data: response.data?.data,
+                    comeFrom: 'update_task',
+                  });
+                } else {
+                  ToastMessage.showMessage(response.data?.message);
+                  console.log('get Permission null', response.data?.data);
+                }
+              });
+            }}
+          />
+        )}
+        {taskDetails[0]?.task_status === 'Completed' ? (
+          <Appbar.Action
+            icon="autorenew"
+            size={18}
+            color={ColorConstants.primaryBlack}
+            onPress={() => {
+              reopenOptionRef.current.show();
+            }}
+            style={{
+              marginLeft: -5,
+              marginRight: -10,
+            }}
+          />
+        ) : (
+          <Appbar.Action
+            icon="check"
+            size={18}
+            color={ColorConstants.primaryBlack}
+            onPress={() => {
+              completeOptionRef.current.show();
+            }}
+            style={{
+              marginLeft: -5,
+              marginRight: -10,
+            }}
+          />
+        )}
       </Appbar.Header>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <CalenderContainer
+          date={date}
+          deadline={getDeadline}
+          onCancal={() => setModalVisible(!modalVisible)}
+          onDayPress={day => {
+            console.log('selected day', day.dateString);
+            setTaskDeadline(day.dateString);
+          }}
+          onSelect={() => {
+            getUpdateDate().then(response => {
+              setLoading(false);
+              getTaskDetails();
+              ToastMessage.showMessage(response.data?.message);
+            });
+            setModalVisible(!modalVisible);
+          }}
+        />
+      </Modal>
       <ScrollView contentContainerStyle={styles.scroll_styles}>
         {taskDetails[0]?.task_status === 'Completed' ? (
           <View
@@ -199,13 +325,13 @@ const TaskDetailsScreen = ({navigation, route}) => {
                 fontWeight: '500',
                 color: ColorConstants.primaryWhite,
               }}>
-              {' '}
-              Task Completed{' '}
+              Task Completed
             </Text>
           </View>
         ) : (
           <View />
         )}
+        <AppSize height={10} />
         <Label
           name={
             taskDetails[0]?.task_title === '' ? '' : taskDetails[0]?.task_title
@@ -283,9 +409,10 @@ const TaskDetailsScreen = ({navigation, route}) => {
             onPress={() => {
               getPermission().then(response => {
                 setLoading(false);
-                if (response.data?.data !== null) {
+                if (response.data?.data) {
                   console.log('get Permission not null', response.data?.data);
-                  // ToastMessage.showMessage(response.data?.message);
+                  setModalVisible(true);
+                  ToastMessage.showMessage(response.data?.message);
                 } else {
                   ToastMessage.showMessage(response.data?.message);
                   console.log('get Permission null', response.data?.data);
@@ -315,18 +442,7 @@ const TaskDetailsScreen = ({navigation, route}) => {
         </View>
         <AppSize height={10} />
         <Label name={'Task Image'} />
-        <TouchableOpacity
-          style={{
-            height: 40,
-            width: 40,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderStyle: 'dotted',
-            borderWidth: 2,
-            borderRadius: 5,
-            backgroundColor: ColorConstants.primaryWhite,
-            borderColor: ColorConstants.textHintColor,
-          }}>
+        <TouchableOpacity style={styles.attachment}>
           <Ionicons
             name={'add'}
             color={ColorConstants.textHintColor}
@@ -465,6 +581,35 @@ const TaskDetailsScreen = ({navigation, route}) => {
           </TouchableOpacity>
         </View>
       </View>
+      <BottomSheet
+        refer={completeOptionRef}
+        backButton={() => completeOptionRef.current.hide()}
+        widget={
+          <TaskAlert
+            buttonLabel={'Complete'}
+            label={'Are you sure you want to close the task.'}
+            onBack={() => completeOptionRef.current.hide()}
+            onPress={() => {
+              getCompleteTask('Completed');
+            }}
+          />
+        }
+      />
+      <BottomSheet
+        refer={reopenOptionRef}
+        backButton={() => reopenOptionRef.current.hide()}
+        widget={
+          <TaskAlert
+            label={'Are you sure you want to Reopen the task.'}
+            buttonLabel={'Reopen'}
+            onBack={() => reopenOptionRef.current.hide()}
+            onPress={() => {
+              getCompleteTask('Reopen');
+            }}
+          />
+        }
+      />
+
       {isLoading && <Loading />}
     </View>
   );
@@ -634,6 +779,19 @@ const styles = StyleSheet.create({
   comment_text: {
     fontSize: 12,
     color: ColorConstants.textDarkBlack,
+  },
+  attachment: {
+    height: 45,
+    width: 45,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
+    borderWidth: 2,
+    borderRadius: 5,
+    borderStyle: 'dotted',
+    borderColor: ColorConstants.textLightBlack1,
+    backgroundColor: ColorConstants.primaryWhite,
   },
 });
 

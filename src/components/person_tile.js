@@ -78,8 +78,8 @@ const Tile = ({
           />
         )}
         <AppSize width={10} />
-        <View style={{flex: 1}}>
-          <Label name={title} style={textStyle} />
+        <View style={textStyle}>
+        <Label name={title} style={textStyle} />
         </View>
         {tailer === true && (
           <Ionicons

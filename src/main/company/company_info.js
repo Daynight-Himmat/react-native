@@ -328,9 +328,7 @@ const styles = StyleSheet.create({
   contactName: {
     width: '100%',
     flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignContent: 'center',
+    justifyContent: 'flex-start',
     backgroundColor: ColorConstants.primaryWhite,
     borderRadius: 10,
     shadowColor: '#000',

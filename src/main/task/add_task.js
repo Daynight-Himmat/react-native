@@ -28,13 +28,11 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import moment from 'moment';
 import AppHeader from '../../components/app_header';
 import ToastMessage from '../../components/toast_message';
-import RowButton from '../../components/row_button';
-import FontConstants from '../../constants/fonts';
-import {Calendar} from 'react-native-calendars';
 import BottomSheet from '../../components/bottom_sheet';
 import CalenderContainer from '../../components/calender';
 
-const AddTask = ({navigation}) => {
+const AddTask = ({navigation, route}) => {
+  const {data, comeFrom} = route?.params;
   const [isLoading, setLoading] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -192,12 +190,27 @@ const AddTask = ({navigation}) => {
   //   );
   // };
 
+  console.log(data);
+  
   useEffect(() => {
     const initCheckedItems = {};
     assignee.forEach(item => {
       initCheckedItems[item.id] = false;
     });
     setCheckedItems(initCheckedItems);
+    const updateTask = () => {
+      if (comeFrom === 'update_task') {
+        setTitle(data.task_title);
+        setProjectId(data.project_id);
+        selectProject(
+          project.map(data => data?.project_name === data.project_name),
+        );
+        setDescription(data.description);
+        setPriority(data.priority);
+        setTaskDeadline(data.task_deadline);
+      }
+    };
+    updateTask();
     checking();
   }, []);
 
@@ -235,6 +248,7 @@ const AddTask = ({navigation}) => {
           </Modal>
           <Label name={'Title'} style={styles.labelmargin} />
           <TextInput
+            value={title}
             placeholder="Enter task title"
             placeholderTextColor={ColorConstants.textLightBlack1}
             style={styles.inputText}
@@ -242,6 +256,7 @@ const AddTask = ({navigation}) => {
           />
           <Label name={'Description'} style={styles.labelmargin} />
           <TextInput
+            value={description}
             placeholder="Enter task Description"
             multiline={true}
             placeholderTextColor={ColorConstants.textLightBlack1}
@@ -249,7 +264,7 @@ const AddTask = ({navigation}) => {
             onChangeText={text => setDescription(text)}
           />
 
-          <Label name={'Project'} style={styles.labelmargin}/>
+          <Label name={'Project'} style={styles.labelmargin} />
           <SelectList
             data={project.map((data, _index) => data?.project_name)}
             setSelected={val => {
@@ -278,7 +293,7 @@ const AddTask = ({navigation}) => {
             placeholderTextColor={ColorConstants.textLightBlack1}
             boxStyles={styles.boxStyles}
           />
-          <Label name={'Assignee'} style={styles.labelmargin}/>
+          <Label name={'Assignee'} style={styles.labelmargin} />
           <View
             style={{
               flexDirection: 'column',

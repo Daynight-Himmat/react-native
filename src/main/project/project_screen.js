@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useCallback, useRef} from 'react';
 import {View, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
-import {Appbar, Text} from 'react-native-paper';
+import {Appbar, Text, Icon} from 'react-native-paper';
 import {InnerTab} from '../../components/tabs';
 import axios from 'axios';
 import {ApiConstants, BaseUrl, BaseUrl1} from '../../constants/api_constants';
@@ -15,6 +15,7 @@ import ToastMessage from '../../components/toast_message';
 import AllTask from '../tabs/task_type/all_task';
 import Dividers from '../../components/divider';
 import CommanFunctions from '../../components/comman_functions';
+
 
 const ProjectPageScreen = ({navigation, route}) => {
   const {data} = route.params;
@@ -174,6 +175,7 @@ const ProjectPageScreen = ({navigation, route}) => {
   }, [getProjectsTaskList]);
 
   return (
+   
     <View style={styles.container}>
       <Appbar.Header style={styles.app_bar_header}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />

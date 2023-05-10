@@ -15,11 +15,7 @@ const BottomSheet = ({widget, refer, backButton, buttonButton}) => {
     <SafeAreaView>
       <ActionSheet ref={refer}>
         <TouchableOpacity onPress={backButton} style={styles.backButton} />
-        <ScrollView
-          contentContainerStyle={{
-            paddingHorizontal: 10,
-            paddingVertical: 20,
-          }}>
+        <ScrollView contentContainerStyle={styles.container}>
           {widget}
         </ScrollView>
         {buttonButton}
@@ -30,7 +26,8 @@ const BottomSheet = ({widget, refer, backButton, buttonButton}) => {
 
 const styles = StyleSheet.create({
   container: {
-    // marginBottom: 50,
+    paddingHorizontal: 10,
+    // paddingVertical: 20,
   },
   backButton: {
     height: 5,

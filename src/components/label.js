@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '400',
     color: ColorConstants.textLightBlack1,
-    fontFamily: FontConstants.light,
+    fontFamily: FontConstants.semiBold,
   },
 });
 

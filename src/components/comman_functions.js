@@ -2,9 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {ApiConstants, BaseUrl, BaseUrl1} from '../constants/api_constants';
 
-const changePriorityUrl = BaseUrl1(ApiConstants.changePriority);
-const completeTaskUrl = BaseUrl1(ApiConstants.changeTaskStatus);
-const deleteTaskUrl = BaseUrl1(ApiConstants.changeTaskDelete);
+const changePriorityUrl = BaseUrl(ApiConstants.changePriority);
+const completeTaskUrl = BaseUrl(ApiConstants.changeTaskStatus);
+const deleteTaskUrl = BaseUrl(ApiConstants.changeTaskDelete);
 const taskListUrl = BaseUrl(ApiConstants.myTeamTaskList);
 
 class CommanFunctions {

@@ -10,7 +10,7 @@ const RowButton = ({
   onback: onBack,
   onPress: onTap,
   route: navigation,
-  style: bottonStyle,
+  style,
 }) => {
   return (
     <View style={styles.bottomButtonRow}>
@@ -23,11 +23,7 @@ const RowButton = ({
         onPress={onBack}
       />
       <AppSize width={10} />
-      <AppButton
-        text={buttonName}
-        style={[styles.button, {...bottonStyle}]}
-        onPress={onTap}
-      />
+      <AppButton text={buttonName} style={styles.button} onPress={onTap} />
     </View>
   );
 };
@@ -43,7 +39,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   bottomButtonRow: {
-    alignItems: 'center',
+    alignSelf: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
     backgroundColor: ColorConstants.primaryWhite,

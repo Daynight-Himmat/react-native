@@ -5,6 +5,8 @@ import Feather from 'react-native-vector-icons/Feather';
 import {Ionicons} from './icons';
 import movement from 'moment';
 import {IconButton} from 'react-native-paper';
+import { Label, LightText1 } from './label';
+import FontConstants from '../constants/fonts';
 
 const getColor = data => {
   switch (data.task_status) {
@@ -48,8 +50,8 @@ const TaskTile = ({index, data, onPress, iconPress}) => {
         </View>
 
         <View style={styles.text_column}>
-          <Text style={styles.task_title}>{data?.task_title}</Text>
-          <Text style={styles.task_project}>{data.project_name}</Text>
+          <Label name={data?.task_title} />
+          <LightText1 lightText1={data.project_name} />
         </View>
         {data.task_status === 'Completed' ? (
           <View>
@@ -146,12 +148,13 @@ const styles = StyleSheet.create({
   task_project: {
     color: ColorConstants.textLightBlack1,
     fontSize: 10,
-    fontWeight: '400',
+    fontWeight: '400',    
   },
   task_date: {
     color: ColorConstants.textLightBlack1,
     fontSize: 10,
-    fontWeight: '400',
+    fontWeight: '600',
+    fontFamily: FontConstants.light,
   },
   column: {
     flexDirection: 'column',
