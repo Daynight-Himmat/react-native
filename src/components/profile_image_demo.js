@@ -19,9 +19,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   profileImage: {
-    backgroundColor: ColorConstants.textLightBlack3,
-    height: 50,
-    width: 50,
+    backgroundColor: ColorConstants.greyColor,
+    height: 35,
+    width: 35,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 100,
@@ -29,9 +29,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   image: {
-    color: ColorConstants.greyColor,
+    color: ColorConstants.primaryWhite,
     justifyContent: 'center',
-    alignContent: 'center',
     alignItems: 'center',
   },
 });

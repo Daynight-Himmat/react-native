@@ -8,6 +8,8 @@ const Approved = ({navigation, route}) => {
   const {taskStatus} = route.params;
   const getApprove = () => {
     switch (taskStatus) {
+      case 'Approved':
+        return ' Successfully Approved \n the task ';
       case 'Completed':
         return ' Successfully completed \n the task ';
       case 'Reopen':
@@ -24,8 +26,8 @@ const Approved = ({navigation, route}) => {
   useEffect(() => {
     setTimeout(() => {
       navigation.goBack();
-    }, 4000);
-  }, []);
+    }, 500);
+  }, [navigation]);
 
   return (
     <SafeAreaView>
@@ -35,7 +37,7 @@ const Approved = ({navigation, route}) => {
           style={styles.image}
         />
         <View style={styles.margin}>
-          <Label name={`${getApprove(taskStatus)}`} style={styles.text}/>
+          <Label name={`${getApprove()}`} style={styles.text}/>
         </View>
       </View>
     </SafeAreaView>

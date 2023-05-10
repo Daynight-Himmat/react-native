@@ -29,16 +29,22 @@ const TeamProfile = ({navigation, route}) => {
         {data.profile_image != null &&
         data.profile_image.split('.').pop() === 'jpg' ? (
           <Avatar
-            size={100}
+            size={120}
             rounded
             renderPlaceholderContent={<ActivityIndicator />}
             placeholderStyle={{backgroundColor: ColorConstants.primaryWhite}}
             source={{
               uri: data.profile_image,
-            }}/>
-
+            }}
+          />
         ) : (
-          <ProfileDemo />
+          <ProfileDemo
+            containerSize={{
+              height: 100,
+              width: 100,
+            }}
+            iconSize={30}
+          />
         )}
       </TouchableOpacity>
 

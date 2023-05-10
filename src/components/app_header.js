@@ -2,6 +2,7 @@ import React from 'react';
 import {StyleSheet, Dimensions} from 'react-native';
 import ColorConstants from '../constants/color_constants';
 import {Appbar} from 'react-native-paper';
+import FontConstants from '../constants/fonts';
 const {width} = Dimensions.get('screen');
 
 const AppHeader = ({text: title, navigate: navigation}) => {
@@ -29,6 +30,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '700',
     color: ColorConstants.primaryBlack,
+    fontFamily: FontConstants.ragular
   },
 });
 

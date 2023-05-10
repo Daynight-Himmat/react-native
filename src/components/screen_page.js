@@ -7,7 +7,6 @@ import CreatePassword from '../auth/create_pass';
 import OtpPage from '../auth/otp_page';
 import DashBoard from '../main/dashboard';
 import HomeScreen from '../main/tabs/home';
-import {MyAssignee, MyTask} from '../main/tabs/my_task';
 import ProjectScreen from '../main/tabs/project';
 import CompanyScreen from '../main/tabs/company';
 import TeamScreen from '../main/tabs/team';
@@ -64,14 +63,6 @@ const screens = [
   {
     name: 'home_page',
     component: HomeScreen,
-  },
-  {
-    name: 'my_task',
-    component: MyTask,
-  },
-  {
-    name: 'assignee',
-    component: MyAssignee,
   },
   {
     name: 'project_page',

@@ -15,6 +15,8 @@ import {ApiConstants, BaseUrl} from '../../constants/api_constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Loading} from '../../components/no_data_found';
 import AppHeader from '../../components/app_header';
+import {Label} from '../../components/label';
+import {ViewProfileButton} from '../../components/text_button';
 
 const MyAccount = ({navigation, route}) => {
   const {data} = route.params;
@@ -35,9 +37,10 @@ const MyAccount = ({navigation, route}) => {
           })
           .then(async response => {
             if (response.status === 200) {
+              await AsyncStorage.clear();
               await AsyncStorage.removeItem('token');
               await AsyncStorage.removeItem('user_id');
-              console.log(await AsyncStorage.clear());
+              AsyncStorage.setItem('loggedIn', false);
               var token = await AsyncStorage.getItem('token');
               console.log(token);
               navigation.navigate('sign_in');
@@ -65,11 +68,7 @@ const MyAccount = ({navigation, route}) => {
     <View style={styles.container}>
       <AppHeader text={'My Profile'} navigate={() => navigation.goBack()} />
 
-      <View
-        style={{
-          padding: 10,
-        }}
-      />
+      <View style={{padding: 10}} />
       <TouchableOpacity
         style={styles.imageContainer}
         onPress={() =>
@@ -88,46 +87,21 @@ const MyAccount = ({navigation, route}) => {
         )}
       </TouchableOpacity>
       <View style={{padding: 5}} />
-      <TouchableOpacity
+      <ViewProfileButton
+        text={'View Profile'}
         onPress={() => {
           navigation.navigate('edit_profile', {
             data: data,
           });
         }}
-        activeOpacity={0.3}>
-        <Text
-          style={{
-            padding: 10,
-            color: ColorConstants.editColor,
-            fontWeight: '400',
-          }}>
-          View Profile
-        </Text>
-      </TouchableOpacity>
+      />
       <View style={{padding: 10}} />
       <TouchableOpacity
         activeOpacity={0.5}
         onPress={createTwoButtonAlert}
         accessibilityIgnoresInvertColors={ColorConstants.textHighLight}
-        style={{
-          backgroundColor: ColorConstants.textHighLight,
-          borderRadius: 5,
-          height: 40,
-          justifyContent: 'center',
-          alignContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'row',
-          paddingHorizontal: 10,
-        }}>
-        <Text
-          style={{
-            flex: 1,
-            fontSize: 16,
-            fontWeight: '500',
-            color: ColorConstants.primaryWhite,
-          }}>
-          Log Out
-        </Text>
+        style={styles.tileStyles}>
+        <Label name={'Log Out'} style={{color: ColorConstants.primaryWhite}} />
         <Ionicons name={'exit-outline'} size={20} />
       </TouchableOpacity>
       <View />
@@ -160,6 +134,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center',
     alignItems: 'center',
+  },
+  tileStyles: {
+    backgroundColor: ColorConstants.textHighLight,
+    borderRadius: 5,
+    height: 40,
+    width: '100%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingHorizontal: 10,
   },
 });
 

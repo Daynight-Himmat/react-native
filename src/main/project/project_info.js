@@ -1,16 +1,19 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
-import {View, ScrollView, StyleSheet} from 'react-native';
+import {View, ScrollView, StyleSheet, Dimensions, Text} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Appbar} from 'react-native-paper';
 import {ApiConstants, BaseUrl} from '../../constants/api_constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Loading} from '../../components/no_data_found';
-import {Label, LightText1} from '../../components/label';
+import {Label, LightText1, LightText} from '../../components/label';
 import moment from 'moment';
-import {TimeTile} from '../../components/person_tile';
+import {PersonTile, TimeTile} from '../../components/person_tile';
 import AppHeader from '../../components/app_header';
+import Dividers from '../../components/divider';
+
+const {height, width} = Dimensions.get('screen');
 
 const ProjectInfo = ({navigation, route}) => {
   const {project_id} = route.params;
@@ -76,16 +79,10 @@ const ProjectInfo = ({navigation, route}) => {
   }, []);
 
   return (
-    <View style={styles(ColorConstants.primaryWhite).container}>
-      <AppHeader text={''} navigate={navigation} />
-      <ScrollView
-        style={{
-          paddingHorizontal: 10,
-        }}>
-        <View
-          style={{
-            flexDirection: 'column',
-          }}>
+    <View style={styles.container}>
+      <AppHeader navigate={() => navigation.goBack()} />
+      <ScrollView style={{paddingHorizontal: 10}}>
+        <View>
           <Label name={projectInfo[0]?.project_name} />
           <LightText1
             lightText1={
@@ -93,18 +90,15 @@ const ProjectInfo = ({navigation, route}) => {
             }
           />
         </View>
-        <TimeTile
-          type={'person'}
-          color={ColorConstants.primaryColor}
-          time={projectInfo[0]?.cordinator_name?.map(
+        <PersonTile
+          title={'Project Assignee'}
+          subTitle={projectInfo[0]?.cordinator_name?.map(
             (data, index) => `${data?.name}, ` ?? 'No name',
           )}
-          label={'Project Assignee'}
         />
-        <TimeTile
-          type={'person'}
-          color={ColorConstants.primaryColor}
-          time={
+        <PersonTile
+          title={'Task Assignee'}
+          subTitle={
             projectInfo[0]?.team_cordinator !== '' &&
             projectInfo[0]?.team_cordinator !== null
               ? getUserData.map((data, index) =>
@@ -112,18 +106,16 @@ const ProjectInfo = ({navigation, route}) => {
                 )
               : 'No Task Assignee found'
           }
-          label={'Task Assignee'}
         />
         <TimeTile
-          type={'date'}
           color={ColorConstants.buttonGreenColor}
           label={'Actual DeadLine'}
           time={
             moment(projectInfo[0]?.deadline).format('MMM DD, yyyy') ?? 'date'
           }
         />
+        <Dividers h1={0.5} />
         <TimeTile
-          type={'date'}
           color={ColorConstants.primaryColor}
           label={'DeadLine'}
           time={
@@ -131,13 +123,11 @@ const ProjectInfo = ({navigation, route}) => {
             'date'
           }
         />
-        <View
-          style={{
-            flexDirection: 'column',
-          }}>
+        <Dividers h1={0.5} />
+        <View>
           <Label name={'Description'} />
           <LightText1
-            lightText1={projectInfo[0]?.description ?? 'No Description'}
+            lightText1={projectInfo[0]?.description ?? 'No description found'}
           />
         </View>
       </ScrollView>
@@ -146,38 +136,30 @@ const ProjectInfo = ({navigation, route}) => {
   );
 };
 
-const styles = color =>
-  StyleSheet.create({
-    container: {
-      height: '100%',
-      width: '100%',
-      alignItems: 'flex-start',
-      justifyContent: 'flex-start',
-      backgroundColor: ColorConstants.primaryWhite,
-    },
-    column: {
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      alignContent: 'center',
-    },
-    row: {
-      flexDirection: 'row',
-      paddingVertical: 10,
-      alignItems: 'center',
-    },
-    calenderStyle: {
-      height: 40,
-      width: 40,
-      borderWidth: 1,
-      borderColor: color,
-      borderRadius: 100,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    app_bar_header: {
-      flex: 1,
-      backgroundColor: ColorConstants.primaryWhite,
-    },
-  });
+const styles = StyleSheet.create({
+  container: {
+    height: '100%',
+    width: '100%',
+    backgroundColor: ColorConstants.primaryWhite,
+  },
+  row: {
+    flexDirection: 'row',
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  calenderStyle: {
+    height: 40,
+    width: 40,
+    borderWidth: 1,
+    // borderColor: color,
+    borderRadius: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  app_bar_header: {
+    flex: 1,
+    backgroundColor: ColorConstants.primaryWhite,
+  },
+});
 
 export default ProjectInfo;

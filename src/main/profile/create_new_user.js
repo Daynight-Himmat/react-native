@@ -10,7 +10,7 @@ import AppButton from '../../components/app_button';
 import {ApiConstants, BaseUrl1} from '../../constants/api_constants';
 import AppHeader from '../../components/app_header';
 
-const CreateProfile = () => {
+const CreateProfile = ({navigation}) => {
   const [isLoading, setLoading] = useState(false);
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
@@ -35,7 +35,10 @@ const CreateProfile = () => {
 
   return (
     <View style={styles.container}>
-      <AppHeader text={'Create Team Member'} />
+      <AppHeader
+        text={'Create Team Member'}
+        navigate={() => navigation.goBack()}
+      />
       <ScrollView>
         <AppSize height={20} />
         <View
@@ -43,7 +46,6 @@ const CreateProfile = () => {
             width: '100%',
             flexDirection: 'row',
             justifyContent: 'center',
-
           }}>
           <View style={styles.imageContainer}>
             {/* {data.profile_image !== null &&

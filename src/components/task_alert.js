@@ -1,8 +1,7 @@
 import React from 'react';
-import {View, ScrollView, StyleSheet} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import ColorConstants from '../constants/color_constants';
 import {Label} from './label';
-import {Tile} from './person_tile';
 import RowButton from './row_button';
 import AppSize from './size';
 
@@ -34,8 +33,6 @@ const TaskAlert = ({
 export default TaskAlert;
 
 const styles = StyleSheet.create({
-  view: {
-    backgroundColor: ColorConstants.primaryWhite,
-  },
-  textContainer: {alignSelf: 'center'},
+  view: {backgroundColor: ColorConstants.primaryWhite},
+  textContainer: {alignSelf: 'center', marginBottom: 10},
 });

@@ -63,6 +63,7 @@ const SignInScreen = ({navigation}) => {
           if (response.data.success === true) {
             DataManager.token = response.data.token;
             AsyncStorage.setItem('token', response.data.token);
+            AsyncStorage.setItem('loggedIn', 'true');
             setLoading(false);
             navigation.navigate('dashboard', {
               token: response.data.token,

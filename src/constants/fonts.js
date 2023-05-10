@@ -6,6 +6,8 @@ class FontConstants {
     static medium = 'Poppins-Medium';
     static ragular = 'Poppins-Regular';
     static semiBold = 'Poppins-SemiBold';
+    static thin = 'Poppins-Thin';
+    static light = 'Poppins-Light';
   }
 
   export default FontConstants;

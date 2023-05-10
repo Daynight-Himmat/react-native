@@ -4,7 +4,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ColorConstants from '../../constants/color_constants';
 import ProjectTile from '../../components/project_tile';
-import {BaseUrl, ApiConstants} from '../../constants/api_constants';
+import {BaseUrl, BaseUrl1, ApiConstants} from '../../constants/api_constants';
 import SearchBox from '../../components/search_box';
 import {Loading, NoData} from '../../components/no_data_found';
 
@@ -15,7 +15,7 @@ const ProjectScreen = ({navigation}) => {
   const [getSearchValue, setSearchValue] = useState(getprojectData);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const url = BaseUrl(ApiConstants.myProjectList);
+  const url = BaseUrl1(ApiConstants.myProjectList);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const checking = useCallback(async () => {
@@ -70,10 +70,7 @@ const ProjectScreen = ({navigation}) => {
       <View style={{padding: 5}} />
       {loading === false ? (
         getSearchValue.length > 0 ? (
-          <ScrollView
-            contentContainerStyle={{
-              flexGrow: 1,
-            }}>
+          <ScrollView>
             {getSearchValue.map((data, index) => (
               <ProjectTile
                 key={index}

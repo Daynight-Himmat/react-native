@@ -1,25 +1,47 @@
-import React, {useState, useEffect} from 'react';
-import {View, StyleSheet, Text, ScrollView} from 'react-native';
+import React, {useState, useEffect, useRef} from 'react';
+import {View, StyleSheet, ScrollView} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ApiConstants, BaseUrl} from '../../constants/api_constants';
 import {InnerTab} from '../../components/tabs';
 import {Loading, NoData} from '../../components/no_data_found';
-import TaskTile from '../../components/task_tile';
 import {Appbar} from 'react-native-paper';
 import movement from 'moment';
+import Dividers from '../../components/divider';
+import AllTask from '../tabs/task_type/all_task';
+import BottomSheetConditions from '../../components/bottom_sheet_with_condition';
+import ToastMessage from '../../components/toast_message';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+
+const Tab = createMaterialTopTabNavigator();
 
 const TeamTaskScreen = ({navigation, route}) => {
   const {data} = route.params;
   const [token, setToken] = useState([]);
+  const [checked, setChecked] = useState('High');
+  const [taskId, setTaskId] = useState('');
   const [loading, setLoading] = useState(false);
+  const [allTask, setAllTaskList] = useState([]);
+  const [dueTask, setDueTaskList] = useState([]);
+  const [todayTask, setTodayTaskList] = useState([]);
+  const [completeTask, setCompleteTaskList] = useState([]);
   const [side, setSide] = useState('My Task');
   const [innerSide, setInnerSide] = useState('All');
   const [getTaskData, setTaskData] = useState([]);
-  var currentDate = new movement().format('MMM DD, yyyy');
-
+  const [getBottomData, setData] = useState([]);
+  const [projectId, setProjectId] = useState('');
+  const [taskStatus, setTaskStatus] = useState('');
+  const taskOptionsRef = useRef(null);
+  const deleteOptionRef = useRef(null);
+  const reopenOptionRef = useRef(null);
+  const completeOptionRef = useRef(null);
+  const assigneeOptionRef = useRef(null);
+  const changePriorityRef = useRef(null);
   const taskListUrl = BaseUrl(ApiConstants.myTeamTaskList);
+  const changePriorityUrl = BaseUrl(ApiConstants.changePriority);
+  const completeTaskUrl = BaseUrl(ApiConstants.changeTaskStatus);
+  const deleteTaskUrl = BaseUrl(ApiConstants.changeTaskDelete);
 
   const checking = async ({type}) => {
     setLoading(true);
@@ -34,11 +56,139 @@ const TeamTaskScreen = ({navigation, route}) => {
         })
         .then(response => {
           if (response.status === 200) {
-            setTaskData(response.data?.data?.data);
+            if (response.status === 200) {
+              setAllTaskList(
+                response.data.data?.data.filter(
+                  item =>
+                    item.task_status === 'Active' ||
+                    item.task_status === 'Reopen',
+                ),
+              );
+              setTodayTaskList(
+                response.data.data?.data.filter(
+                  item =>
+                    movement(item.created_at.slice(0, 10)).format(
+                      'yyyy-MM-DD',
+                    ) === movement().format('yyyy-MM-DD'),
+                ),
+              );
+              setDueTaskList(
+                response.data.data?.data.filter(
+                  item =>
+                    movement(item.created_at.slice(0, 10)).format(
+                      'yyyy-MM-DD',
+                    ) !== movement().format('yyyy-MM-DD') &&
+                    item.task_status !== 'Completed',
+                ),
+              );
+              setCompleteTaskList(
+                response.data.data?.data.filter(
+                  item =>
+                    item.task_status === 'Completed' ||
+                    item.task_status === 'Approved',
+                ),
+              );
+              setLoading(false);
+            }
             setLoading(false);
           }
         })
         .catch(() => {
+          setLoading(false);
+        });
+    } catch (error) {
+      setLoading(false);
+    }
+  };
+
+  const getCompleteTask = async task_status => {
+    try {
+      setLoading(true);
+      var asyncStorage = await AsyncStorage.getItem('token');
+      var user_id = await AsyncStorage.getItem('user_id');
+      await axios
+        .post(completeTaskUrl, {
+          token: asyncStorage,
+          id: user_id,
+          task_id: taskId,
+          task_status: task_status,
+        })
+        .then(response => {
+          if (response.status === 200) {
+            setLoading(false);
+            checking({type: 'All'});
+            navigation.navigate('approve', {
+              taskStatus: task_status,
+            });
+            ToastMessage.showMessage(response.data?.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          setLoading(false);
+        });
+    } catch (error) {
+      setLoading(false);
+    }
+  };
+
+  const getChangePriority = async (taskId, priority) => {
+    try {
+      setLoading(true);
+      var asyncStorage = await AsyncStorage.getItem('token');
+      var user_id = await AsyncStorage.getItem('user_id');
+      await axios
+        .post(changePriorityUrl, {
+          token: asyncStorage,
+          id: user_id,
+          task_id: taskId,
+          priority: priority,
+        })
+        .then(response => {
+          if (response.status === 200) {
+            console.log(response.data?.message);
+            setLoading(false);
+            checking({type: 'All'});
+            navigation.navigate('approve', {
+              taskStatus: 'Priority',
+            });
+            changePriorityRef.current.hide();
+            ToastMessage.showMessage(response.data?.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          setLoading(false);
+        });
+    } catch (error) {
+      setLoading(false);
+    }
+  };
+
+  const getDeleteTask = async () => {
+    try {
+      setLoading(true);
+      var asyncStorage = await AsyncStorage.getItem('token');
+      var user_id = await AsyncStorage.getItem('user_id');
+      await axios
+        .post(deleteTaskUrl, {
+          token: asyncStorage,
+          id: user_id,
+          task_id: taskId,
+        })
+        .then(response => {
+          if (response.status === 200) {
+            console.log(response.data?.message);
+            setLoading(false);
+            checking({type: 'All'});
+            navigation.navigate('approve', {
+              taskStatus: 'Delete',
+            });
+            ToastMessage.showMessage(response.data?.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
           setLoading(false);
         });
     } catch (error) {
@@ -146,97 +296,122 @@ const TeamTaskScreen = ({navigation, route}) => {
           }}
         />
       </View>
-      <View
-        style={{
-          width: '100%',
-          height: 0.5,
-          backgroundColor: ColorConstants.textHintColor,
-        }}
-      />
-      {loading === false ? (
-        getTaskData.length > 0 ? (
-          <ScrollView>
-            {getTaskData.map((taskData, index) =>
-              innerSide === 'All' ? (
-                taskData.task_status === 'Active' ? (
-                  <TaskTile
-                    key={taskData.title}
-                    data={taskData}
-                    index={index}
-                    onPress={() => {
-                      navigation.navigate('task_details_screen', {
-                        data: taskData,
-                      });
-                    }}
-                  />
-                ) : (
-                  <View />
-                )
-              ) : innerSide === 'today' ? (
-                movement(taskData.actual_deadline).format('MMM DD, yyyy') ===
-                  currentDate && taskData.task_status === 'Active' ? (
-                  <TaskTile
-                    key={taskData.title}
-                    data={taskData}
-                    index={index}
-                    onPress={() => {
-                      navigation.navigate('task_details_screen', {
-                        data: taskData,
-                      });
-                    }}
-                  />
-                ) : (
-                  <View />
-                )
-              ) : innerSide === 'due' ? (
-                movement(taskData.actual_deadline).format('MMM DD, yyyy') !==
-                  currentDate && taskData.task_status === 'Active' ? (
-                  <TaskTile
-                    key={taskData.title}
-                    data={taskData}
-                    index={index}
-                    onPress={() => {
-                      navigation.navigate('task_details_screen', {
-                        data: taskData,
-                      });
-                    }}
-                  />
-                ) : (
-                  <View />
-                )
-              ) : innerSide === 'complete' ? (
-                taskData.task_status === 'Completed' ? (
-                  <TaskTile
-                    key={taskData.title}
-                    data={taskData}
-                    index={index}
-                    onPress={() => {
-                      navigation.navigate('task_details_screen', {
-                        data: taskData,
-                      });
-                    }}
-                  />
-                ) : (
-                  <View />
-                )
-              ) : (
-                <View key={taskData.title}>
-                  <Text
-                    style={{
-                      color: ColorConstants.primaryBlack,
-                    }}>
-                    {movement(taskData.actual_deadline).format('MMM DD, yyyy')}
-                  </Text>
-                </View>
-              ),
-            )}
-          </ScrollView>
+      <Dividers />
+      <View style={{flex: 1, paddingHorizontal: 10}}>
+        {innerSide === 'All' ? (
+          allTask.length > 0 ? (
+            <ScrollView>
+              {allTask.map((data, index) => (
+                <AllTask
+                  data={data}
+                  key={index}
+                  navigation={navigation}
+                  iconPress={() => {
+                    setData(data);
+                    setTaskId(data.id);
+                    setProjectId(data.project_id);
+                    setTaskStatus(data.task_status);
+                    taskOptionsRef.current.show();
+                  }}
+                />
+              ))}
+            </ScrollView>
+          ) : (
+            <NoData />
+          )
+        ) : innerSide === 'today' ? (
+          todayTask.length > 0 ? (
+            <ScrollView>
+              {todayTask.map((data, index) => (
+                <AllTask
+                  data={data}
+                  key={index}
+                  navigation={navigation}
+                  iconPress={() => {
+                    setData(data);
+                    setTaskId(data.id);
+                    setProjectId(data.project_id);
+                    setTaskStatus(data.task_status);
+                    taskOptionsRef.current.show();
+                  }}
+                />
+              ))}
+            </ScrollView>
+          ) : (
+            <NoData />
+          )
+        ) : innerSide === 'due' ? (
+          dueTask.length > 0 ? (
+            <ScrollView>
+              {dueTask.map((data, index) => (
+                <AllTask
+                  data={data}
+                  key={index}
+                  navigation={navigation}
+                  iconPress={() => {
+                    setData(data);
+                    setTaskId(data.id);
+                    setProjectId(data.project_id);
+                    setTaskStatus(data.task_status);
+                    taskOptionsRef.current.show();
+                  }}
+                />
+              ))}
+            </ScrollView>
+          ) : (
+            <NoData />
+          )
+        ) : innerSide === 'complete' ? (
+          completeTask.length > 0 ? (
+            <ScrollView>
+              {completeTask.map((data, index) => (
+                <AllTask
+                  data={data}
+                  key={index}
+                  navigation={navigation}
+                  iconPress={() => {
+                    setData(data);
+                    setData(data);
+                    setTaskId(data.id);
+                    setProjectId(data.project_id);
+                    setTaskStatus(data.task_status);
+                    taskOptionsRef.current.show();
+                  }}
+                />
+              ))}
+            </ScrollView>
+          ) : (
+            <NoData />
+          )
         ) : (
           <NoData />
-        )
-      ) : (
-        <Loading />
-      )}
+        )}
+      </View>
+      <BottomSheetConditions
+        assigneeOptionRef={assigneeOptionRef}
+        bottomSheetRef={taskOptionsRef}
+        changePriorityRef={changePriorityRef}
+        checked={checked}
+        completeOptionRef={completeOptionRef}
+        deleteOptionRef={deleteOptionRef}
+        onPressComplete={() => {
+          getCompleteTask('Completed');
+          completeOptionRef.current.hide();
+        }}
+        onPressDelete={() => {
+          getDeleteTask();
+          deleteOptionRef.current.hide();
+        }}
+        onPressPriority={() => getChangePriority(taskId, checked)}
+        onPressReopen={() => {
+          getCompleteTask('Reopen');
+          reopenOptionRef.current.hide();
+        }}
+        onValueChange={value => setChecked(value)}
+        reopenOptionRef={reopenOptionRef}
+        status={taskStatus}
+      />
+      {loading && <Loading />}
     </View>
   );
 };

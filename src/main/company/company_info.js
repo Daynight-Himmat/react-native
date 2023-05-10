@@ -1,5 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import {View, ScrollView, Image, StyleSheet} from 'react-native';
+import {
+  View,
+  ScrollView,
+  Image,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Loading} from '../../components/no_data_found';
 import {Label} from '../../components/label';
@@ -15,6 +21,9 @@ import {
   CompanyProfileImage,
 } from '../../constants/api_constants';
 import {Appbar} from 'react-native-paper';
+import ProfileDemo from '../../components/profile_image_demo';
+import {Avatar} from '@rneui/themed';
+import FontConstants from '../../constants/fonts';
 
 const CompanyInfo = ({navigation, route}) => {
   const {company_id} = route.params;
@@ -45,7 +54,7 @@ const CompanyInfo = ({navigation, route}) => {
 
   const getProjectDetails = async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       var token = await AsyncStorage.getItem('token');
       const response = await axios.post(getCompanyProjectUrl, {
         token: token,
@@ -62,28 +71,24 @@ const CompanyInfo = ({navigation, route}) => {
 
   useEffect(() => {
     getCompanyDetails();
-  });
+  }, []);
 
   return (
     <View style={styles.container}>
-      <Appbar.Header
-        style={{
-          width: '100%',
-          backgroundColor: ColorConstants.primaryWhite,
-        }}>
+      <Appbar.Header style={styles.headerWidth}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content
           title="Company Profile"
           color={ColorConstants.primaryBlack}
-          titleStyle={{
-            fontWeight: '700',
-            fontSize: 20,
-          }}
+          titleStyle={styles.headerText}
         />
         <Appbar.Action
           icon="pencil"
           onPress={() => {
-            navigation.navigate('create_company');
+            navigation.navigate('create_company', {
+              companyData: getCompanyData,
+              comeFrom: 'Company Update',
+            });
           }}
         />
         <Appbar.Action
@@ -92,77 +97,63 @@ const CompanyInfo = ({navigation, route}) => {
           onPress={() => {}}
         />
       </Appbar.Header>
-      <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-        }}>
-        <AppSize height={20} />
-        <View
-          style={{
-            width: '100%',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            alignContent: 'center',
-            paddingHorizontal: 10,
-            backgroundColor: ColorConstants.primaryWhite,
-          }}>
-          <View style={styles.imageContainer}>
-            {getCompanyData[0]?.profile_picture === '' ? (
-              <Ionicons name={'business'} size={35} style={styles.image} />
-            ) : (
-              <Image
-                style={styles.imageContainer}
-                source={{
-                  uri: CompanyProfileImage + getCompanyData[0]?.profile_picture,
-                }}
-              />
-            )}
+      <ScrollView>
+        {getCompanyData.map((data, index) => (
+          <View key={index}>
+            <View style={styles.imageContain}>
+              <View style={styles.imageContainer}>
+                {data?.profile_picture != null &&
+                data?.profile_picture.split('.').pop() === 'jpg' ? (
+                  <Avatar
+                    size={35}
+                    rounded
+                    renderPlaceholderContent={<ActivityIndicator />}
+                    placeholderStyle={{
+                      backgroundColor: ColorConstants.primaryWhite,
+                    }}
+                    source={{
+                      uri: CompanyProfileImage + data?.profile_picture,
+                    }}
+                  />
+                ) : (
+                  <Ionicons name={'business'} size={35} style={styles.image} />
+                )}
+              </View>
+            </View>
+            <View style={{paddingHorizontal: 15}}>
+              <Label name={data?.company_name} />
+            </View>
+
+            <View
+              style={{
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+              }}>
+              <View style={styles.contactName}>
+                <Label name={'Contact Name'} />
+                <Tile
+                  image={require('../../../assets/images/business.png')}
+                  title={
+                    data?.company_details[0]?.contact_name ?? 'No Name Found'
+                  }
+                />
+                <Tile
+                  image={require('../../../assets/images/emails.png')}
+                  title={
+                    data?.company_details[0]?.contact_email ?? 'No Email Found'
+                  }
+                />
+                <Tile
+                  image={require('../../../assets/images/phone.png')}
+                  title={
+                    data?.company_details[0]?.contact_number ??
+                    'No Number Found '
+                  }
+                />
+              </View>
+            </View>
           </View>
-        </View>
-        <AppSize height={20} />
-        <View />
-        <View
-          style={{
-            width: '100%',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingHorizontal: 10,
-            backgroundColor: ColorConstants.primaryWhite,
-          }}>
-          <Label name={getCompanyData[0]?.company_name} />
-        </View>
-        <View
-          style={{
-            paddingHorizontal: 10,
-            paddingVertical: 5,
-          }}>
-          <View style={styles.contactName}>
-            <Label name={'Contact Name'} />
-            <Tile
-              image={require('../../../assets/images/business.png')}
-              title={
-                getCompanyData[0]?.company_details[0]?.contact_name ??
-                'No Name Found'
-              }
-            />
-            <Tile
-              image={require('../../../assets/images/emails.png')}
-              title={
-                getCompanyData[0]?.company_details[0]?.contact_email ??
-                'No Email Found'
-              }
-            />
-            <Tile
-              image={require('../../../assets/images/phone.png')}
-              title={
-                getCompanyData[0]?.company_details[0]?.contact_number ??
-                'No Number Found '
-              }
-            />
-          </View>
-        </View>
+        ))}
         <View
           style={{
             paddingHorizontal: 10,
@@ -171,14 +162,131 @@ const CompanyInfo = ({navigation, route}) => {
           <View style={styles.contactName}>
             <Label name={'Company Project'} />
 
-            {getProjectListData?.map((data, index) => (
-              <CompanyTile key={index} index={index} name={data.project_name} />
-            ))}
+            <ScrollView>
+              {getProjectListData?.map((data, index) => (
+                <CompanyTile
+                  key={index}
+                  index={index}
+                  name={data.project_name}
+                />
+              ))}
+            </ScrollView>
           </View>
         </View>
+        <AppSize height={20} />
       </ScrollView>
-      {isLoading && <Loading />}
     </View>
+
+    // <View style={styles.container}>
+    //   <Appbar.Header
+    //     style={{
+    //       width: '100%',
+    //       backgroundColor: ColorConstants.primaryWhite,
+    //     }}>
+    //     <Appbar.BackAction onPress={() => navigation.goBack()} />
+    //     <Appbar.Content
+    //       title="Company Profile"
+    //       color={ColorConstants.primaryBlack}
+    //       titleStyle={{
+    //         fontWeight: '700',
+    //         fontSize: 20,
+    //       }}
+    //     />
+    //     <Appbar.Action
+    //       icon="pencil"
+    //       onPress={() => {
+    //         navigation.navigate('create_company');
+    //       }}
+    //     />
+    //     <Appbar.Action
+    //       icon="delete"
+    //       color={ColorConstants.highLightColor}
+    //       onPress={() => {}}
+    //     />
+    //   </Appbar.Header>
+    //   <ScrollView>
+    //     <AppSize height={20} />
+    //     <View
+    //       style={styles.imageContain}>
+    //       <View style={styles.imageContainer}>
+    //         {getCompanyData[0]?.profile_picture != null &&
+    //         getCompanyData[0]?.profile_picture.split('.').pop() === 'jpg' ? (
+    //           <Avatar
+    //             size={35}
+    //             rounded
+    //             renderPlaceholderContent={<ActivityIndicator />}
+    //             placeholderStyle={{
+    //               backgroundColor: ColorConstants.primaryWhite,
+    //             }}
+    //             source={{
+    //               uri: CompanyProfileImage + getCompanyData[0]?.profile_picture,
+    //             }}
+    //           />
+    //         ) : (
+    //           <Ionicons name={'business'} size={35} style={styles.image} />
+    //         )}
+    //       </View>
+    //     </View>
+    //     <AppSize height={20} />
+
+    //     <View />
+    //     <View
+    //       style={{
+    //         width: '100%',
+    //         flexDirection: 'row',
+    //         justifyContent: 'space-between',
+    //         alignItems: 'center',
+    //         paddingHorizontal: 10,
+    //         backgroundColor: ColorConstants.primaryWhite,
+    //       }}>
+    //       <Label name={getCompanyData[0]?.company_name} />
+    //     </View>
+    //     <View
+    //       style={{
+    //         paddingHorizontal: 10,
+    //         paddingVertical: 5,
+    //       }}>
+    //       <View style={styles.contactName}>
+    //         <Label name={'Contact Name'} />
+    //         <Tile
+    //           image={require('../../../assets/images/business.png')}
+    //           title={
+    //             getCompanyData[0]?.company_details[0]?.contact_name ??
+    //             'No Name Found'
+    //           }
+    //         />
+    //         <Tile
+    //           image={require('../../../assets/images/emails.png')}
+    //           title={
+    //             getCompanyData[0]?.company_details[0]?.contact_email ??
+    //             'No Email Found'
+    //           }
+    //         />
+    //         <Tile
+    //           image={require('../../../assets/images/phone.png')}
+    //           title={
+    //             getCompanyData[0]?.company_details[0]?.contact_number ??
+    //             'No Number Found '
+    //           }
+    //         />
+    //       </View>
+    //     </View>
+    //     {/* <View
+    //       style={{
+    //         paddingHorizontal: 10,
+    //         paddingVertical: 5,
+    //       }}>
+    //       <View style={styles.contactName}>
+    //         <Label name={'Company Project'} />
+
+    //         {getProjectListData?.map((data, index) => (
+    //           <CompanyTile key={index} index={index} name={data.project_name} />
+    //         ))}
+    //       </View>
+    //     </View> */}
+    //   </ScrollView>
+    //   {isLoading && <Loading />}
+    // </View>
   );
 };
 
@@ -186,11 +294,21 @@ const styles = StyleSheet.create({
   container: {
     height: '100%',
     width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignContent: 'center',
-    flexDirection: 'column',
     backgroundColor: ColorConstants.primaryWhite,
+  },
+  headerWidth: {
+    width: '100%',
+    backgroundColor: ColorConstants.primaryWhite,
+  },
+  headerText: {
+    fontWeight: '700',
+    fontSize: 17,
+    fontFamily: FontConstants.ragular,
+  },
+  imageContain: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginVertical: 15,
   },
   imageContainer: {
     height: 100,

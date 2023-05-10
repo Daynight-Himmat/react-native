@@ -11,6 +11,7 @@ import CompleteTaskIcon from '../../assets/images/complete.svg';
 import Assignee from '../../assets/images/assignee.svg';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import BottomSheet from './bottom_sheet';
+import {Ionicons} from './icons';
 
 const TaskOption = ({
   status,
@@ -31,7 +32,7 @@ const TaskOption = ({
           widget={<Priority height={15} widget={15} />}
           title={'Change Priority'}
           divider={0.5}
-          tailer={'ios-chevron-forward-outline'}
+          tailer={true}
           onPress={onPressPriority}
         />
       )}
@@ -41,7 +42,7 @@ const TaskOption = ({
           widget={<CompleteTaskIcon height={15} widget={15} />}
           title={'Mark as Complete'}
           divider={0.5}
-          tailer={'ios-chevron-forward-outline'}
+          tailer={true}
           onPress={onPressComplete}
         />
       ) : (
@@ -49,7 +50,7 @@ const TaskOption = ({
           widget={<Approved height={15} widget={15} />}
           title={'Mark as Approve'}
           divider={0.5}
-          tailer={'ios-chevron-forward-outline'}
+          tailer={true}
           onPress={onPressApproved}
         />
       )}
@@ -58,7 +59,7 @@ const TaskOption = ({
           widget={<Assignee height={15} widget={15} />}
           title={'Change Assignee'}
           divider={0.5}
-          tailer={'ios-chevron-forward-outline'}
+          tailer={true}
           onPress={onPressChangeAssignee}
         />
       ) : (
@@ -66,7 +67,7 @@ const TaskOption = ({
           widget={<Reopen height={15} widget={15} />}
           title={'Mask as Reopen'}
           divider={0.5}
-          tailer={'ios-chevron-forward-outline'}
+          tailer={true}
           onPress={onPressReopen}
         />
       )}
@@ -76,7 +77,7 @@ const TaskOption = ({
         title={'Delete Task'}
         textStyle={{color: ColorConstants.highLightColor}}
         divider={0.5}
-        tailer={'ios-chevron-forward-outline'}
+        tailer={true}
         color={ColorConstants.highLightColor}
         onPress={onPressDelete}
       />

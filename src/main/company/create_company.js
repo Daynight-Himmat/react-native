@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Text,
   StyleSheet,
+  ActivityIndicator,
 } from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Loading} from '../../components/no_data_found';
@@ -19,15 +20,18 @@ import {ApiConstants, BaseUrl} from '../../constants/api_constants';
 import axios from 'axios';
 import ToastMessage from '../../components/toast_message';
 import AppHeader from '../../components/app_header';
+import {Avatar} from '@rneui/themed';
+import ImageCropPicker from 'react-native-image-crop-picker';
 
-const CreateCompany = ({navigation}) => {
+const CreateCompany = ({navigation, route}) => {
+  const {companyData, comeFrom} = route.params;
   const [addMore, setAddMore] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [companyName, setCompanyName] = useState('');
   const [companyContactPerson, setContactPerson] = useState('');
   const [companyContactEmail, setContactEmail] = useState('');
   const [companyContactPhone, setContactPhone] = useState('');
-  const [company1ContactPerson, set1ContactPerson] = useState('No Name');
+  const [company1ContactPerson, set1ContactPerson] = useState('');
   const [company1ContactEmail, set1ContactEmail] = useState('');
   const [company1ContactPhone, set1ContactPhone] = useState('');
   const [companyLogo, setCompanyLogo] = useState('');
@@ -45,6 +49,7 @@ const CreateCompany = ({navigation}) => {
       : [companyContactEmail, company1ContactEmail];
 
   const createCompanyUrl = BaseUrl(ApiConstants.companyEdit);
+  const updateCompanyUrl = BaseUrl(ApiConstants.updateCompany);
 
   const validateEmail = validEmail => {
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -117,24 +122,28 @@ const CreateCompany = ({navigation}) => {
   const getCompanyDetails = async () => {
     try {
       if (validation()) {
+        const formData = new FormData();
+        formData.append('token', token);
+        formData.append('company_name', companyName);
+        formData.append('contact_name', name);
+        formData.append('contact_email', email);
+        formData.append('contact_number', number);
+        companyLogo === ''
+          ? formData.append('profile_picture', '')
+          : formData.append('profile_picture', {
+              uri: companyLogo,
+              type: 'image/jpg',
+              name: 'image',
+            });
         var token = await AsyncStorage.getItem('token');
         setLoading(true);
-        await axios
-          .post(createCompanyUrl, {
-            token: token,
-            company_name: companyName,
-            contact_name: name,
-            contact_number: number,
-            contact_email: email,
-            profile_picture: '',
-          })
-          .then(resposne => {
-            if (resposne.status === 200) {
-              setLoading(false);
-              ToastMessage.showMessage(resposne.data?.message);
-              navigation.goBack();
-            }
-          });
+        await axios.post(createCompanyUrl, formData).then(resposne => {
+          if (resposne.status === 200) {
+            setLoading(false);
+            ToastMessage.showMessage(resposne.data?.message);
+            navigation.goBack();
+          }
+        });
       }
     } catch (err) {
       console.log({error: err});
@@ -142,44 +151,148 @@ const CreateCompany = ({navigation}) => {
     }
   };
 
-  useEffect(() => {}, []);
+  const getUpdateCompanyDetails = async () => {
+    try {
+      if (validation()) {
+        var token = await AsyncStorage.getItem('token');
+        const contact =
+          addMore === false
+            ? comeFrom === 'Company Update'
+              ? companyData[0].company_details[0] !== null
+                ? [companyData[0].company_details[0].id]
+                : []
+              : companyData[0].company_details[1] !== null
+              ? [
+                  companyData[0].company_details[0].id,
+                  companyData[0].company_details[1].id,
+                ]
+              : []
+            : [];
+        const formData = new FormData();
+        formData.append('token', token);
+        formData.append('id', companyData[0].id);
+        formData.append('company_name', companyName);
+        formData.append('contact_name', name);
+        formData.append('contact_email', email);
+        formData.append('contact_number', number);
+        formData.append('contact_id', contact);
+        companyLogo === ''
+          ? formData.append('profile_picture', '')
+          : formData.append('profile_picture', {
+              uri: companyLogo,
+              type: 'image/jpg',
+              name: 'image',
+            });
+
+        // setLoading(true);
+        const response = await axios({
+          method: 'post',
+          url: updateCompanyUrl,
+          data: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log(response.data?.message);
+        // await axios.post(updateCompanyUrl, formData).then(resposne => {
+        //   if (resposne.status === 200) {
+        //     setLoading(false);
+        //     ToastMessage.showMessage(resposne.data?.message);
+        //     navigation.goBack();
+        //   }
+        // });
+      }
+    } catch (err) {
+      console.log({error: err});
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const updateCompanyData = () => {
+      if (comeFrom === 'Company Update') {
+        setCompanyName(companyData[0].company_name);
+        if (companyData[0].company_details[0] !== null) {
+          setContactPerson(
+            companyData[0].company_details[0].contact_name ?? '',
+          );
+          setContactEmail(
+            companyData[0].company_details[0].contact_email ?? '',
+          );
+          setContactPhone(
+            companyData[0].company_details[0].contact_number ?? '',
+          );
+        } else if (companyData[0].company_details[1] !== null) {
+          set1ContactPerson(
+            companyData[0].company_details[1].contact_name ?? '',
+          );
+          set1ContactEmail(
+            companyData[0].company_details[1].contact_email ?? '',
+          );
+          set1ContactPhone(
+            companyData[0].company_details[1].contact_number ?? '',
+          );
+        }
+      }
+    };
+    updateCompanyData();
+  }, [comeFrom, companyData]);
 
   return (
     <View style={styles.container}>
-      <AppHeader text={'Create Company'} navigate={()=> navigation.goBack()} />
-      <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-        }}>
+      <AppHeader
+        text={
+          comeFrom === 'Company Create' ? 'Create Company' : 'Update Company'
+        }
+        navigate={() => navigation.goBack()}
+      />
+      <ScrollView>
         <AppSize height={20} />
-        <View
-          style={{
-            width: '100%',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            alignContent: 'center',
-          }}>
-          <View style={styles.imageContainer}>
-            {/* {data.profile_image !== null &&
-        data.profile_image.split('.').pop() === 'jpg' ? (
-          <Image
-            style={styles.imageContainer}
-            source={{uri: data.profile_image}}
-          />
-        ) : ( */}
-            <Ionicons name={'business'} size={35} style={styles.image} />
-            {/* )} */}
-          </View>
+        <View style={styles.imageView}>
+          <TouchableOpacity style={styles.imageContain} onPress={() => {}}>
+            <View style={styles.imageContainer}>
+              {companyLogo !== '' ? (
+                <Avatar
+                  size={100}
+                  rounded
+                  renderPlaceholderContent={<ActivityIndicator />}
+                  placeholderStyle={{
+                    backgroundColor: ColorConstants.primaryWhite,
+                  }}
+                  source={{
+                    uri: companyLogo,
+                  }}
+                />
+              ) : (
+                <Ionicons name={'business'} size={35} style={styles.image} />
+              )}
+            </View>
+          </TouchableOpacity>
         </View>
         <AppSize height={10} />
-
-        <View style={styles.addLogo}>
-          <ViewProfileButton text={'Add Logo'} />
+        <View
+          style={{
+            alignSelf: 'center',
+          }}>
+          <ViewProfileButton
+            text={'Change Profile'}
+            onPress={() => {
+              ImageCropPicker.openPicker({
+                compressImageMaxWidth: 300,
+                compressImageMaxHeight: 300,
+                cropping: false,
+                multiple: false,
+              }).then(image => {
+                setCompanyLogo(image.path);
+              });
+            }}
+          />
         </View>
         <AppSize height={20} />
         <Label name={'Company Name'} />
         <TextInput
+          value={companyName}
           placeholder="Enter the company name"
           placeholderTextColor={ColorConstants.textLightBlack1}
           style={styles.inputText}
@@ -225,6 +338,7 @@ const CreateCompany = ({navigation}) => {
           <Label name={'Name'} />
 
           <TextInput
+            value={companyContactPerson}
             placeholder="Enter contact person name"
             placeholderTextColor={ColorConstants.textLightBlack1}
             style={styles.inputText}
@@ -232,6 +346,7 @@ const CreateCompany = ({navigation}) => {
           />
           <Label name={'Mobile Number'} />
           <TextInput
+            value={companyContactPhone}
             placeholder="Enter mobile number"
             placeholderTextColor={ColorConstants.textLightBlack1}
             style={styles.inputText}
@@ -241,6 +356,7 @@ const CreateCompany = ({navigation}) => {
           />
           <Label name={'Email'} />
           <TextInput
+            value={companyContactEmail}
             placeholder="Enter email Address"
             placeholderTextColor={ColorConstants.textLightBlack1}
             style={styles.inputText}
@@ -251,13 +367,11 @@ const CreateCompany = ({navigation}) => {
         {addMore ? <Label name={'Contact Person 02'} /> : <View />}
         <AppSize height={10} />
         {addMore ? (
-          <View
-            style={{
-              width: '100%',
-            }}>
+          <View>
             <Label name={'Name'} />
 
             <TextInput
+              value={company1ContactPerson}
               placeholder="Enter contact person name"
               placeholderTextColor={ColorConstants.textLightBlack1}
               style={styles.inputText}
@@ -265,6 +379,7 @@ const CreateCompany = ({navigation}) => {
             />
             <Label name={'Mobile Number'} />
             <TextInput
+              value={company1ContactPhone}
               placeholder="Enter mobile number"
               placeholderTextColor={ColorConstants.textLightBlack1}
               style={styles.inputText}
@@ -274,6 +389,7 @@ const CreateCompany = ({navigation}) => {
             />
             <Label name={'Email'} />
             <TextInput
+              value={company1ContactEmail}
               placeholder="Enter email Address"
               placeholderTextColor={ColorConstants.textLightBlack1}
               style={styles.inputText}
@@ -285,12 +401,16 @@ const CreateCompany = ({navigation}) => {
         )}
         <AppSize height={20} />
         <AppButton
-          text={'Create Company'}
+          text={
+            comeFrom === 'Company Update' ? 'Update Company' : 'Create Company'
+          }
           style={{
             backgroundColor: ColorConstants.buttonGreenColor,
           }}
           onPress={() => {
-            getCompanyDetails();
+            comeFrom === 'Company Update'
+              ? getUpdateCompanyDetails()
+              : getCompanyDetails();
           }}
         />
         <AppSize height={20} />
@@ -315,6 +435,11 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     alignItems: 'center',
     backgroundColor: ColorConstants.textHintColor,
+  },
+  imageView: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   image: {
     color: ColorConstants.primaryWhite,

@@ -8,6 +8,10 @@ import {ApiConstants, BaseUrl} from '../constants/api_constants';
 import {Loading} from '../components/no_data_found';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AppHeader from '../components/app_header';
+import { Label, LightText } from '../components/label';
+import FontConstants from '../constants/fonts';
+import ProfileDemo from '../components/profile_image_demo';
+import { PersonTile } from '../components/person_tile';
 
 const NotificationPage = ({navigation}) => {
   const [isLoading, setLoading] = useState(false);
@@ -88,6 +92,8 @@ const styles = StyleSheet.create({
   notificationText: {
     flex: 1,
     color: ColorConstants.primaryBlack,
+    fontFamily: FontConstants.light, 
+    fontSize: 14,
   },
 });
 

@@ -23,7 +23,7 @@ import {Loading} from '../components/no_data_found';
 const Tab = createBottomTabNavigator();
 
 const DashBoard = ({navigation}) => {
-  const [token, setToken] = useState('');
+  const [getToken, setToken] = useState('');
   const [loading, setLoading] = useState(true);
   const [get_user, setUserData] = useState('');
   const [index, setIndex] = useState('');
@@ -32,9 +32,9 @@ const DashBoard = ({navigation}) => {
 
   const checking = async () => {
     try {
+      const isLoadIn = await AsyncStorage.getItem('loggedIn');
       setLoading(true);
       const asyncStorageRes = await AsyncStorage.getItem('token');
-      setToken(asyncStorageRes);
       await axios
         .post(url, {
           token: asyncStorageRes,
@@ -183,7 +183,10 @@ const DashBoard = ({navigation}) => {
                     case 1:
                       return navigation.navigate('create_project');
                     case 3:
-                      return navigation.navigate('create_company');
+                      return navigation.navigate('create_company', {
+                        companyData: [],
+                        comeFrom: 'Company Create',
+                      });
                     case 4:
                       return navigation.navigate('create_profile');
                     default:

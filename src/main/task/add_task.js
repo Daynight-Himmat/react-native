@@ -150,47 +150,47 @@ const AddTask = ({navigation}) => {
     setSearchData(remove);
   };
 
-  const checkListTile = (data, index) => {
-    return (
-      <View
-        key={index}
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          alignItems: 'center',
-        }}>
-        <Checkbox.Item
-          label={data.name}
-          labelStyle={{
-            width: '90%',
-          }}
-          status={
-            selectUser.length > 0
-              ? searchUser.map(e => e === data.id) === checkedItems[data.id]
-                ? 'checked'
-                : 'unchecked'
-              : checkedItems[data.id]
-              ? 'checked'
-              : 'unchecked'
-          }
-          onPress={() => {
-            setCheckedItems({
-              ...checkedItems,
-              [data.id]: !checkedItems[data.id],
-            });
-            if (!checkedItems[data.id]) {
-              searchUser.push(data.id);
-              setSelectedAssignee(searchUser);
-            } else {
-              searchUser.pop(data.id);
-              setSelectedAssignee(searchUser);
-            }
-            console.log(checkedItems);
-          }}
-        />
-      </View>
-    );
-  };
+  // const checkListTile = (data, index) => {
+  //   return (
+  //     <View
+  //       key={index}
+  //       style={{
+  //         flex: 1,
+  //         flexDirection: 'row',
+  //         alignItems: 'center',
+  //       }}>
+  //       <Checkbox.Item
+  //         label={data.name}
+  //         labelStyle={{
+  //           width: '90%',
+  //         }}
+  //         status={
+  //           selectUser.length > 0
+  //             ? searchUser.map(e => e === data.id) === checkedItems[data.id]
+  //               ? 'checked'
+  //               : 'unchecked'
+  //             : checkedItems[data.id]
+  //             ? 'checked'
+  //             : 'unchecked'
+  //         }
+  //         onPress={() => {
+  //           setCheckedItems({
+  //             ...checkedItems,
+  //             [data.id]: !checkedItems[data.id],
+  //           });
+  //           if (!checkedItems[data.id]) {
+  //             searchUser.push(data.id);
+  //             setSelectedAssignee(searchUser);
+  //           } else {
+  //             searchUser.pop(data.id);
+  //             setSelectedAssignee(searchUser);
+  //           }
+  //           console.log(checkedItems);
+  //         }}
+  //       />
+  //     </View>
+  //   );
+  // };
 
   useEffect(() => {
     const initCheckedItems = {};
@@ -233,14 +233,14 @@ const AddTask = ({navigation}) => {
               onSelect={() => setModalVisible(!modalVisible)}
             />
           </Modal>
-          <Label name={'Title'} />
+          <Label name={'Title'} style={styles.labelmargin} />
           <TextInput
             placeholder="Enter task title"
             placeholderTextColor={ColorConstants.textLightBlack1}
             style={styles.inputText}
             onChangeText={text => setTitle(text)}
           />
-          <Label name={'Description'} />
+          <Label name={'Description'} style={styles.labelmargin} />
           <TextInput
             placeholder="Enter task Description"
             multiline={true}
@@ -249,7 +249,7 @@ const AddTask = ({navigation}) => {
             onChangeText={text => setDescription(text)}
           />
 
-          <Label name={'Project'} />
+          <Label name={'Project'} style={styles.labelmargin}/>
           <SelectList
             data={project.map((data, _index) => data?.project_name)}
             setSelected={val => {
@@ -278,7 +278,7 @@ const AddTask = ({navigation}) => {
             placeholderTextColor={ColorConstants.textLightBlack1}
             boxStyles={styles.boxStyles}
           />
-          <Label name={'Assignee'} />
+          <Label name={'Assignee'} style={styles.labelmargin}/>
           <View
             style={{
               flexDirection: 'column',
@@ -503,6 +503,10 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: ColorConstants.primaryWhite,
     paddingHorizontal: 10,
+  },
+  labelmargin: {
+    marginVertical: 5,
+    marginTop: 10,
   },
   inputText: {
     borderColor: ColorConstants.textLightBlack1,

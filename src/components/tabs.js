@@ -36,11 +36,10 @@ const InnerTab = ({
 const styles = (condition, textCondition) =>
   StyleSheet.create({
     tabContainer: {
-      height: 45,
+      height: 44,
       flexDirection: 'row',
       width: '50%',
       justifyContent: 'center',
-      alignSelf: 'center',
       alignItems: 'center',
       borderRadius: 3,
       borderColor: textCondition,
@@ -57,21 +56,21 @@ const styles = (condition, textCondition) =>
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      alignContent: 'center',
     },
     inner_text: {
       color: textCondition,
       justifyContent: 'center',
       alignItems: 'center',
-      alignContent: 'center',
       fontWeight: '600',
       paddingBottom: 2,
+      fontFamily: FontConstants.semiBold
     },
     inner_bottom_container: {
       height: 5,
       width: '100%',
       paddingHorizontal: 2,
       paddingVertical: 2,
+      marginTop: 2,
       borderRadius: 100,
       backgroundColor: condition,
     },

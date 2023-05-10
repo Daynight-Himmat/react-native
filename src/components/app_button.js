@@ -14,7 +14,7 @@ const AppButton = ({
       activeOpacity={0.6}
       style={[styles.button, style]}
       onPress={onTap}>
-      <Text style={[styles.buttonText, textStyle]}>{buttonName}</Text>
+      <Text style={[styles.buttonText, {...textStyle}]}>{buttonName}</Text>
     </TouchableOpacity>
   );
 };
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: ColorConstants.primaryWhite,
     textAlign: 'center',
-    fontFamily: FontConstants.semiBold
+    fontFamily: FontConstants.semiBold,
   },
 });
 

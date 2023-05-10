@@ -63,10 +63,7 @@ const CompanyScreen = ({navigation}) => {
     <View style={styles.container}>
       <SearchBox onChangeText={handleSearch} />
       {getSearchQuery.length > 0 ? (
-        <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-          }}>
+        <ScrollView>
           {getSearchQuery.map((data, index) => (
             <CompanyTile
               key={index}

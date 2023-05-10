@@ -26,45 +26,43 @@ const getColor = data => {
 const TaskTile = ({index, data, onPress, iconPress}) => {
   var currentDate = new movement().format('MMM DD, yyyy');
 
-  
-
   return (
     <TouchableOpacity key={data.title} onPress={onPress}>
-      <View style={styles(data).tile}>
-        <View style={styles(data).tile_task_indicator}>
+      <View style={styles.tile}>
+        <View
+          style={[
+            styles.tile_task_indicator,
+            {backgroundColor: getColor(data)},
+          ]}>
           {data.task_status === 'Completed' ? (
-            <View
-              style={{
-                alignContent: 'center',
-                justifyContent: 'center',
-              }}>
+            <View>
               <Ionicons
                 name={'checkmark-done-sharp'}
                 color={ColorConstants.primaryWhite}
+                size={8}
               />
             </View>
           ) : (
-            <View style={styles(data).indicator_task_pedding} />
+            <View style={styles.indicator_task_pedding} />
           )}
         </View>
-        <View style={{padding: 5}} />
-        <View style={styles(data).text_column}>
-          <Text style={styles(data).task_title}>{data?.task_title}</Text>
-          <Text style={styles(data).task_project}>{data.project_name}</Text>
+
+        <View style={styles.text_column}>
+          <Text style={styles.task_title}>{data?.task_title}</Text>
+          <Text style={styles.task_project}>{data.project_name}</Text>
         </View>
-        <View style={{padding: 5}} />
         {data.task_status === 'Completed' ? (
-          <View style={styles(data).column}>
-            <View style={styles(data).row}>
+          <View>
+            <View style={styles.row}>
               <Ionicons
                 name={'create-outline'}
                 color={ColorConstants.textLightBlack1}
               />
-              <Text style={styles(data).task_date}>
+              <Text style={styles.task_date}>
                 {movement(data.created_at).format('DD MMM')}
               </Text>
             </View>
-            <View style={styles(data).row}>
+            <View style={styles.row}>
               <Ionicons
                 name={'checkmark-done-sharp'}
                 color={
@@ -76,7 +74,7 @@ const TaskTile = ({index, data, onPress, iconPress}) => {
               />
               <Text
                 style={[
-                  styles(data).task_date,
+                  styles.task_date,
                   {
                     color:
                       currentDate ===
@@ -90,97 +88,83 @@ const TaskTile = ({index, data, onPress, iconPress}) => {
             </View>
           </View>
         ) : (
-          <View style={styles(data).column}>
-            <View style={styles(data).row}>
+          <View>
+            <View style={styles.row}>
               <Ionicons
                 name={'create-outline'}
                 color={ColorConstants.textLightBlack1}
               />
-              <Text style={styles(data).task_date}>
+              <Text style={styles.task_date}>
                 {movement(data.created_at).format('DD MMM')}
               </Text>
             </View>
           </View>
         )}
-        <View style={{padding: 5}} />
-        <TouchableOpacity onPress={iconPress} style={styles.iconButton}>
-          <Feather
-            name={'more-vertical'}
-            color={ColorConstants.textDarkBlack}
-            size={18}
-          />
-        </TouchableOpacity>
+        <IconButton
+          icon={'dots-vertical'}
+          onPress={iconPress}
+          size={18}
+          style={styles.iconButton}
+        />
       </View>
     </TouchableOpacity>
   );
 };
 
-const styles = data =>
-  StyleSheet.create({
-    tile: {
-      flexDirection: 'row',
-      justifyContent: 'flex-start',
-      alignItems: 'center',
-      padding: 10,
-      borderBottomWidth: 0.5,
-      borderBottomColor: ColorConstants.textHintColor,
-    },
-    tile_task_indicator: {
-      height: 12,
-      width: 12,
-      borderRadius: 100,
-      justifyContent: 'center',
-      alignItems: 'center',
-      alignContent: 'center',
-      backgroundColor: getColor(data),
-      // backgroundColor:
-      //   data.task_status === 'Active'
-      //     ? data.priority === 'High'
-      //       ? ColorConstants.highPriorityColor
-      //       : ColorConstants.lowPriorityColor
-      //     : data.task_status === 'Completed'
-      //     ? ColorConstants.buttonGreenColor
-      //     : ColorConstants.buttonGreenColor,
-    },
-    indicator_task_pedding: {
-      height: 5,
-      width: 5,
-      borderRadius: 100,
-      backgroundColor: ColorConstants.primaryWhite,
-    },
-    text_column: {
-      flex: 1,
-      flexDirection: 'column',
-      justifyContent: 'flex-start',
-      alignItems: 'flex-start',
-      alignContent: 'flex-start',
-    },
-    task_title: {
-      color: ColorConstants.textDarkBlack,
-      fontSize: 14,
-      fontWeight: '400',
-    },
-    task_project: {
-      color: ColorConstants.textLightBlack1,
-      fontSize: 10,
-      fontWeight: '400',
-    },
-    task_date: {
-      color: ColorConstants.textLightBlack1,
-      fontSize: 10,
-      fontWeight: '400',
-    },
-    column: {
-      flexDirection: 'column',
-    },
-    row: {
-      flexDirection: 'row',
-    },
-    iconButton: {
-      width: 30,
-      justifyContent: 'flex-end',
-      alignItems: 'flex-end',
-    },
-  });
+const styles = StyleSheet.create({
+  tile: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 0.5,
+    borderBottomColor: ColorConstants.textHintColor,
+  },
+  tile_task_indicator: {
+    height: 12,
+    width: 12,
+    borderRadius: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  indicator_task_pedding: {
+    height: 5,
+    width: 5,
+    borderRadius: 100,
+    backgroundColor: ColorConstants.primaryWhite,
+  },
+  text_column: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  task_title: {
+    color: ColorConstants.textDarkBlack,
+    fontSize: 14,
+    fontWeight: '400',
+  },
+  task_project: {
+    color: ColorConstants.textLightBlack1,
+    fontSize: 10,
+    fontWeight: '400',
+  },
+  task_date: {
+    color: ColorConstants.textLightBlack1,
+    fontSize: 10,
+    fontWeight: '400',
+  },
+  column: {
+    flexDirection: 'column',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+  },
+  iconButton: {
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+  },
+});
 
 export default TaskTile;

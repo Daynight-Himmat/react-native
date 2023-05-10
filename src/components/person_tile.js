@@ -23,17 +23,19 @@ const PersonTile = ({index, image, title, subTitle, tilePress, imagePress}) => {
         <View style={styles.lite}>
           <TouchableOpacity onPress={imagePress}>
             {image != null && image.split('.').pop() === 'jpg' ? (
-              <Avatar
-                size={30}
-                rounded
-                renderPlaceholderContent={<ActivityIndicator />}
-                placeholderStyle={{
-                  backgroundColor: ColorConstants.primaryWhite,
-                }}
-                source={{
-                  uri: image,
-                }}
-              />
+              <View>
+                <Avatar
+                  size={35}
+                  rounded
+                  renderPlaceholderContent={<ActivityIndicator />}
+                  placeholderStyle={{
+                    backgroundColor: ColorConstants.primaryWhite,
+                  }}
+                  source={{
+                    uri: image,
+                  }}
+                />
+              </View>
             ) : (
               <ProfileDemo
                 containerSize={{
@@ -44,10 +46,8 @@ const PersonTile = ({index, image, title, subTitle, tilePress, imagePress}) => {
             )}
           </TouchableOpacity>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>{title}</Text>
-            <Text style={styles.subTitle}>
-              {subTitle != null ? subTitle : 'No Designation'}
-            </Text>
+            <Label name={title} />
+            {subTitle !== null && <LightText1 lightText1={subTitle} />}
           </View>
         </View>
         <View style={styles.divider} />
@@ -60,7 +60,7 @@ const Tile = ({
   image,
   title,
   widget: leading,
-  tailer: tailerWidget,
+  tailer,
   divider,
   textStyle,
   color,
@@ -78,10 +78,12 @@ const Tile = ({
           />
         )}
         <AppSize width={10} />
-        <Text style={[styles.tile_text_style, {...textStyle}]}>{title}</Text>
-        {tailerWidget && (
+        <View style={{flex: 1}}>
+          <Label name={title} style={textStyle} />
+        </View>
+        {tailer === true && (
           <Ionicons
-            name={tailerWidget}
+            name={'ios-chevron-forward-outline'}
             color={color ?? ColorConstants.primaryBlack}
           />
         )}
@@ -93,42 +95,15 @@ const Tile = ({
 
 const TimeTile = ({color, label, time, type}) => {
   return (
-    <View style={timeTilestyle(color, type).row}>
-      <View style={timeTilestyle(color, type).calenderStyle}>
-        {type === 'date' ? (
-          <Ionicons name={'calendar'} size={24} color={color} />
-        ) : (
-          <Ionicons
-            name={'person-sharp'}
-            // size={24}
-            color={ColorConstants.primaryWhite}
-          />
-        )}
+    <View style={timeTilestyle.row}>
+      <View style={[timeTilestyle.calenderStyle, {borderColor: color}]}>
+        <Ionicons name={'calendar'} size={18} color={color} />
       </View>
       <AppSize width={10} />
-      {type === 'date' ? (
-        <View style={timeTilestyle(color, type).column}>
-          <Label name={label} />
-          <LightText1 lightText1={time} color={color} />
-        </View>
-      ) : (
-        <View style={timeTilestyle(color, type).column}>
-          <Label name={label} />
-          <View
-            style={{
-              width: '80%',
-              paddingRight: 20,
-            }}>
-            <Text
-              style={{
-                color: ColorConstants.textHintColor,
-                fontSize: 12,
-              }}>
-              {time}
-            </Text>
-          </View>
-        </View>
-      )}
+      <View>
+        <Label name={label} />
+        <LightText1 lightText1={time} color={color} />
+      </View>
     </View>
   );
 };
@@ -165,41 +140,30 @@ const TimeContainer = ({dateLabel, date, style, color}) => {
 
 export {PersonTile, Tile, TimeTile, TimeContainer};
 
-const timeTilestyle = (color, type) =>
-  StyleSheet.create({
-    column: {
-      width: '100%',
-      paddingRight: 0,
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      alignContent: 'center',
-    },
-    row: {
-      width: '100%',
-      flexDirection: 'row',
-      alignItems: 'center',
-      alignContent: 'center',
-      paddingVertical: 10,
-      paddingHorizontal: 10,
-      justifyContent: 'flex-start',
-    },
-    calenderStyle: {
-      height: 40,
-      width: 40,
-      borderWidth: 1,
-      borderColor: type === 'date' ? color : ColorConstants.textLightBlack1,
-      borderRadius: 100,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor:
-        type === 'date' ? ColorConstants.white : ColorConstants.textLightBlack1,
-    },
-  });
+const timeTilestyle = StyleSheet.create({
+  row: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignContent: 'center',
+    paddingVertical: 10,
+    justifyContent: 'flex-start',
+  },
+  calenderStyle: {
+    height: 40,
+    width: 40,
+    borderWidth: 1,
+    borderColor: ColorConstants.textLightBlack1,
+    borderRadius: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: ColorConstants.primaryWhite,
+  },
+});
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 1,
-    flexDirection: 'column',
+    paddingVertical: 2,
     elevation: 10,
   },
   time_Container: {
@@ -228,12 +192,9 @@ const styles = StyleSheet.create({
   },
   lite: {
     height: 60,
-    width: '100%',
-    paddingHorizontal: 10,
     backgroundColor: ColorConstants.primaryWhite,
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    alignContent: 'center',
     alignItems: 'center',
   },
   imageContainer: {
@@ -252,19 +213,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   titleContainer: {
-    width: '100%',
     paddingHorizontal: 10,
-    flexDirection: 'column',
   },
   title: {
     fontSize: 14,
     fontWeight: '600',
     color: ColorConstants.primaryBlack,
+    fontFamily: FontConstants.semiBold,
   },
   subTitle: {
     fontSize: 12,
     fontWeight: '400',
     color: ColorConstants.teamHiColor,
+    fontFamily: FontConstants.light,
   },
   divider: {
     height: 0.6,
@@ -272,7 +233,6 @@ const styles = StyleSheet.create({
     backgroundColor: ColorConstants.textLightBlack3,
   },
   tile_container: {
-    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
