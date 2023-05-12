@@ -1,21 +1,19 @@
 import React, {useState, useEffect, useCallback, useRef} from 'react';
-import {View, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, ScrollView} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
-import {Appbar, Text, Icon} from 'react-native-paper';
+import {Appbar} from 'react-native-paper';
 import {InnerTab} from '../../components/tabs';
 import axios from 'axios';
-import {ApiConstants, BaseUrl, BaseUrl1} from '../../constants/api_constants';
+import {ApiConstants, BaseUrl1} from '../../constants/api_constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Loading, NoData} from '../../components/no_data_found';
-import TaskTile from '../../components/task_tile';
-import {Feather} from '../../components/icons';
 import movement from 'moment';
 import BottomSheetConditions from '../../components/bottom_sheet_with_condition';
 import ToastMessage from '../../components/toast_message';
 import AllTask from '../tabs/task_type/all_task';
 import Dividers from '../../components/divider';
 import CommanFunctions from '../../components/comman_functions';
-
+import FontConstants from '../../constants/fonts';
 
 const ProjectPageScreen = ({navigation, route}) => {
   const {data} = route.params;
@@ -175,7 +173,6 @@ const ProjectPageScreen = ({navigation, route}) => {
   }, [getProjectsTaskList]);
 
   return (
-   
     <View style={styles.container}>
       <Appbar.Header style={styles.app_bar_header}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
@@ -197,7 +194,10 @@ const ProjectPageScreen = ({navigation, route}) => {
           icon="shape-square-plus"
           color={ColorConstants.primaryBlack}
           onPress={() => {
-            navigation.navigate('add_task');
+            navigation.navigate('add_task', {
+              data: [],
+              comeFrom: 'create_Task',
+            });
           }}
         />
       </Appbar.Header>
@@ -517,8 +517,9 @@ const styles = StyleSheet.create({
     backgroundColor: ColorConstants.primaryWhite,
   },
   app_bar_title: {
-    fontWeight: '700',
+    fontWeight: '600',
     fontSize: 17,
+    fontFamily: FontConstants.semiBold
   },
   inner_tab_view_style: {
     height: 30,

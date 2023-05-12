@@ -19,12 +19,14 @@ import {ApiConstants, BaseUrl} from '../constants/api_constants';
 import {FAB} from 'react-native-paper';
 import AddTask from './task/add_task';
 import {Loading} from '../components/no_data_found';
+import {useFocusEffect} from '@react-navigation/native';
+import FontConstants from '../constants/fonts';
 
 const Tab = createBottomTabNavigator();
 
 const DashBoard = ({navigation}) => {
   const [getToken, setToken] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [get_user, setUserData] = useState('');
   const [index, setIndex] = useState('');
 
@@ -32,9 +34,8 @@ const DashBoard = ({navigation}) => {
 
   const checking = async () => {
     try {
-      const isLoadIn = await AsyncStorage.getItem('loggedIn');
-      setLoading(true);
       const asyncStorageRes = await AsyncStorage.getItem('token');
+      setToken(asyncStorageRes);
       await axios
         .post(url, {
           token: asyncStorageRes,
@@ -43,21 +44,13 @@ const DashBoard = ({navigation}) => {
           if (response.status === 200) {
             setUserData(response.data?.user);
             AsyncStorage.setItem('user_id', `${response.data?.user.id}`);
-            setLoading(false);
             // console.log(response.data);
           }
         });
     } catch (error) {
-      setLoading(false);
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    setTimeout(() => {
-      checking();
-    }, 10);
-  }, []);
 
   return (
     <View
@@ -80,71 +73,7 @@ const DashBoard = ({navigation}) => {
           name="home_page"
           component={HomeScreen}
           options={{
-            headerShown: true,
-            headerTitle: `Hi ${get_user.name}`,
-            headerTitleStyle: styles.headerTitleStyle,
-            headerBackTitle: 'Back',
-            headerRight: () => (
-              <View style={styles.iconList}>
-                {get_user.role_id === 1 ? (
-                  <TouchableOpacity onPress={() => {}}>
-                    <Feather name={'mail'} color={'black'} size={20} />
-                  </TouchableOpacity>
-                ) : (
-                  <View />
-                )}
-                <View
-                  style={{
-                    paddingHorizontal: 5,
-                  }}
-                />
-                <Feather name={'download'} color={'black'} size={20} />
-                <View
-                  style={{
-                    paddingHorizontal: 5,
-                  }}
-                />
-                <TouchableOpacity onPress={() => navigation.navigate('search')}>
-                  <SearchIcon height={20} width={20} />
-                </TouchableOpacity>
-                <View
-                  style={{
-                    paddingHorizontal: 5,
-                  }}
-                />
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('notification')}>
-                  <Notification height={20} width={20} />
-                </TouchableOpacity>
-                <View
-                  style={{
-                    paddingHorizontal: 5,
-                  }}
-                />
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate('my_account', {
-                      data: get_user,
-                    });
-                  }}>
-                  <View style={styles.imageContainer}>
-                    {get_user.profile_image != null &&
-                    get_user.profile_image.split('.').pop() === 'jpg' ? (
-                      <Image
-                        style={styles.imageContainer}
-                        source={{uri: get_user.profile_image}}
-                      />
-                    ) : (
-                      <Ionicons
-                        name={'person-sharp'}
-                        size={10}
-                        style={styles.image}
-                      />
-                    )}
-                  </View>
-                </TouchableOpacity>
-              </View>
-            ),
+            headerShown: false,
             tabBarIcon: ({color, size}) => (
               <Foundation name={'home'} size={size} color={color} />
             ),
@@ -181,7 +110,7 @@ const DashBoard = ({navigation}) => {
                     case 0:
                       return navigation.navigate('add_task', {
                         data: [],
-                        comeFrom : 'create_Task'
+                        comeFrom: 'create_Task',
                       });
                     case 1:
                       return navigation.navigate('create_project');
@@ -239,7 +168,11 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     elevation: 10,
   },
-  headerTitleStyle: {fontSize: 17, fontWeight: '600'},
+  headerTitleStyle: {
+    fontSize: 17,
+    fontWeight: '600',
+    fontFamily: FontConstants.semiBold,
+  },
   lite: {
     height: 60,
     width: '100%',

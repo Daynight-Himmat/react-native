@@ -55,7 +55,8 @@ const AddTask = ({navigation, route}) => {
 
   const url = BaseUrl(ApiConstants.myProjectList);
   const url1 = BaseUrl(ApiConstants.projectWiseMember);
-  const addTask = BaseUrl(ApiConstants.addTask);
+  const addTaskUrl = BaseUrl(ApiConstants.addTask);
+  const updateTaskUrl = BaseUrl(ApiConstants.taskUpdate);
   const refRBSheet = useRef();
   var date = moment().utcOffset('+05:30').format('YYYY-MM-DD');
 
@@ -116,7 +117,7 @@ const AddTask = ({navigation, route}) => {
         setLoading(true);
         const token = await AsyncStorage.getItem('token');
         const user_Id = await AsyncStorage.getItem('user_id');
-        const response = await axios.post(addTask, {
+        const response = await axios.post(addTaskUrl, {
           token: token,
           task_title: title,
           priority: priority,
@@ -143,55 +144,46 @@ const AddTask = ({navigation, route}) => {
     }
   };
 
+  const updateTask = async () => {
+    try {
+      if (!title) {
+        ToastMessage.showMessage('Title is required');
+      } else {
+        setLoading(true);
+        const token = await AsyncStorage.getItem('token');
+        const user_Id = await AsyncStorage.getItem('user_id');
+        const response = await axios.post(updateTaskUrl, {
+          token: token,
+          task_id: data.id,
+          task_title: title,
+          priority: priority,
+          task_deadline: getDeadline,
+          assigned_status: searchUser.length === 0 ? 'No' : 'Yes',
+          description: description,
+          assined_ids: data.assined_ids,
+          project_id: getProjectId,
+          id: user_Id,
+        });
+        if (response.status === 200) {
+          console.log(response.data);
+          ToastMessage.showMessage(response.data?.message);
+          setLoading(false);
+          navigation.navigate('task_details_screen', {
+            data: data,
+          });
+        }
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log('this is the error===', error);
+    }
+  };
+
   const handleRemove = id => {
     const remove = searchUser.filter(data => data.id !== id);
     setSearchData(remove);
   };
 
-  // const checkListTile = (data, index) => {
-  //   return (
-  //     <View
-  //       key={index}
-  //       style={{
-  //         flex: 1,
-  //         flexDirection: 'row',
-  //         alignItems: 'center',
-  //       }}>
-  //       <Checkbox.Item
-  //         label={data.name}
-  //         labelStyle={{
-  //           width: '90%',
-  //         }}
-  //         status={
-  //           selectUser.length > 0
-  //             ? searchUser.map(e => e === data.id) === checkedItems[data.id]
-  //               ? 'checked'
-  //               : 'unchecked'
-  //             : checkedItems[data.id]
-  //             ? 'checked'
-  //             : 'unchecked'
-  //         }
-  //         onPress={() => {
-  //           setCheckedItems({
-  //             ...checkedItems,
-  //             [data.id]: !checkedItems[data.id],
-  //           });
-  //           if (!checkedItems[data.id]) {
-  //             searchUser.push(data.id);
-  //             setSelectedAssignee(searchUser);
-  //           } else {
-  //             searchUser.pop(data.id);
-  //             setSelectedAssignee(searchUser);
-  //           }
-  //           console.log(checkedItems);
-  //         }}
-  //       />
-  //     </View>
-  //   );
-  // };
-
-  console.log(data);
-  
   useEffect(() => {
     const initCheckedItems = {};
     assignee.forEach(item => {
@@ -216,7 +208,10 @@ const AddTask = ({navigation, route}) => {
 
   return (
     <SafeAreaView>
-      <AppHeader text={'Add Task'} navigate={() => navigation.goBack()} />
+      <AppHeader
+        text={comeFrom === 'update_task' ? 'Update Task' : 'Add Task'}
+        navigate={() => navigation.goBack()}
+      />
       <View
         style={[
           styles.container,
@@ -264,87 +259,91 @@ const AddTask = ({navigation, route}) => {
             onChangeText={text => setDescription(text)}
           />
 
-          <Label name={'Project'} style={styles.labelmargin} />
-          <SelectList
-            data={project.map((data, _index) => data?.project_name)}
-            setSelected={val => {
-              var id;
-              for (var i = 0; i < project.length; i++) {
-                if (project[i].project_name === val) {
-                  id = project[i].id;
-                }
-              }
-              selectProject(val);
-              console.log('---', val);
-              console.log('---id ', id);
-              setProjectId(id);
-              getAssignee({id: id});
-            }}
-            search={false}
-            notFoundText={'No Project Found'}
-            dropdownTextStyles={styles.dropdownTextStyles}
-            placeholder={'Select Project'}
-            inputStyles={styles.inputStyles}
-            onSelect={() => {
-              // console.log('---get Project', getProject);
-            }}
-            fontFamily={'400'}
-            color={ColorConstants.primaryBlack}
-            placeholderTextColor={ColorConstants.textLightBlack1}
-            boxStyles={styles.boxStyles}
-          />
-          <Label name={'Assignee'} style={styles.labelmargin} />
-          <View
-            style={{
-              flexDirection: 'column',
-            }}>
-            {assignee.length > 0 && searchUser.length > 0 ? (
-              <ScrollView
-                horizontal={true}
-                contentContainerStyle={{
-                  flexGrow: 1,
+          {comeFrom !== 'update_task' && (
+            <View>
+              <Label name={'Project'} style={styles.labelmargin} />
+              <SelectList
+                data={project.map((data, _index) => data?.project_name)}
+                setSelected={val => {
+                  var id;
+                  for (var i = 0; i < project.length; i++) {
+                    if (project[i].project_name === val) {
+                      id = project[i].id;
+                    }
+                  }
+                  selectProject(val);
+                  console.log('---', val);
+                  console.log('---id ', id);
+                  setProjectId(id);
+                  getAssignee({id: id});
+                }}
+                search={false}
+                notFoundText={'No Project Found'}
+                dropdownTextStyles={styles.dropdownTextStyles}
+                placeholder={getProject && 'Select Project'}
+                inputStyles={styles.inputStyles}
+                onSelect={() => {
+                  console.log('---get Project', getProject);
+                }}
+                fontFamily={'400'}
+                color={ColorConstants.primaryBlack}
+                placeholderTextColor={ColorConstants.textLightBlack1}
+                boxStyles={styles.boxStyles}
+              />
+              <Label name={'Assignee'} style={styles.labelmargin} />
+              <View
+                style={{
+                  flexDirection: 'column',
                 }}>
-                {searchUser.length > 0 ? (
-                  searchUser.map((userid, i) => (
-                    <View
-                      key={i}
-                      style={{
-                        flexDirection: 'row',
-                      }}>
-                      <View style={styles.assigneeChip}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            handleRemove(userid.id);
-                            checkedItems[userid.id] = false;
-                            console.log(searchUser);
-                          }}
-                          style={styles.cancelButton}>
-                          <MaterialIcons
-                            name={'clear'}
-                            color={ColorConstants.primaryWhite}
-                            size={12}
-                          />
-                        </TouchableOpacity>
-                        <Text style={styles.chipText}>{userid.name}</Text>
-                      </View>
-                      <AppSize width={10} />
-                    </View>
-                  ))
+                {assignee.length > 0 && searchUser.length > 0 ? (
+                  <ScrollView
+                    horizontal={true}
+                    contentContainerStyle={{
+                      flexGrow: 1,
+                    }}>
+                    {searchUser.length > 0 ? (
+                      searchUser.map((userid, i) => (
+                        <View
+                          key={i}
+                          style={{
+                            flexDirection: 'row',
+                          }}>
+                          <View style={styles.assigneeChip}>
+                            <TouchableOpacity
+                              onPress={() => {
+                                handleRemove(userid.id);
+                                checkedItems[userid.id] = false;
+                                console.log(searchUser);
+                              }}
+                              style={styles.cancelButton}>
+                              <MaterialIcons
+                                name={'clear'}
+                                color={ColorConstants.primaryWhite}
+                                size={12}
+                              />
+                            </TouchableOpacity>
+                            <Text style={styles.chipText}>{userid.name}</Text>
+                          </View>
+                          <AppSize width={10} />
+                        </View>
+                      ))
+                    ) : (
+                      <View />
+                    )}
+                  </ScrollView>
                 ) : (
-                  <View />
+                  <View style={{flex: 1, flexDirection: 'column'}} />
                 )}
-              </ScrollView>
-            ) : (
-              <View style={{flex: 1, flexDirection: 'column'}} />
-            )}
-          </View>
-          <TouchableOpacity
-            onPress={() => {
-              refRBSheet.current.show();
-            }}
-            style={styles.add}>
-            <Text style={styles.add_text}>+ Add</Text>
-          </TouchableOpacity>
+              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  refRBSheet.current.show();
+                }}
+                style={styles.add}>
+                <Text style={styles.add_text}>+ Add</Text>
+              </TouchableOpacity>
+            </View>
+          )}
           <BottomSheet
             refer={refRBSheet}
             backButton={() => refRBSheet.current.hide()}
@@ -441,10 +440,11 @@ const AddTask = ({navigation, route}) => {
                     }}
                   />
                 </View>
+                <AppSize height={20} />
               </View>
             }
           />
-          <AppSize height={20} />
+
           <View style={styles.radiobuttonContainer}>
             <View>
               <Label name={'Priority'} />
@@ -497,9 +497,9 @@ const AddTask = ({navigation, route}) => {
           </View>
           <AppSize height={20} />
           <AppButton
-            text={'Add Task'}
+            text={comeFrom === 'update_task' ? 'Update Task' : 'Add Task'}
             onPress={() => {
-              submitTask();
+              comeFrom === 'update_task' ? updateTask() : submitTask();
             }}
           />
         </ScrollView>

@@ -1,6 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect, useRef} from 'react';
-import {View, StyleSheet, ScrollView} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,12 +21,20 @@ import ToastMessage from '../../components/toast_message';
 import Dividers from '../../components/divider';
 import BottomSheetConditions from '../../components/bottom_sheet_with_condition';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {useFocusEffect} from '@react-navigation/native';
+import {Feather, Ionicons} from '../../components/icons';
+import Notification from '../../assets/images/notification.svg';
+import SearchIcon from '../../assets/images/search.svg';
+import AppSize from '../../components/size';
+import {Label} from '../../components/label';
 
 const HomeScreen = ({navigation}) => {
   const [checked, setChecked] = useState('High');
   const [loading, setLoading] = useState(false);
   const [side, setSide] = useState(false);
+  const [userId, setUserId] = useState('');
   const [taskId, setTaskId] = useState('');
+  const [get_user, setUserData] = useState('');
   const [projectId, setProjectId] = useState('');
   const [taskStatus, setTaskStatus] = useState('');
   const [innerSide, setInnerSide] = useState('All');
@@ -41,6 +55,7 @@ const HomeScreen = ({navigation}) => {
   const changePriorityRef = useRef(null);
   const selectAssigneeRef = useRef(null);
   const selectApprovedRef = useRef(null);
+  const url = BaseUrl(ApiConstants.getUser);
   const taskListUrl = BaseUrl(ApiConstants.myTaskList);
   const taskAssigneeListUrl = BaseUrl(ApiConstants.taskAssignList);
   const changePriorityUrl = BaseUrl(ApiConstants.changePriority);
@@ -50,12 +65,31 @@ const HomeScreen = ({navigation}) => {
   const checking = async () => {
     try {
       setLoading(true);
-      var userId = await AsyncStorage.getItem('user_id');
       var asyncStorageRes = await AsyncStorage.getItem('token');
-      axios
+      await axios
+        .post(url, {
+          token: asyncStorageRes,
+        })
+        .then(response => {
+          if (response.status === 200) {
+            setUserData(response.data?.user);
+            AsyncStorage.setItem('user_id', `${response.data?.user.id}`);
+            setUserId(response.data?.user.id);
+            taskData(response.data?.user.id);
+          }
+        });
+    } catch (error) {
+      setLoading(false);
+    }
+  };
+
+  const taskData = async id => {
+    try {
+      var asyncStorageRes = await AsyncStorage.getItem('token');
+      await axios
         .post(taskListUrl, {
           token: asyncStorageRes,
-          id: userId,
+          id: id,
         })
         .then(response => {
           if (response.status === 200) {
@@ -97,10 +131,10 @@ const HomeScreen = ({navigation}) => {
           setLoading(false);
         });
 
-      axios
+      await axios
         .post(taskAssigneeListUrl, {
           token: asyncStorageRes,
-          id: userId,
+          id: id,
         })
         .then(response => {
           if (response.status === 200) {
@@ -143,7 +177,7 @@ const HomeScreen = ({navigation}) => {
           setLoading(false);
         });
     } catch (error) {
-      setLoading(false);
+      console.log(error);
     }
   };
 
@@ -242,13 +276,61 @@ const HomeScreen = ({navigation}) => {
     }
   };
 
-  useEffect(() => {
-    checking();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      checking();
+      taskData(userId);
+    }, [url]),
+  );
 
   return (
     <SafeAreaView>
       <View style={styles.container}>
+        <View style={styles.iconList}>
+          <View style={{flex: 1}}>
+            <Label name={`Hi ${get_user.name}`} style={styles.app_bar_title} />
+          </View>
+          {get_user.role_id === 1 ? (
+            <TouchableOpacity onPress={() => {}}>
+              <Feather name={'mail'} color={'black'} size={20} />
+            </TouchableOpacity>
+          ) : (
+            <View />
+          )}
+          <AppSize width={15} />
+          <Feather name={'download'} color={'black'} size={20} />
+          <AppSize width={15} />
+          <TouchableOpacity onPress={() => navigation.navigate('search')}>
+            <SearchIcon height={20} width={20} />
+          </TouchableOpacity>
+          <AppSize width={15} />
+          <TouchableOpacity onPress={() => navigation.navigate('notification')}>
+            <Notification height={20} width={20} />
+          </TouchableOpacity>
+          <AppSize width={15} />
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('my_account', {
+                data: get_user,
+              });
+            }}>
+            <View style={styles.imageContainer}>
+              {get_user.profile_image != null &&
+              get_user.profile_image.split('.').pop() === 'jpg' ? (
+                <Image
+                  style={styles.imageContainer}
+                  source={{uri: get_user.profile_image}}
+                />
+              ) : (
+                <Ionicons
+                  name={'person-sharp'}
+                  size={10}
+                  style={styles.image}
+                />
+              )}
+            </View>
+          </TouchableOpacity>
+        </View>
         <View style={styles.tab_container}>
           <TabContainer
             condition={
@@ -259,7 +341,7 @@ const HomeScreen = ({navigation}) => {
             }
             onPress={() => {
               setSide(false);
-              checking({type: innerSide});
+              taskData(userId);
             }}
             buttonName={'My Task'}
           />
@@ -272,7 +354,7 @@ const HomeScreen = ({navigation}) => {
             }
             onPress={() => {
               setSide(true);
-              checking({type: innerSide});
+              taskData(userId);
             }}
             buttonName={'Assigned Task'}
           />
@@ -298,7 +380,7 @@ const HomeScreen = ({navigation}) => {
             }
             onPress={() => {
               setInnerSide('All');
-              checking({type: 'All'});
+              taskData(userId);
             }}
           />
 
@@ -316,7 +398,7 @@ const HomeScreen = ({navigation}) => {
             }
             onPress={() => {
               setInnerSide('today');
-              checking({type: 'today'});
+              taskData(userId);
             }}
           />
 
@@ -334,7 +416,7 @@ const HomeScreen = ({navigation}) => {
             }
             onPress={() => {
               setInnerSide('due');
-              checking({type: 'due'});
+              taskData(userId);
             }}
           />
 
@@ -352,7 +434,7 @@ const HomeScreen = ({navigation}) => {
             }
             onPress={() => {
               setInnerSide('complete');
-              checking({type: 'Completed'});
+              taskData(userId);
             }}
           />
         </View>
@@ -617,6 +699,27 @@ const styles = StyleSheet.create({
   radioLabel: {
     fontFamily: FontConstants.medium,
     fontWeight: '600',
+  },
+  iconList: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 48,
+    paddingHorizontal: 10,
+  },
+  imageContainer: {
+    height: 24,
+    width: 24,
+    borderRadius: 100,
+    backgroundColor: ColorConstants.textHintColor,
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+  },
+  app_bar_title: {
+    fontWeight: '600',
+    fontSize: 17,
+    fontFamily: FontConstants.semiBold,
   },
 });
 

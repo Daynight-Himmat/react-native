@@ -40,7 +40,6 @@ const MyAccount = ({navigation, route}) => {
               await AsyncStorage.clear();
               await AsyncStorage.removeItem('token');
               await AsyncStorage.removeItem('user_id');
-              AsyncStorage.setItem('loggedIn', false);
               var token = await AsyncStorage.getItem('token');
               console.log(token);
               navigation.navigate('sign_in');

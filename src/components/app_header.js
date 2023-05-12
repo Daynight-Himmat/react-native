@@ -5,7 +5,11 @@ import {Appbar} from 'react-native-paper';
 import FontConstants from '../constants/fonts';
 const {width} = Dimensions.get('screen');
 
-const AppHeader = ({text: title, navigate: navigation}) => {
+const AppHeader = ({
+  text: title,
+  navigate: navigation,
+  action,
+}) => {
   return (
     <Appbar.Header style={styles.headerStyles}>
       <Appbar.BackAction onPress={navigation} style={styles.backButton} />
@@ -14,6 +18,7 @@ const AppHeader = ({text: title, navigate: navigation}) => {
         color={ColorConstants.primaryBlack}
         titleStyle={styles.headerText}
       />
+      {action}
     </Appbar.Header>
   );
 };
@@ -28,9 +33,9 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 17,
-    fontWeight: '700',
+    fontWeight: '600',
     color: ColorConstants.primaryBlack,
-    fontFamily: FontConstants.ragular
+    fontFamily: FontConstants.semiBold,
   },
 });
 

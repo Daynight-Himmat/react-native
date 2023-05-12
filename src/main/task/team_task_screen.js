@@ -13,6 +13,7 @@ import AllTask from '../tabs/task_type/all_task';
 import BottomSheetConditions from '../../components/bottom_sheet_with_condition';
 import ToastMessage from '../../components/toast_message';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import FontConstants from '../../constants/fonts';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -213,7 +214,10 @@ const TeamTaskScreen = ({navigation, route}) => {
           icon="shape-square-plus"
           color={ColorConstants.primaryBlack}
           onPress={() => {
-            navigation.navigate('add_task');
+            navigation.navigate('add_task', {
+              data: [],
+              comeFrom: 'create_Task',
+            });
           }}
         />
       </Appbar.Header>
@@ -439,8 +443,9 @@ const styles = StyleSheet.create({
     backgroundColor: ColorConstants.primaryWhite,
   },
   app_bar_title: {
-    fontWeight: '700',
+    fontWeight: '600',
     fontSize: 17,
+    fontFamily: FontConstants.semiBold
   },
 });
 

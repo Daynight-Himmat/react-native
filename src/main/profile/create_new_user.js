@@ -61,24 +61,13 @@ const CreateProfile = ({navigation}) => {
         </View>
         <AppSize height={10} />
 
-        <View
-          style={{
-            width: '100%',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            alignContent: 'center',
-            flexDirection: 'row',
-          }}>
+        <View style={{alignSelf: 'center'}}>
           <ViewProfileButton text={'Add Image'} />
         </View>
         <AppSize height={20} />
 
-        <View
-          style={{
-            width: '100%',
-          }}>
-          <Label name={'Name'} />
+        <View style={{width: '100%'}}>
+          <Label name={'Name'} margin={10} />
 
           <View style={styles.inputContainer}>
             <Image
@@ -86,7 +75,7 @@ const CreateProfile = ({navigation}) => {
               style={styles.tile_leading_icon}
               resizeMode="contain"
             />
-            <AppSize width={5} />
+            <AppSize width={5} margin={10} />
             <TextInput
               placeholder="Enter the name"
               placeholderTextColor={ColorConstants.textLightBlack1}
@@ -94,21 +83,21 @@ const CreateProfile = ({navigation}) => {
               onChangeText={text => setName(text)}
             />
           </View>
-          <Label name={'Mobile Number'} />
+          <Label name={'Mobile Number'} margin={10} />
           <View style={styles.inputContainer}>
             <Image
               source={require('../../../assets/images/phone.png')}
               style={styles.tile_leading_icon}
               resizeMode="contain"
             />
-            <AppSize width={5} />
+            <AppSize width={5} margin={10} />
             <TextInput
               placeholder="Enter the number"
               placeholderTextColor={ColorConstants.textLightBlack1}
               style={styles.inputText}
             />
           </View>
-          <Label name={'Email'} />
+          <Label name={'Email'} margin={10} />
           <View style={styles.inputContainer}>
             <Image
               source={require('../../../assets/images/emails.png')}
@@ -122,7 +111,7 @@ const CreateProfile = ({navigation}) => {
               style={styles.inputText}
             />
           </View>
-          <Label name={'Designation'} />
+          <Label name={'Designation'} margin={10} />
           <View style={styles.inputContainer}>
             <Image
               source={require('../../../assets/images/designation.png')}

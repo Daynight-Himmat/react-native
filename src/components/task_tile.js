@@ -5,7 +5,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import {Ionicons} from './icons';
 import movement from 'moment';
 import {IconButton} from 'react-native-paper';
-import { Label, LightText1 } from './label';
+import {Label, LightText1} from './label';
 import FontConstants from '../constants/fonts';
 
 const getColor = data => {
@@ -148,21 +148,22 @@ const styles = StyleSheet.create({
   task_project: {
     color: ColorConstants.textLightBlack1,
     fontSize: 10,
-    fontWeight: '400',    
+    fontWeight: '400',
   },
   task_date: {
     color: ColorConstants.textLightBlack1,
     fontSize: 10,
     fontWeight: '600',
     fontFamily: FontConstants.light,
+    justifyContent: 'center',
   },
   column: {
     flexDirection: 'column',
   },
   row: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   iconButton: {
     justifyContent: 'flex-end',

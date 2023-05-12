@@ -239,7 +239,7 @@ const TaskDetailsScreen = ({navigation, route}) => {
                 setLoading(false);
                 console.log(response.data);
                 if (response.data?.data) {
-                  console.log('get Permission not null', response.data?.data);
+                  // console.log('get Permission not null', response.data?.data);
                   ToastMessage.showMessage(response.data?.message);
                   navigation.navigate('add_task', {
                     data: response.data?.data,

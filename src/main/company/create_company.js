@@ -290,7 +290,7 @@ const CreateCompany = ({navigation, route}) => {
           />
         </View>
         <AppSize height={20} />
-        <Label name={'Company Name'} />
+        <Label name={'Company Name'} margin={10} />
         <TextInput
           value={companyName}
           placeholder="Enter the company name"
@@ -300,25 +300,15 @@ const CreateCompany = ({navigation, route}) => {
         />
         <AppSize height={10} />
 
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignContent: 'center',
-            alignItems: 'center',
-          }}>
+        <View style={styles.viewContainer}>
           <View>
-            <Label name={'Contact Person 01'} />
+            <Label name={'Contact Person 01'} margin={10} />
           </View>
           <TouchableOpacity
             onPress={() => {
               setAddMore(!addMore);
             }}
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'flex-end',
-              flex: 1,
-            }}>
+            style={styles.viewMore}>
             <Text
               style={{
                 color: !addMore
@@ -335,7 +325,7 @@ const CreateCompany = ({navigation, route}) => {
           style={{
             width: '100%',
           }}>
-          <Label name={'Name'} />
+          <Label name={'Name'} margin={10} />
 
           <TextInput
             value={companyContactPerson}
@@ -344,7 +334,7 @@ const CreateCompany = ({navigation, route}) => {
             style={styles.inputText}
             onChangeText={text => setContactPerson(text)}
           />
-          <Label name={'Mobile Number'} />
+          <Label name={'Mobile Number'} margin={10} />
           <TextInput
             value={companyContactPhone}
             placeholder="Enter mobile number"
@@ -354,7 +344,7 @@ const CreateCompany = ({navigation, route}) => {
             keyboardType="phone-pad"
             onChangeText={text => setContactPhone(text)}
           />
-          <Label name={'Email'} />
+          <Label name={'Email'} margin={10} />
           <TextInput
             value={companyContactEmail}
             placeholder="Enter email Address"
@@ -368,7 +358,7 @@ const CreateCompany = ({navigation, route}) => {
         <AppSize height={10} />
         {addMore ? (
           <View>
-            <Label name={'Name'} />
+            <Label name={'Name'} margin={10} />
 
             <TextInput
               value={company1ContactPerson}
@@ -377,7 +367,7 @@ const CreateCompany = ({navigation, route}) => {
               style={styles.inputText}
               onChangeText={text => set1ContactPerson(text)}
             />
-            <Label name={'Mobile Number'} />
+            <Label name={'Mobile Number'} margin={10} />
             <TextInput
               value={company1ContactPhone}
               placeholder="Enter mobile number"
@@ -387,7 +377,7 @@ const CreateCompany = ({navigation, route}) => {
               keyboardType="phone-pad"
               onChangeText={text => set1ContactPhone(text)}
             />
-            <Label name={'Email'} />
+            <Label name={'Email'} margin={10} />
             <TextInput
               value={company1ContactEmail}
               placeholder="Enter email Address"
@@ -426,6 +416,16 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: 10,
     backgroundColor: ColorConstants.primaryWhite,
+  },
+  viewContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  viewMore: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    flex: 1,
   },
   imageContainer: {
     height: 100,

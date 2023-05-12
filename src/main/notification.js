@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   notificationText: {
     flex: 1,
     color: ColorConstants.primaryBlack,
-    fontFamily: FontConstants.light, 
+    fontFamily: FontConstants.ragular, 
     fontSize: 14,
   },
 });

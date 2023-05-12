@@ -4,9 +4,9 @@ import ColorConstants from '../constants/color_constants';
 import FontConstants from '../constants/fonts';
 
 const {height, width} = Dimensions.get('screen');
-const Label = ({name, style}) => {
+const Label = ({name, style, margin}) => {
   return (
-    <View>
+    <View style={{marginVertical: margin ?? 0}}>
       <Text style={[styles.label_text, {...style}]}>{name}</Text>
     </View>
   );

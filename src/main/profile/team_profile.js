@@ -1,10 +1,11 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   StyleSheet,
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -12,13 +13,64 @@ import {Tile} from '../../components/person_tile';
 import AppHeader from '../../components/app_header';
 import {Avatar} from '@rneui/themed';
 import ProfileDemo from '../../components/profile_image_demo';
+import ToastMessage from '../../components/toast_message';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {ApiConstants, BaseUrl1} from '../../constants/api_constants';
+import {Loading} from '../../components/no_data_found';
+import {Appbar} from 'react-native-paper';
 
 const TeamProfile = ({navigation, route}) => {
   const {data} = route.params;
+  const [isLoading, setLoading] = useState(false);
+  const deleteUserUrl = BaseUrl1(ApiConstants.destroyUser);
+
+  const deleteUser = async () => {
+    try {
+      setLoading(true);
+      const token = await AsyncStorage.getItem('token');
+      const user_Id = await AsyncStorage.getItem('user_id');
+      const response = await axios.post(deleteUserUrl, {
+        token: token,
+        id: user_Id,
+        deleted: 'Yes',
+      });
+      if (response.status === 200) {
+        setLoading(false);
+        ToastMessage.showMessage(response.data?.message);
+        navigation.goBack();
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log('this is the error===', error);
+    }
+  };
+
+  const createTwoButtonAlert = () =>
+    Alert.alert('Delete User', 'Are you sure you want to Delete User ?', [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {text: 'Delete User', onPress: () => deleteUser()},
+    ]);
 
   return (
     <View style={styles.container}>
-      <AppHeader text={data?.name} navigate={() => navigation.goBack()} />
+      <AppHeader
+        text={data?.name}
+        navigate={() => navigation.goBack()}
+        action={
+          data?.rote_id === 1 && <Appbar.Action
+            icon={'delete'}
+            color={ColorConstants.textHighLight}
+            onPress={() => createTwoButtonAlert()}
+          />
+        }
+        icon2={data?.role_id === 1 && 'delete'}
+        icon2Press={() => data?.role_id === 1 && createTwoButtonAlert()}
+      />
       <TouchableOpacity
         style={styles.imageContainer}
         onPress={() =>
@@ -66,6 +118,7 @@ const TeamProfile = ({navigation, route}) => {
           title={data.designation ?? 'No Designation Found'}
         />
       </View>
+      {isLoading && <Loading />}
     </View>
   );
 };

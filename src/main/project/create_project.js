@@ -174,14 +174,14 @@ const CreateProject = ({navigation}) => {
             onSelect={() => setModalVisible(!modalVisible)}
           />
         </Modal>
-        <Label name={'Project title'} />
+        <Label name={'Project title'} margin={10}/>
         <TextInput
           placeholder="Enter task title"
           placeholderTextColor={ColorConstants.textLightBlack1}
           style={styles.inputText}
           onChangeText={text => setTitle(text)}
         />
-        <Label name={'Company'} />
+        <Label name={'Company'} margin={10}/>
         <SelectList
           data={getComapany.map((data, index) => data?.company_name)}
           setSelected={val => {
@@ -218,7 +218,7 @@ const CreateProject = ({navigation}) => {
         />
 
         <AppSize height={10} />
-        <Label name={'Project Member'} />
+        <Label name={'Project Member'} margin={10}/>
         <View
           style={{
             flexDirection: 'column',
@@ -370,7 +370,7 @@ const CreateProject = ({navigation}) => {
           }
         />
         <AppSize height={10} />
-        <Label name={'Team Coordinator'} />
+        <Label name={'Team Coordinator'} margin={10}/>
         <SelectList
           data={getAssigne.map((data, index) => data?.name)}
           setSelected={val => {
@@ -424,7 +424,7 @@ const CreateProject = ({navigation}) => {
           </TouchableOpacity>
         </View>
         <AppSize height={10} />
-        <Label name={'Description'} />
+        <Label name={'Description'} margin={10} />
         <TextInput
           placeholder="Write description here ..."
           placeholderTextColor={ColorConstants.textLightBlack1}

@@ -5,6 +5,7 @@ import {
   Image,
   StyleSheet,
   ActivityIndicator,
+  Alert
 } from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Loading} from '../../components/no_data_found';
@@ -18,12 +19,14 @@ import axios from 'axios';
 import {
   ApiConstants,
   BaseUrl,
+  BaseUrl1,
   CompanyProfileImage,
 } from '../../constants/api_constants';
 import {Appbar} from 'react-native-paper';
 import ProfileDemo from '../../components/profile_image_demo';
 import {Avatar} from '@rneui/themed';
 import FontConstants from '../../constants/fonts';
+import ToastMessage from '../../components/toast_message';
 
 const CompanyInfo = ({navigation, route}) => {
   const {company_id} = route.params;
@@ -33,6 +36,7 @@ const CompanyInfo = ({navigation, route}) => {
 
   const getCompanyUrl = BaseUrl(ApiConstants.companyDetails);
   const getCompanyProjectUrl = BaseUrl(ApiConstants.companyProjectList);
+  const deleteCompanyUrl = BaseUrl1(ApiConstants.destroyCompany);
 
   const getCompanyDetails = async () => {
     try {
@@ -44,6 +48,7 @@ const CompanyInfo = ({navigation, route}) => {
       });
       if (response.status === 200) {
         setLoading(false);
+        console.log(response.data);
         setCompanyData(response.data?.data);
         getProjectDetails();
       }
@@ -69,9 +74,41 @@ const CompanyInfo = ({navigation, route}) => {
     }
   };
 
+  const deleteCompany = async () => {
+    try {
+      setLoading(true);
+      const token = await AsyncStorage.getItem('token');
+      const response = await axios.post(deleteCompanyUrl, {
+        token: token,
+        id: company_id,
+        deleted: 'Yes',
+      });
+      if (response.status === 200) {
+        setLoading(false);
+        ToastMessage.showMessage(response.data?.message);
+        navigation.goBack();
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log('this is the error===', error);
+    }
+  };
+
+  const createTwoButtonAlert = () =>
+    Alert.alert('Delete Company', 'Are you sure you want to Delete Company ?', [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {text: 'Delete Company', onPress: () => deleteCompany()},
+    ]);
+
   useEffect(() => {
     getCompanyDetails();
   }, []);
+
+  console.log()
 
   return (
     <View style={styles.container}>
@@ -94,7 +131,7 @@ const CompanyInfo = ({navigation, route}) => {
         <Appbar.Action
           icon="delete"
           color={ColorConstants.highLightColor}
-          onPress={() => {}}
+          onPress={() => createTwoButtonAlert()}
         />
       </Appbar.Header>
       <ScrollView>
@@ -102,7 +139,7 @@ const CompanyInfo = ({navigation, route}) => {
           <View key={index}>
             <View style={styles.imageContain}>
               <View style={styles.imageContainer}>
-                {data?.profile_picture != null &&
+                {data?.profile_picture !== '' &&
                 data?.profile_picture.split('.').pop() === 'jpg' ? (
                   <Avatar
                     size={35}
