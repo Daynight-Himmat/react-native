@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback, useRef} from 'react';
-import {View, StyleSheet, ScrollView} from 'react-native';
+import {View, StyleSheet, ScrollView, Dimensions} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Appbar} from 'react-native-paper';
 import {InnerTab} from '../../components/tabs';
@@ -14,6 +14,7 @@ import AllTask from '../tabs/task_type/all_task';
 import Dividers from '../../components/divider';
 import CommanFunctions from '../../components/comman_functions';
 import FontConstants from '../../constants/fonts';
+const {height, width} = Dimensions.get('screen');
 
 const ProjectPageScreen = ({navigation, route}) => {
   const {data} = route.params;
@@ -274,10 +275,12 @@ const ProjectPageScreen = ({navigation, route}) => {
         />
       </View>
       <Dividers />
-      <View style={{flex: 1}}>
+      <View>
         {innerSide === 'All' ? (
           projectAllTask.length > 0 ? (
-            <ScrollView>
+            <ScrollView contentContainerStyle={{
+              flexGrow: 1,
+            }}>
               {projectAllTask.map((all, index) => (
                 <AllTask
                   data={all}

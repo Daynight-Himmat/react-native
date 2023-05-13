@@ -8,6 +8,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Modal,
+  Dimensions 
 } from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Loading, NoData} from '../../components/no_data_found';
@@ -28,6 +29,8 @@ import BottomSheet from '../../components/bottom_sheet';
 import TaskAlert from '../../components/task_alert';
 import CommanFunctions from '../../components/comman_functions';
 import CalenderContainer from '../../components/calender';
+
+const {height, widget} = Dimensions.get('screen'); 
 
 const TaskDetailsScreen = ({navigation, route}) => {
   const {data} = route.params;
@@ -307,7 +310,7 @@ const TaskDetailsScreen = ({navigation, route}) => {
           }}
         />
       </Modal>
-      <ScrollView contentContainerStyle={styles.scroll_styles}>
+      <View style={styles.scroll_styles}>
         {taskDetails[0]?.task_status === 'Completed' ? (
           <View
             style={{
@@ -542,8 +545,8 @@ const TaskDetailsScreen = ({navigation, route}) => {
 
           <AppSize height={10} />
         </View>
-        <AppSize height={121} />
-      </ScrollView>
+        {/* <AppSize height={121} /> */}
+      </View>
       <View style={styles.bottom_container}>
         <View style={styles.text_input_container}>
           <TextInput
@@ -628,7 +631,7 @@ const styles = StyleSheet.create({
     left: -10,
   },
   scroll_styles: {
-    flexGrow: 1,
+   paddingHorizontal: 10,
   },
   row: {flexDirection: 'row'},
   column: {flexDirection: 'column'},
@@ -651,10 +654,12 @@ const styles = StyleSheet.create({
     height: 35,
   },
   container: {
-    height: '100%',
-    width: '100%',
+    
+    height: height,
+    width: widget,
+    // width: '100%',
     justifyContent: 'flex-start',
-    paddingHorizontal: 10,
+    // paddingHorizontal: 10,
     backgroundColor: ColorConstants.primaryWhite,
   },
   time_container_styles: {
@@ -690,8 +695,9 @@ const styles = StyleSheet.create({
   bottom_container: {
     width: '100%',
     position: 'absolute',
-    bottom: 3,
-    left: 10,
+    bottom: 30,
+    // left: 10,
+    paddingHorizontal: 10,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 5,
@@ -758,6 +764,7 @@ const styles = StyleSheet.create({
   },
   comment_scroll_container: {
     width: '100%',
+    height: 150,
     paddingHorizontal: 10,
     paddingVertical: 10,
   },

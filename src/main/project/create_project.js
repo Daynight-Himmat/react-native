@@ -211,7 +211,6 @@ const CreateProject = ({navigation}) => {
           onSelect={() => {
             console.log('---get Project', getProject);
           }}
-          fontFamily={'400'}
           color={ColorConstants.primaryBlack}
           placeholderTextColor={ColorConstants.textLightBlack3}
           boxStyles={styles.boxStyles}
@@ -398,7 +397,7 @@ const CreateProject = ({navigation}) => {
           onSelect={() => {
             console.log('---get Project', getProject);
           }}
-          fontFamily={'400'}
+          
           color={ColorConstants.primaryBlack}
           placeholderTextColor={ColorConstants.textLightBlack1}
           boxStyles={styles.boxStyles}
@@ -481,6 +480,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     paddingHorizontal: 10,
     color: ColorConstants.primaryBlack,
+    paddingVertical: 15
   },
   dropdownTextStyles: {
     color: ColorConstants.textDarkBlack,

@@ -86,7 +86,7 @@ const TaskOption = ({
         tailer={true}
         color={ColorConstants.highLightColor}
         onPress={onPressDelete}
-        textStyle={styles.labelstyles}
+        
       />
     </View>
   );

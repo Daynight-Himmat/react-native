@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  Dimensions
 } from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import axios from 'axios';
@@ -27,6 +28,9 @@ import Notification from '../../assets/images/notification.svg';
 import SearchIcon from '../../assets/images/search.svg';
 import AppSize from '../../components/size';
 import {Label} from '../../components/label';
+import AppHeader from '../../components/app_header';
+import { Appbar } from 'react-native-paper';
+const {height, width} = Dimensions.get('screen');
 
 const HomeScreen = ({navigation}) => {
   const [checked, setChecked] = useState('High');
@@ -284,9 +288,9 @@ const HomeScreen = ({navigation}) => {
   );
 
   return (
-    <SafeAreaView>
+    
       <View style={styles.container}>
-        <View style={styles.iconList}>
+        <Appbar.Header children={ <View style={styles.iconList}>
           <View style={{flex: 1}}>
             <Label name={`Hi ${get_user.name}`} style={styles.app_bar_title} />
           </View>
@@ -330,7 +334,7 @@ const HomeScreen = ({navigation}) => {
               )}
             </View>
           </TouchableOpacity>
-        </View>
+        </View>} />
         <View style={styles.tab_container}>
           <TabContainer
             condition={
@@ -440,7 +444,7 @@ const HomeScreen = ({navigation}) => {
         </View>
         <Dividers />
         {!loading && (
-          <View style={{flex: 1}}>
+          <View>
             {side === false ? (
               innerSide === 'All' ? (
                 getAddData.length > 0 ? (
@@ -653,7 +657,7 @@ const HomeScreen = ({navigation}) => {
         />
         {loading && <Loading />}
       </View>
-    </SafeAreaView>
+    
   );
 };
 
@@ -662,7 +666,7 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
     flexDirection: 'column',
-    padding: 10,
+    paddingHorizontal: 10,
     backgroundColor: ColorConstants.primaryWhite,
   },
   tab_container: {
@@ -705,6 +709,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     height: 48,
+    width: '100%',
     paddingHorizontal: 10,
   },
   imageContainer: {

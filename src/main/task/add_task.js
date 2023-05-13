@@ -207,7 +207,7 @@ const AddTask = ({navigation, route}) => {
   }, []);
 
   return (
-    <SafeAreaView>
+    <View>
       <AppHeader
         text={comeFrom === 'update_task' ? 'Update Task' : 'Add Task'}
         navigate={() => navigation.goBack()}
@@ -247,13 +247,14 @@ const AddTask = ({navigation, route}) => {
             placeholder="Enter task title"
             placeholderTextColor={ColorConstants.textLightBlack1}
             style={styles.inputText}
+            textAlignVertical='center'
             onChangeText={text => setTitle(text)}
           />
           <Label name={'Description'} style={styles.labelmargin} />
           <TextInput
             value={description}
             placeholder="Enter task Description"
-            multiline={true}
+            textAlignVertical='center'
             placeholderTextColor={ColorConstants.textLightBlack1}
             style={styles.inputText}
             onChangeText={text => setDescription(text)}
@@ -285,7 +286,7 @@ const AddTask = ({navigation, route}) => {
                 onSelect={() => {
                   console.log('---get Project', getProject);
                 }}
-                fontFamily={'400'}
+  
                 color={ColorConstants.primaryBlack}
                 placeholderTextColor={ColorConstants.textLightBlack1}
                 boxStyles={styles.boxStyles}
@@ -506,7 +507,7 @@ const AddTask = ({navigation, route}) => {
       </View>
 
       {isLoading && <Loading />}
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -529,6 +530,19 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     paddingHorizontal: 10,
     color: ColorConstants.primaryBlack,
+    paddingVertical: 15
+  },
+  textInputView: {
+    paddingHorizontal: 5,
+    borderColor: ColorConstants.textLightBlack1,
+    borderWidth: 1,
+    borderRadius: 5,
+    height: 48,
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
   },
   dropdownTextStyles: {
     color: ColorConstants.textDarkBlack,

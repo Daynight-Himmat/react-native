@@ -12,7 +12,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 
 const BottomSheet = ({widget, refer, backButton, buttonButton}) => {
   return (
-    <SafeAreaView>
+    // <SafeAreaView>
       <ActionSheet ref={refer}>
         <TouchableOpacity onPress={backButton} style={styles.backButton} />
         <ScrollView contentContainerStyle={styles.container}>
@@ -20,7 +20,7 @@ const BottomSheet = ({widget, refer, backButton, buttonButton}) => {
         </ScrollView>
         {buttonButton}
       </ActionSheet>
-    </SafeAreaView>
+    // </SafeAreaView>
   );
 };
 

@@ -13,6 +13,19 @@ import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import Zocial from 'react-native-vector-icons/Zocial';
 import Octicons from 'react-native-vector-icons/Octicons';
 
+// Ionicons.loadFont();
+// Feather.loadFont();
+// FontAwesome.loadFont();
+// Fontisto.loadFont();
+// Foundation.loadFont();
+// MaterialCommunityIcons.loadFont();
+// MaterialIcons.loadFont();
+// AntDesign.loadFont();
+// Entypo.loadFont();
+// EvilIcons.loadFont();
+// Zocial.loadFont();
+// Octicons.loadFont();
+
 export {
   Ionicons,
   Feather,

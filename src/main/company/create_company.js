@@ -213,7 +213,7 @@ const CreateCompany = ({navigation, route}) => {
     const updateCompanyData = () => {
       if (comeFrom === 'Company Update') {
         setCompanyName(companyData[0].company_name);
-        if (companyData[0].company_details[0] !== null) {
+        if (companyData[0].company_details !== null) {
           setContactPerson(
             companyData[0].company_details[0].contact_name ?? '',
           );
@@ -471,6 +471,7 @@ const styles = StyleSheet.create({
   },
   inputText: {
     width: '100%',
+    paddingVertical:15,
     borderColor: ColorConstants.textLightBlack1,
     borderWidth: 1,
     borderRadius: 4,

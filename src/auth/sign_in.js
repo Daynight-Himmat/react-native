@@ -13,7 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import DataManager from '../constants/static_data';
 import AppButton from '../components/app_button';
 import ToastMessage from '../components/toast_message';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { MaterialIcons } from '../components/icons';
 import AuthImage from '../components/auth_image';
 import AppSize from '../components/size';
 import {HighLightLabel} from '../components/label';
