@@ -36,9 +36,9 @@ const ProjectPageScreen = ({navigation, route}) => {
   const [projectTodayTask, setProjectTodayTaskList] = useState([]);
   const [projectCompleteTask, setProjectCompleteTaskList] = useState([]);
   const projectTaskListUrl = BaseUrl(ApiConstants.projectTaskList);
-  const changePriorityUrl = BaseUrl1(ApiConstants.changePriority);
-  const completeTaskUrl = BaseUrl1(ApiConstants.changeTaskStatus);
-  const deleteTaskUrl = BaseUrl1(ApiConstants.changeTaskDelete);
+  const changePriorityUrl = BaseUrl(ApiConstants.changePriority);
+  const completeTaskUrl = BaseUrl(ApiConstants.changeTaskStatus);
+  const deleteTaskUrl = BaseUrl(ApiConstants.changeTaskDelete);
   var currentDate = new movement().format('MMM DD, yyyy');
   const taskOptionsRef = useRef(null);
   const deleteOptionRef = useRef(null);
@@ -48,7 +48,7 @@ const ProjectPageScreen = ({navigation, route}) => {
   const changePriorityRef = useRef(null);
   const selectAssigneeRef = useRef(null);
 
-  const getProjectsTaskList = useCallback(async () => {
+  const getProjectsTaskList = async () => {
     try {
       setLoading(true);
       const token = await AsyncStorage.getItem('token');
@@ -58,7 +58,7 @@ const ProjectPageScreen = ({navigation, route}) => {
       });
       if (response.status === 200) {
         setProjectAllTaskList(
-          response.data?.data.filter(item => item.task_status === 'Active'),
+          response.data?.data.filter(item => item.task_status === 'Active' || item.task_status === 'Reopen'),
         );
         setProjectTodayTaskList(
           response.data?.data.filter(
@@ -83,7 +83,7 @@ const ProjectPageScreen = ({navigation, route}) => {
     } catch (error) {
       setLoading(false);
     }
-  }, [data.id, projectTaskListUrl]);
+  };
 
   const getCompleteTask = async task_status => {
     try {
@@ -97,7 +97,7 @@ const ProjectPageScreen = ({navigation, route}) => {
       //     task_id: taskId,
       //     task_status: task_status,
       //   })
-      return CommanFunctions.getCompleteTask(task_status, taskId)
+      return CommanFunctions.getCompleteTask(task_status, getBottomData.id)
         .then(response => {
           if (response.status === 200) {
             setLoading(false);
@@ -115,32 +115,29 @@ const ProjectPageScreen = ({navigation, route}) => {
     }
   };
 
-  const getChangePriority = async (taskId, priority) => {
+  const getChangePriority = async () => {
     try {
       setLoading(true);
       var asyncStorage = await AsyncStorage.getItem('token');
       var user_id = await AsyncStorage.getItem('user_id');
-      await axios
+      const response = await axios
         .post(changePriorityUrl, {
           token: asyncStorage,
           id: user_id,
-          task_id: taskId,
-          priority: priority,
-        })
-        .then(response => {
+          task_id: getBottomData.id,
+          priority: checked,
+        });
+        console.log(response);
+        
           if (response.status === 200) {
             setLoading(false);
+            console.log(response.data?.message);
             navigation.navigate('approve', {
               taskStatus: 'Priority',
             });
             changePriorityRef.current.hide();
             ToastMessage.showMessage(response.data?.message);
           }
-        })
-        .catch(error => {
-          console.log(error);
-          setLoading(false);
-        });
     } catch (error) {
       setLoading(false);
     }
@@ -179,11 +176,11 @@ const ProjectPageScreen = ({navigation, route}) => {
   const onRefresh = React.useCallback(() => {
     setLoading(true);
     getProjectsTaskList();
-  }, [getProjectsTaskList]);
+  }, []);
 
   useEffect(() => {
     getProjectsTaskList();
-  }, [getProjectsTaskList]);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -308,9 +305,6 @@ const ProjectPageScreen = ({navigation, route}) => {
                   navigation={navigation}
                   iconPress={() => {
                     setData(all);
-                    setTaskId(all.id);
-                    setProjectId(all.project_id);
-                    setTaskStatus(all.task_status);
                     taskOptionsRef.current.show();
                   }}
                 />
@@ -332,9 +326,6 @@ const ProjectPageScreen = ({navigation, route}) => {
                   navigation={navigation}
                   iconPress={() => {
                     setData(today);
-                    setTaskId(today.id);
-                    setProjectId(today.project_id);
-                    setTaskStatus(today.task_status);
                     taskOptionsRef.current.show();
                   }}
                 />
@@ -356,9 +347,6 @@ const ProjectPageScreen = ({navigation, route}) => {
                   navigation={navigation}
                   iconPress={() => {
                     setData(due);
-                    setTaskId(due.id);
-                    setProjectId(due.project_id);
-                    setTaskStatus(due.task_status);
                     taskOptionsRef.current.show();
                   }}
                 />
@@ -380,10 +368,6 @@ const ProjectPageScreen = ({navigation, route}) => {
                   navigation={navigation}
                   iconPress={() => {
                     setData(complete);
-                    setData(complete);
-                    setTaskId(complete.id);
-                    setProjectId(complete.project_id);
-                    setTaskStatus(complete.task_status);
                     taskOptionsRef.current.show();
                   }}
                 />
@@ -510,6 +494,7 @@ const ProjectPageScreen = ({navigation, route}) => {
       </View> */}
 
       <BottomSheetConditions
+        taskData={getBottomData}
         assigneeOptionRef={assigneeOptionRef}
         selectAssigneeRef={selectAssigneeRef}
         bottomSheetRef={taskOptionsRef}
@@ -520,18 +505,29 @@ const ProjectPageScreen = ({navigation, route}) => {
         deleteOptionRef={deleteOptionRef}
         onPressComplete={() => {
           getCompleteTask('Completed');
+          taskOptionsRef.current.hide();
           completeOptionRef.current.hide();
         }}
         onPressDelete={() => {
           getDeleteTask();
+          taskOptionsRef.current.hide();
           deleteOptionRef.current.hide();
         }}
-        onPressPriority={() => getChangePriority(taskId, checked)}
+        onPressPriority={() =>
+          {
+            taskOptionsRef.current.hide();
+            console.log(checked);
+            getChangePriority();
+        }}
         onPressReopen={() => {
           getCompleteTask('Reopen');
+          taskOptionsRef.current.hide();
           reopenOptionRef.current.hide();
         }}
-        onValueChange={value => setChecked(value)}
+        onValueChange={value => {
+          console.log(value);
+          setChecked(value);
+        }}
         reopenOptionRef={reopenOptionRef}
         status={taskStatus}
       />

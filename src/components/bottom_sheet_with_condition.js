@@ -123,36 +123,35 @@ const BottomSheetConditions = ({
         refer={bottomSheetRef}
         backButton={() => bottomSheetRef.current.hide()}
         widget={
+          <View>
           <TaskOption
             status={status}
             onPressPriority={() => {
-              bottomSheetRef.current.hide();
+              // bottomSheetRef.current.hide();
               changePriorityRef.current.show();
             }}
             onPressComplete={() => {
-              bottomSheetRef.current.hide();
+              // bottomSheetRef.current.hide();
               completeOptionRef.current.show();
             }}
             onPressDelete={() => {
-              bottomSheetRef.current.hide();
+              // bottomSheetRef.current.hide();
               deleteOptionRef.current.show();
             }}
             onPressReopen={() => {
-              bottomSheetRef.current.hide();
+              // bottomSheetRef.current.hide();
               reopenOptionRef.current.show();
             }}
             onPressChangeAssignee={() => {
-              bottomSheetRef.current.hide();
+              // bottomSheetRef.current.hide();
               assigneeOptionRef.current.show();
             }}
             onPressApproved={() => {
-              bottomSheetRef.current.hide();
+              // bottomSheetRef.current.hide();
               approveTaskRef.current.show();
             }}
           />
-        }
-      />
-      <BottomSheet
+          <BottomSheet
         refer={completeOptionRef}
         backButton={() => completeOptionRef.current.hide()}
         widget={
@@ -402,6 +401,9 @@ const BottomSheetConditions = ({
             </View>
             <AppButton text={'Change Priority'} onPress={onPressPriority} />
           </View>
+        }
+      />
+      </View>
         }
       />
     </View>

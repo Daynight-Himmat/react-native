@@ -21,14 +21,12 @@ import FontConstants from '../../constants/fonts';
 import ToastMessage from '../../components/toast_message';
 import Dividers from '../../components/divider';
 import BottomSheetConditions from '../../components/bottom_sheet_with_condition';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {useFocusEffect} from '@react-navigation/native';
 import {Feather, Ionicons} from '../../components/icons';
 import Notification from '../../assets/images/notification.svg';
 import SearchIcon from '../../assets/images/search.svg';
 import AppSize from '../../components/size';
 import {Label} from '../../components/label';
-import AppHeader from '../../components/app_header';
 import { Appbar } from 'react-native-paper';
 const {height, width} = Dimensions.get('screen');
 
@@ -39,8 +37,6 @@ const HomeScreen = ({navigation}) => {
   const [userId, setUserId] = useState('');
   const [taskId, setTaskId] = useState('');
   const [get_user, setUserData] = useState('');
-  const [projectId, setProjectId] = useState('');
-  const [taskStatus, setTaskStatus] = useState('');
   const [innerSide, setInnerSide] = useState('All');
   const [getAddData, setAllData] = useState([]);
   const [getTodayData, setTodayData] = useState([]);
@@ -59,6 +55,13 @@ const HomeScreen = ({navigation}) => {
   const changePriorityRef = useRef(null);
   const selectAssigneeRef = useRef(null);
   const selectApprovedRef = useRef(null);
+  const [assignee, setAssignee] = useState([]);
+  const [searchUser, setSearchData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [checkedItems, setCheckedItems] = useState([]);
+  const [getSearchAssingee, setSearchAssignee] = useState([]);
+  const url1 = BaseUrl(ApiConstants.projectWiseMember);
+  const changeAssigneeUrl = BaseUrl(ApiConstants.changeTaskAssignee);
   const url = BaseUrl(ApiConstants.getUser);
   const taskListUrl = BaseUrl(ApiConstants.myTaskList);
   const taskAssigneeListUrl = BaseUrl(ApiConstants.taskAssignList);
@@ -194,7 +197,7 @@ const HomeScreen = ({navigation}) => {
         .post(completeTaskUrl, {
           token: asyncStorage,
           id: user_id,
-          task_id: taskId,
+          task_id: getBottomData.id,
           task_status: task_status,
         })
         .then(response => {
@@ -278,6 +281,60 @@ const HomeScreen = ({navigation}) => {
     } catch (error) {
       setLoading(false);
     }
+  };
+
+  const getAssignee = async projectId => {
+    try {
+      setLoading(true);
+      const token = await AsyncStorage.getItem('token');
+      const response = await axios.post(url1, {
+        token: token,
+        project_id: projectId,
+      });
+      setSearchAssignee(response.data?.data);
+      setAssignee(response.data?.data);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+    }
+  };
+
+  const updateAssignee = async () => {
+    try {
+      setLoading(true);
+      const token = await AsyncStorage.getItem('token');
+      const response = await axios.post(changeAssigneeUrl, {
+        token: token,
+        id: taskData.user_id,
+        task_id: taskData.id,
+        assined_ids: '',
+        new_assignee: searchUser.map(item => item.id).toString(),
+      });
+      if (response.status === 200) {
+        ToastMessage.showMessage(response.data?.message);
+        assigneeOptionRef.current.hide();
+      }
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = text => {
+    if (text === '') {
+      setAssignee(getSearchAssingee);
+    } else {
+      const filtered = getSearchAssingee.filter(item => {
+        return item.name?.toLowerCase().includes(text.toLowerCase());
+      });
+      setAssignee(filtered);
+      setSearchQuery(text);
+    }
+  };
+
+  const handleRemove = id => {
+    const remove = searchUser.filter(data => data.id !== id);
+    setSearchData(remove);
   };
 
   useFocusEffect(
@@ -444,7 +501,7 @@ const HomeScreen = ({navigation}) => {
         </View>
         <Dividers />
         {!loading && (
-          <View>
+          <View style={{flex:1}}>
             {side === false ? (
               innerSide === 'All' ? (
                 getAddData.length > 0 ? (
@@ -456,9 +513,6 @@ const HomeScreen = ({navigation}) => {
                         navigation={navigation}
                         iconPress={() => {
                           setData(data);
-                          setTaskId(data.id);
-                          setProjectId(data.project_id);
-                          setTaskStatus(data.task_status);
                           taskOptionsRef.current.show();
                         }}
                       />
@@ -477,9 +531,6 @@ const HomeScreen = ({navigation}) => {
                         navigation={navigation}
                         iconPress={() => {
                           setData(data);
-                          setTaskId(data.id);
-                          setProjectId(data.project_id);
-                          setTaskStatus(data.task_status);
                           taskOptionsRef.current.show();
                         }}
                       />
@@ -498,9 +549,6 @@ const HomeScreen = ({navigation}) => {
                         navigation={navigation}
                         iconPress={() => {
                           setData(data);
-                          setTaskId(data.id);
-                          setProjectId(data.project_id);
-                          setTaskStatus(data.task_status);
                           taskOptionsRef.current.show();
                         }}
                       />
@@ -519,10 +567,6 @@ const HomeScreen = ({navigation}) => {
                         navigation={navigation}
                         iconPress={() => {
                           setData(data);
-                          setData(data);
-                          setTaskId(data.id);
-                          setProjectId(data.project_id);
-                          setTaskStatus(data.task_status);
                           taskOptionsRef.current.show();
                         }}
                       />
@@ -544,9 +588,6 @@ const HomeScreen = ({navigation}) => {
                       navigation={navigation}
                       iconPress={() => {
                         setData(data);
-                        setTaskId(data.id);
-                        setTaskStatus(data.task_status);
-                        setProjectId(data.project_id);
                         taskOptionsRef.current.show();
                       }}
                     />
@@ -565,9 +606,6 @@ const HomeScreen = ({navigation}) => {
                       navigation={navigation}
                       iconPress={() => {
                         setData(data);
-                        setTaskId(data.id);
-                        setProjectId(data.project_id);
-                        setTaskStatus(data.task_status);
                         taskOptionsRef.current.show();
                       }}
                     />
@@ -586,9 +624,6 @@ const HomeScreen = ({navigation}) => {
                       navigation={navigation}
                       iconPress={() => {
                         setData(data);
-                        setTaskId(data.id);
-                        setTaskStatus(data.task_status);
-                        setProjectId(data.project_id);
                         taskOptionsRef.current.show();
                       }}
                     />
@@ -607,9 +642,6 @@ const HomeScreen = ({navigation}) => {
                       navigation={navigation}
                       iconPress={() => {
                         setData(data);
-                        setTaskId(data.id);
-                        setTaskStatus(data.task_status);
-                        setProjectId(data.project_id);
                         taskOptionsRef.current.show();
                       }}
                     />
@@ -623,6 +655,304 @@ const HomeScreen = ({navigation}) => {
             )}
           </View>
         )}
+        {/* <BottomSheet
+        refer={taskOptionsRef}
+        nextReff={changePriorityRef}
+        backButton={() => taskOptionsRef.current.hide()}
+        widget={
+          <TaskOption
+            status={getBottomData.task_status}
+            onPressPriority={() => {
+              changePriorityRef.current.show();
+            }}
+            onPressComplete={() => {
+              // taskOptionsRef.current.hide();
+              completeOptionRef.current.show();
+            }}
+            onPressDelete={() => {
+              // taskOptionsRef.current.hide();
+              deleteOptionRef.current.show();
+            }}
+            onPressReopen={() => {
+              // taskOptionsRef.current.hide();
+              reopenOptionRef.current.show();
+            }}
+            onPressChangeAssignee={() => {
+              // taskOptionsRef.current.hide();
+              assigneeOptionRef.current.show();
+            }}
+            onPressApproved={() => {
+              // taskOptionsRef.current.hide();
+              approveTaskRef.current.show();
+            }}
+          />
+
+        }
+      />
+      <BottomSheet
+        refer={completeOptionRef}
+        backButton={() => completeOptionRef.current.hide()}
+        widget={
+          <TaskAlert
+            buttonLabel={'Complete'}
+            label={'Are you sure you want to close the task.'}
+            onBack={() => completeOptionRef.current.hide()}
+            onPress={() => {
+              getCompleteTask('Completed');
+              selectApprovedRef.current.hide();
+            }}
+          />
+        }
+      />
+
+      <BottomSheet
+        refer={selectApprovedRef}
+        backButton={() => selectApprovedRef.current.hide()}
+        widget={
+          <TaskAlert
+            buttonLabel={'Approve'}
+            label={'Are you sure you want to Approved the task.'}
+            onBack={() => selectApprovedRef.current.hide()}
+            onPress={() => {
+              getCompleteTask('Approved');
+              selectApprovedRef.current.hide();
+            }}
+          />
+        }
+      />
+
+      <BottomSheet
+        refer={assigneeOptionRef}
+        backButton={() => assigneeOptionRef.current.hide()}
+        widget={
+          <View>
+            <Label name={'Assignee'} />
+            <View
+              style={{
+                flexDirection: 'column',
+              }}>
+              {assignee.length > 0 && searchUser.length > 0 ? (
+                <ScrollView
+                  horizontal={true}
+                  contentContainerStyle={{
+                    flexGrow: 1,
+                    paddingVertical: 10,
+                  }}>
+                  {searchUser.length > 0 ? (
+                    searchUser.map((userid, i) => (
+                      <View
+                        key={i}
+                        style={{
+                          flexDirection: 'row',
+                        }}>
+                        <View style={styles.assigneeChip}>
+                          <TouchableOpacity
+                            onPress={() => {
+                              handleRemove(userid.id);
+                              checkedItems[userid.id] = false;
+                              console.log(searchUser);
+                            }}
+                            style={styles.cancelButton}>
+                            <MaterialIcons
+                              name={'clear'}
+                              color={ColorConstants.primaryWhite}
+                              size={12}
+                            />
+                          </TouchableOpacity>
+                          <Text style={styles.chipText}>{userid.name}</Text>
+                        </View>
+                        <AppSize width={10} />
+                      </View>
+                    ))
+                  ) : (
+                    <View />
+                  )}
+                </ScrollView>
+              ) : (
+                <View style={{flex: 1, flexDirection: 'column'}} />
+              )}
+            </View>
+            <TouchableOpacity
+              onPress={() => {
+                getAssignee(project_id);
+                selectAssigneeRef.current.show();
+              }}
+              style={styles.add}>
+              <Text style={styles.add_text}>+ Add</Text>
+            </TouchableOpacity>
+            <View style={{paddingVertical: 10}}>
+              <RowButton
+                onPress={() => {
+                  if (searchUser.length === 0) {
+                    ToastMessage.showMessage('Please Select Assignee First');
+                  } else {
+                    updateAssignee();
+                  }
+                }}
+                onback={() => {
+                  assigneeOptionRef.current.hide();
+                }}
+                text={'Select'}
+              />
+            </View>
+          </View>
+        }
+      />
+
+      <BottomSheet
+        refer={selectAssigneeRef}
+        backButton={() => selectAssigneeRef.current.hide()}
+        widget={
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'column',
+              paddingHorizontal: 10,
+              backgroundColor: ColorConstants.primaryWhite,
+            }}>
+            <SearchBox
+              onChangeText={handleSearch}
+              onPress={() => {
+                handleSearch(searchQuery);
+              }}
+            />
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'column',
+              }}>
+              {assignee.length > 0 ? (
+                <ScrollView
+                  contentContainerStyle={{
+                    flexGrow: 1,
+                    paddingVertical: 10,
+                  }}>
+                  {assignee.map((data, index) => (
+                    <View
+                      key={index}
+                      style={{
+                        flex: 1,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                      }}>
+                      <Checkbox.Item
+                        label={data.name}
+                        labelStyle={{
+                          width: '90%',
+                        }}
+                        status={
+                          selectUser.length > 0
+                            ? searchUser.map(e => e === data.id) ===
+                              checkedItems[data.id]
+                              ? 'checked'
+                              : 'unchecked'
+                            : checkedItems[data.id]
+                            ? 'checked'
+                            : 'unchecked'
+                        }
+                        onPress={() => {
+                          setCheckedItems({
+                            ...checkedItems,
+                            [data.id]: !checkedItems[data.id],
+                          });
+                          if (!checkedItems[data.id]) {
+                            searchUser.push({id: data.id, name: data.name});
+                            setSearchData(searchUser);
+                          } else {
+                            searchUser.pop({id: data.id, name: data.name});
+                            setSearchData(searchUser);
+                          }
+                          console.log(checkedItems);
+                        }}
+                      />
+                    </View>
+                  ))}
+                </ScrollView>
+              ) : (
+                <View style={{height: 200, flexDirection: 'column'}}>
+                  <NoData />
+                </View>
+              )}
+            </View>
+            <View
+              style={{
+                paddingVertical: 10,
+              }}>
+              <RowButton
+                onPress={() => {
+                  selectAssigneeRef.current.hide();
+                }}
+                onback={() => {
+                  selectAssigneeRef.current.hide();
+                }}
+                text={'Done'}
+              />
+            </View>
+          </View>
+        }
+      />
+
+      <BottomSheet
+        refer={deleteOptionRef}
+        backButton={() => deleteOptionRef.current.hide()}
+        widget={
+          <TaskAlert
+            label={'Are you sure you want to delete the task.'}
+            buttonLabel={'Delete'}
+            style={{backgroundColor: ColorConstants.highLightColor}}
+            onBack={() => deleteOptionRef.current.hide()}
+            onPress={() => {
+              getDeleteTask();
+              deleteOptionRef.current.hide();
+            }}
+          />
+        }
+      />
+      <BottomSheet
+        refer={reopenOptionRef}
+        backButton={() => reopenOptionRef.current.hide()}
+        widget={
+          <TaskAlert
+            label={'Are you sure you want to Reopen the task.'}
+            buttonLabel={'Reopen'}
+            onBack={() => reopenOptionRef.current.hide()}
+            onPress={() => {
+              getCompleteTask('Reopen');
+              selectApprovedRef.current.hide();
+            }}
+          />
+        }
+      />
+      <BottomSheet
+        refer={changePriorityRef}
+        backButton={() => changePriorityRef.current.hide()}
+        widget={
+          <View style={styles.radioContainerSyle}>
+            <View style={styles.radiobuttonContainer}>
+              <View>
+                <Label name={'Select Priority'} />
+              </View>
+              <RadioButton.Group onValueChange={value => setChecked(value)} value={checked}>
+                <View style={styles.row}>
+                  <RadioButton.Item
+                    color={ColorConstants.highLightColor}
+                    label="High"
+                    value="High"
+                    labelStyle={styles.radioLabel}
+                  />
+                  <RadioButton.Item
+                    color={ColorConstants.highLightColor}
+                    label="Low"
+                    value="Low"
+                    labelStyle={styles.radioLabel}
+                  />
+                </View>
+              </RadioButton.Group>
+            </View>
+            <AppButton text={'Change Priority'} onPress={()=> getChangePriority(checked)} />
+          </View>
+        }
+      /> */}
         <BottomSheetConditions
           taskData={getBottomData}
           assigneeOptionRef={assigneeOptionRef}
@@ -633,27 +963,37 @@ const HomeScreen = ({navigation}) => {
           approveTaskRef={selectApprovedRef}
           deleteOptionRef={deleteOptionRef}
           selectAssigneeRef={selectAssigneeRef}
-          project_id={projectId}
+          project_id={getBottomData.project_id}
           onPressApproved={() => {
             getCompleteTask('Approved');
+            taskOptionsRef.current.hide();
             selectApprovedRef.current.hide();
           }}
           onPressComplete={() => {
+            taskOptionsRef.current.hide();
             getCompleteTask('Completed');
             completeOptionRef.current.hide();
           }}
           onPressDelete={() => {
             getDeleteTask();
+            taskOptionsRef.current.hide();
             deleteOptionRef.current.hide();
           }}
-          onPressPriority={() => getChangePriority(taskId, checked)}
+          onPressPriority={() => {
+            taskOptionsRef.current.hide(); 
+            getChangePriority(getBottomData.id, checked);
+          }}
           onPressReopen={() => {
             getCompleteTask('Reopen');
+            taskOptionsRef.current.hide();
             reopenOptionRef.current.hide();
           }}
-          onValueChange={value => setChecked(value)}
+          onValueChange={value => {
+            setChecked(value);
+            console.log(value);
+          }}
           reopenOptionRef={reopenOptionRef}
-          status={taskStatus}
+          status={getBottomData.task_status}
         />
         {loading && <Loading />}
       </View>
