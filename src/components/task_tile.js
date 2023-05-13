@@ -51,7 +51,7 @@ const TaskTile = ({index, data, onPress, iconPress}) => {
 
         <View style={styles.text_column}>
           <Label name={data?.task_title} />
-          <LightText1 lightText1={data.project_name} />
+          {data.project_name && <LightText1 lightText1={data.project_name} />}
         </View>
         {data.task_status === 'Completed' ? (
           <View>

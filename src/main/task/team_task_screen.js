@@ -39,6 +39,8 @@ const TeamTaskScreen = ({navigation, route}) => {
   const completeOptionRef = useRef(null);
   const assigneeOptionRef = useRef(null);
   const changePriorityRef = useRef(null);
+  const selectAssigneeRef = useRef(null);
+  const approveTaskRef = useRef(null);
   const taskListUrl = BaseUrl(ApiConstants.myTeamTaskList);
   const changePriorityUrl = BaseUrl(ApiConstants.changePriority);
   const completeTaskUrl = BaseUrl(ApiConstants.changeTaskStatus);
@@ -375,7 +377,6 @@ const TeamTaskScreen = ({navigation, route}) => {
                   navigation={navigation}
                   iconPress={() => {
                     setData(data);
-                    setData(data);
                     setTaskId(data.id);
                     setProjectId(data.project_id);
                     setTaskStatus(data.task_status);
@@ -393,6 +394,9 @@ const TeamTaskScreen = ({navigation, route}) => {
       </View>
       <BottomSheetConditions
         assigneeOptionRef={assigneeOptionRef}
+        selectAssigneeRef={selectAssigneeRef}
+        approveTaskRef={approveTaskRef}
+        project_id={getBottomData.project_id}
         bottomSheetRef={taskOptionsRef}
         changePriorityRef={changePriorityRef}
         checked={checked}
@@ -405,6 +409,10 @@ const TeamTaskScreen = ({navigation, route}) => {
         onPressDelete={() => {
           getDeleteTask();
           deleteOptionRef.current.hide();
+        }}
+        onPressApproved={() => {
+          getCompleteTask('Approve');
+          approveTaskRef.current.hide();
         }}
         onPressPriority={() => getChangePriority(taskId, checked)}
         onPressReopen={() => {

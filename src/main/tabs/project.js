@@ -15,7 +15,7 @@ const ProjectScreen = ({navigation}) => {
   const [getSearchValue, setSearchValue] = useState(getprojectData);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const url = BaseUrl1(ApiConstants.myProjectList);
+  const url = BaseUrl(ApiConstants.myProjectList);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const checking = useCallback(async () => {

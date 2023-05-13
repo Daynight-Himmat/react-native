@@ -24,9 +24,7 @@ const Loading = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'column',
-    alignContent: 'center',
-    alignItems: 'center',
+    alignSelf: 'center',
     justifyContent: 'center',
   },
   noDataText: {

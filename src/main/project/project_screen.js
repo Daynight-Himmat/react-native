@@ -1,10 +1,16 @@
 import React, {useState, useEffect, useCallback, useRef} from 'react';
-import {View, StyleSheet, ScrollView, Dimensions} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+  RefreshControl,
+} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Appbar} from 'react-native-paper';
 import {InnerTab} from '../../components/tabs';
 import axios from 'axios';
-import {ApiConstants, BaseUrl1} from '../../constants/api_constants';
+import {ApiConstants, BaseUrl1, BaseUrl} from '../../constants/api_constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Loading, NoData} from '../../components/no_data_found';
 import movement from 'moment';
@@ -29,7 +35,7 @@ const ProjectPageScreen = ({navigation, route}) => {
   const [projectsDueTask, setProjectDueTaskList] = useState([]);
   const [projectTodayTask, setProjectTodayTaskList] = useState([]);
   const [projectCompleteTask, setProjectCompleteTaskList] = useState([]);
-  const projectTaskListUrl = BaseUrl1(ApiConstants.projectTaskList);
+  const projectTaskListUrl = BaseUrl(ApiConstants.projectTaskList);
   const changePriorityUrl = BaseUrl1(ApiConstants.changePriority);
   const completeTaskUrl = BaseUrl1(ApiConstants.changeTaskStatus);
   const deleteTaskUrl = BaseUrl1(ApiConstants.changeTaskDelete);
@@ -40,6 +46,7 @@ const ProjectPageScreen = ({navigation, route}) => {
   const completeOptionRef = useRef(null);
   const assigneeOptionRef = useRef(null);
   const changePriorityRef = useRef(null);
+  const selectAssigneeRef = useRef(null);
 
   const getProjectsTaskList = useCallback(async () => {
     try {
@@ -169,6 +176,11 @@ const ProjectPageScreen = ({navigation, route}) => {
     }
   };
 
+  const onRefresh = React.useCallback(() => {
+    setLoading(true);
+    getProjectsTaskList();
+  }, [getProjectsTaskList]);
+
   useEffect(() => {
     getProjectsTaskList();
   }, [getProjectsTaskList]);
@@ -275,12 +287,20 @@ const ProjectPageScreen = ({navigation, route}) => {
         />
       </View>
       <Dividers />
-      <View>
+      <View
+        style={{
+          flex: 1,
+          paddingHorizontal: 15,
+        }}>
         {innerSide === 'All' ? (
           projectAllTask.length > 0 ? (
-            <ScrollView contentContainerStyle={{
-              flexGrow: 1,
-            }}>
+            <ScrollView
+              refreshControl={
+                <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
+              }
+              contentContainerStyle={{
+                flexGrow: 1,
+              }}>
               {projectAllTask.map((all, index) => (
                 <AllTask
                   data={all}
@@ -301,7 +321,10 @@ const ProjectPageScreen = ({navigation, route}) => {
           )
         ) : innerSide === 'today' ? (
           projectTodayTask.length > 0 ? (
-            <ScrollView>
+            <ScrollView
+              refreshControl={
+                <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
+              }>
               {projectTodayTask.map((today, index) => (
                 <AllTask
                   data={today}
@@ -322,7 +345,10 @@ const ProjectPageScreen = ({navigation, route}) => {
           )
         ) : innerSide === 'due' ? (
           projectsDueTask.length > 0 ? (
-            <ScrollView>
+            <ScrollView
+              refreshControl={
+                <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
+              }>
               {projectsDueTask.map((due, index) => (
                 <AllTask
                   data={due}
@@ -343,7 +369,10 @@ const ProjectPageScreen = ({navigation, route}) => {
           )
         ) : innerSide === 'complete' ? (
           projectCompleteTask.length > 0 ? (
-            <ScrollView>
+            <ScrollView
+              refreshControl={
+                <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
+              }>
               {projectCompleteTask.map((complete, index) => (
                 <AllTask
                   data={complete}
@@ -482,7 +511,9 @@ const ProjectPageScreen = ({navigation, route}) => {
 
       <BottomSheetConditions
         assigneeOptionRef={assigneeOptionRef}
+        selectAssigneeRef={selectAssigneeRef}
         bottomSheetRef={taskOptionsRef}
+        project_id={data.id}
         changePriorityRef={changePriorityRef}
         checked={checked}
         completeOptionRef={completeOptionRef}
@@ -522,7 +553,7 @@ const styles = StyleSheet.create({
   app_bar_title: {
     fontWeight: '600',
     fontSize: 17,
-    fontFamily: FontConstants.semiBold
+    fontFamily: FontConstants.semiBold,
   },
   inner_tab_view_style: {
     height: 30,

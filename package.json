@@ -30,6 +30,7 @@
     "react-native-gesture-handler": "^2.9.0",
     "react-native-image-crop-picker": "^0.39.0",
     "react-native-modal": "^13.0.1",
+    "react-native-onboarding-screens": "^1.0.5",
     "react-native-otp-forminput": "^1.0.2",
     "react-native-pager-view": "^6.2.0",
     "react-native-paper": "^5.5.1",
