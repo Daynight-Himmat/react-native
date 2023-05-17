@@ -18,12 +18,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppButton from '../../components/app_button';
 import {ApiConstants, BaseUrl} from '../../constants/api_constants';
 import axios from 'axios';
-import ToastMessage from '../../components/toast_message';
-import AppHeader from '../../components/app_header';
+import toastMessage from '../../components/toast_message';
+import {AppHeader} from '../../components/app_header';
 import {Avatar} from '@rneui/themed';
+import { useToast } from 'react-native-toast-notifications'; 
 import ImageCropPicker from 'react-native-image-crop-picker';
 
 const CreateCompany = ({navigation, route}) => {
+  const toast = useToast();
   const {companyData, comeFrom} = route.params;
   const [addMore, setAddMore] = useState(false);
   const [isLoading, setLoading] = useState(false);
@@ -59,59 +61,59 @@ const CreateCompany = ({navigation, route}) => {
   const validation = () => {
     if (!addMore) {
       if (!companyName) {
-        ToastMessage.showMessage('Company Name is required');
+        toastMessage(toast, 'Company Name is required');
         return false;
       } else if (!companyContactPerson) {
-        ToastMessage.showMessage('Name is required');
+        toastMessage(toast, 'Name is required');
         return false;
       } else if (!companyContactPhone) {
-        ToastMessage.showMessage('Number is required');
+        toastMessage(toast, 'Number is required');
         return false;
       } else if (companyContactPhone.length !== 10) {
-        ToastMessage.showMessage('Number is Invalid');
+        toastMessage(toast, 'Number is Invalid');
         return false;
       } else if (!companyContactEmail) {
-        ToastMessage.showMessage('Email is required');
+        toastMessage(toast, 'Email is required');
         return false;
       } else if (validateEmail(companyContactEmail) === false) {
-        ToastMessage.showMessage('Email is Invalid');
+        toastMessage(toast, 'Email is Invalid');
         return false;
       } else {
         return true;
       }
     } else {
       if (!companyName) {
-        ToastMessage.showMessage('Company Name is required');
+        toastMessage(toast, 'Company Name is required');
         return false;
       } else if (!companyContactPerson) {
-        ToastMessage.showMessage('Name is required');
+        toastMessage(toast, 'Name is required');
         return false;
       } else if (!companyContactPhone) {
-        ToastMessage.showMessage('Number is required');
+        toastMessage(toast, 'Number is required');
         return false;
       } else if (companyContactPhone.length !== 10) {
-        ToastMessage.showMessage('Number is Invalid');
+        toastMessage(toast, 'Number is Invalid');
         return false;
       } else if (!companyContactEmail) {
-        ToastMessage.showMessage('Email is required');
+        toastMessage(toast, 'Email is required');
         return false;
       } else if (validateEmail(companyContactEmail) === false) {
-        ToastMessage.showMessage('Email is Invalid');
+        toastMessage(toast, 'Email is Invalid');
         return false;
       } else if (!company1ContactPerson) {
-        ToastMessage.showMessage('Contact person 2 Name is required');
+        toastMessage(toast, 'Contact person 2 Name is required');
         return false;
       } else if (!company1ContactPhone) {
-        ToastMessage.showMessage('Contact person 2 Number is required');
+        toastMessage(toast, 'Contact person 2 Number is required');
         return false;
       } else if (company1ContactPhone.length !== 10) {
-        ToastMessage.showMessage('Contact person 2 Number is Invalid');
+        toastMessage(toast, 'Contact person 2 Number is Invalid');
         return false;
       } else if (!company1ContactEmail) {
-        ToastMessage.showMessage('Contact person 2 Email is required');
+        toastMessage(toast, 'Contact person 2 Email is required');
         return false;
       } else if (validateEmail(company1ContactEmail) === false) {
-        ToastMessage.showMessage('Contact person 2 Email is Invalid');
+        toastMessage(toast, 'Contact person 2 Email is Invalid');
         return false;
       } else {
         return true;
@@ -140,7 +142,7 @@ const CreateCompany = ({navigation, route}) => {
         await axios.post(createCompanyUrl, formData).then(resposne => {
           if (resposne.status === 200) {
             setLoading(false);
-            ToastMessage.showMessage(resposne.data?.message);
+            toastMessage(toast, resposne.data?.message);
             navigation.goBack();
           }
         });
@@ -194,13 +196,13 @@ const CreateCompany = ({navigation, route}) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(response.data?.message);
+        
         // await axios.post(updateCompanyUrl, formData).then(resposne => {
-        //   if (resposne.status === 200) {
-        //     setLoading(false);
-        //     ToastMessage.showMessage(resposne.data?.message);
-        //     navigation.goBack();
-        //   }
+          if (response.status === 200) {
+            setLoading(false);
+            toastMessage(toast, response.data?.message);
+            navigation.goBack();
+          }
         // });
       }
     } catch (err) {
@@ -212,26 +214,26 @@ const CreateCompany = ({navigation, route}) => {
   useEffect(() => {
     const updateCompanyData = () => {
       if (comeFrom === 'Company Update') {
-        setCompanyName(companyData[0].company_name);
-        if (companyData[0].company_details !== null) {
+        setCompanyName(companyData[0]?.company_name);
+        if (companyData[0]?.company_details) {
           setContactPerson(
-            companyData[0].company_details[0].contact_name ?? '',
+            companyData[0]?.company_details[0]?.contact_name ?? '',
           );
           setContactEmail(
-            companyData[0].company_details[0].contact_email ?? '',
+            companyData[0]?.company_details[0]?.contact_email ?? '',
           );
           setContactPhone(
-            companyData[0].company_details[0].contact_number ?? '',
+            companyData[0]?.company_details[0]?.contact_number ?? '',
           );
-        } else if (companyData[0].company_details[1] !== null) {
+        } else if (companyData[0]?.company_details[1]) {
           set1ContactPerson(
-            companyData[0].company_details[1].contact_name ?? '',
+            companyData[0]?.company_details[1]?.contact_name ?? '',
           );
           set1ContactEmail(
-            companyData[0].company_details[1].contact_email ?? '',
+            companyData[0]?.company_details[1]?.contact_email ?? '',
           );
           set1ContactPhone(
-            companyData[0].company_details[1].contact_number ?? '',
+            companyData[0]?.company_details[1]?.contact_number ?? '',
           );
         }
       }

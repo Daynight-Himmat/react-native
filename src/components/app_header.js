@@ -23,6 +23,27 @@ const AppHeader = ({
   );
 };
 
+
+const CommanHeader = ({title, pencilPress, deletePress, navigation}) => {
+  return  <Appbar.Header style={styles.headerStyles}>
+  <Appbar.BackAction onPress={() => navigation.goBack()} />
+  <Appbar.Content
+    title={title}
+    color={ColorConstants.primaryBlack}
+    titleStyle={styles.headerText}
+  />
+  <Appbar.Action
+    icon="pencil"
+    onPress={pencilPress}
+  />
+  <Appbar.Action
+    icon="delete"
+    color={ColorConstants.highLightColor}
+    onPress={deletePress}
+  />
+</Appbar.Header>
+}
+
 const styles = StyleSheet.create({
   headerStyles: {
     width: width,
@@ -39,4 +60,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AppHeader;
+export {AppHeader, CommanHeader};

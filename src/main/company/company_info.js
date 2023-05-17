@@ -26,7 +26,8 @@ import {Appbar} from 'react-native-paper';
 import ProfileDemo from '../../components/profile_image_demo';
 import {Avatar} from '@rneui/themed';
 import FontConstants from '../../constants/fonts';
-import ToastMessage from '../../components/toast_message';
+import toastMessage from '../../components/toast_message';
+import { CommanHeader } from '../../components/app_header';
 
 const CompanyInfo = ({navigation, route}) => {
   const {company_id} = route.params;
@@ -85,7 +86,7 @@ const CompanyInfo = ({navigation, route}) => {
       });
       if (response.status === 200) {
         setLoading(false);
-        ToastMessage.showMessage(response.data?.message);
+        toastMessage.showMessage(response.data?.message);
         navigation.goBack();
       }
     } catch (error) {
@@ -112,28 +113,13 @@ const CompanyInfo = ({navigation, route}) => {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={styles.headerWidth}>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content
-          title="Company Profile"
-          color={ColorConstants.primaryBlack}
-          titleStyle={styles.headerText}
-        />
-        <Appbar.Action
-          icon="pencil"
-          onPress={() => {
+      <CommanHeader deletePress={() => createTwoButtonAlert()} navigation={navigation} pencilPress={() => {
             navigation.navigate('create_company', {
               companyData: getCompanyData,
               comeFrom: 'Company Update',
             });
-          }}
-        />
-        <Appbar.Action
-          icon="delete"
-          color={ColorConstants.highLightColor}
-          onPress={() => createTwoButtonAlert()}
-        />
-      </Appbar.Header>
+          }} title={'Company Profile'}/>
+
       <ScrollView>
         {getCompanyData.map((data, index) => (
           <View key={index}>

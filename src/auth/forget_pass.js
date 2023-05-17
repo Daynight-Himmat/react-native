@@ -7,10 +7,12 @@ import AppButton from '../components/app_button';
 import {HighLightLabel, LightText} from '../components/label';
 import axios from 'axios';
 import {ApiConstants, BaseUrl1} from '../constants/api_constants';
-import ToastMessage from '../components/toast_message';
+import toastMessage from '../components/toast_message';
 import {Loading} from '../components/no_data_found';
+import { useToast } from 'react-native-toast-notifications';
 
 const ForgetPassword = ({navigation}) => {
+  const toast = useToast();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const forgetPassUrl = BaseUrl1(ApiConstants.signUp);
@@ -23,9 +25,9 @@ const ForgetPassword = ({navigation}) => {
   const getForgetEmail = async () => {
     try {
       if (email === '') {
-        ToastMessage.showMessage('Please enter your email address');
+        toastMessage(toast, 'Please enter your email address');
       } else if (validateEmail(email) === false) {
-        ToastMessage.showMessage('Please enter valid email address');
+        toastMessage(toast, 'Please enter valid email address');
       } else {
         setIsLoading(true);
         await axios
@@ -38,7 +40,7 @@ const ForgetPassword = ({navigation}) => {
           .then(response => {
             if (response.status === 200) {
               if (response.data.success === true) {
-                ToastMessage.showMessage(response.data.message);
+                toastMessage(toast, response.data.message);
                 navigation.navigate('otp_page', {
                   email: email,
                   name: email,

@@ -8,6 +8,12 @@ const CompanyProfileImage = end_Point =>
 const ProfileImage = end_Point =>
   `http://143.110.190.217/public/storage/${end_Point}`;
 
+const TaskImage = end_Point =>`http://143.110.190.217/public/task_images/${end_Point}`;
+
+const TaskIssueImage = end_Point =>`http://143.110.190.217/public/task_issue_images/${end_Point}`;
+
+const TaskChatImage = end_Point =>`http://143.110.190.217/public/task_chat_images/${end_Point}`;
+
 class ApiConstants {
   static signUp = 'sendOtp';
   static verifyOtp = 'verifyOtp';
@@ -61,4 +67,4 @@ class ApiConstants {
   static appVersion = 'app_verion';
 }
 
-export {BaseUrl, BaseUrl1, CompanyProfileImage, ApiConstants, ProfileImage};
+export {BaseUrl, BaseUrl1, CompanyProfileImage, ApiConstants, ProfileImage, TaskIssueImage, TaskImage, TaskChatImage};

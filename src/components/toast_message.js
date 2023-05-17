@@ -1,13 +1,13 @@
-import {ToastAndroid, Platform} from 'react-native';
-class ToastMessage {
-  static showMessage = message => {
-    if(Platform.OS === 'ios'){
-      
-    }
-    else {
-      ToastAndroid.show(message, ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-    }
-  };
-}
+import ColorConstants from '../constants/color_constants';
 
-export default ToastMessage;
+const toastMessage = (toast, message) => {
+  toast.show(message,{
+        type: 'normal',
+        placement: 'bottom',
+        offset: 30,
+        duration: 3000,
+        normalColor: ColorConstants.primaryBlack
+      });
+};
+
+export default toastMessage;

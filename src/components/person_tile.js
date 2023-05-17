@@ -121,12 +121,12 @@ const TimeContainer = ({dateLabel, date, style, color}) => {
               paddingVertical: 0,
             },
           ]}>
-          <Text style={styles.date_label}>{dateLabel}</Text>
+            <Label name={dateLabel} margin={4} />
           <AppSize width={5} />
           <Ionicons name={'pencil'} color={ColorConstants.primaryBlack} />
         </View>
       ) : (
-        <Text style={styles.date_label}>{dateLabel}</Text>
+        <Label name={dateLabel} margin={4}/>
       )}
       <AppSize height={3} />
       <View style={[styles.date_container, style]}>

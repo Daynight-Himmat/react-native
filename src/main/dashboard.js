@@ -113,7 +113,10 @@ const DashBoard = ({navigation}) => {
                         comeFrom: 'create_Task',
                       });
                     case 1:
-                      return navigation.navigate('create_project');
+                      return navigation.navigate('create_project', {
+                        comeFrom: 'Project Create',
+                        projectInfo: []
+                      });
                     case 3:
                       return navigation.navigate('create_company', {
                         companyData: [],

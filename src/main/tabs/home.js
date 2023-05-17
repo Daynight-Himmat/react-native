@@ -6,7 +6,8 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  Dimensions
+  Dimensions,
+  RefreshControl,
 } from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import axios from 'axios';
@@ -18,7 +19,7 @@ import movement from 'moment';
 import CompleteTask from './task_type/complete_task';
 import AllTask from './task_type/all_task';
 import FontConstants from '../../constants/fonts';
-import ToastMessage from '../../components/toast_message';
+import toastMessage from '../../components/toast_message';
 import Dividers from '../../components/divider';
 import BottomSheetConditions from '../../components/bottom_sheet_with_condition';
 import {useFocusEffect} from '@react-navigation/native';
@@ -27,7 +28,10 @@ import Notification from '../../assets/images/notification.svg';
 import SearchIcon from '../../assets/images/search.svg';
 import AppSize from '../../components/size';
 import {Label} from '../../components/label';
-import { Appbar } from 'react-native-paper';
+import {Appbar} from 'react-native-paper';
+import TaskTile from '../../components/task_tile';
+import Condition from '../../components/conditions';
+import ColorsCondtion from '../../components/color_condition';
 const {height, width} = Dimensions.get('screen');
 
 const HomeScreen = ({navigation}) => {
@@ -101,10 +105,8 @@ const HomeScreen = ({navigation}) => {
         .then(response => {
           if (response.status === 200) {
             setAllData(
-              response.data.data?.data.filter(
-                item =>
-                  item.task_status === 'Active' ||
-                  item.task_status === 'Reopen',
+              response.data.data?.data.filter(item =>
+                Condition.activeAndReopen(item.task_status),
               ),
             );
             setTodayData(
@@ -121,14 +123,12 @@ const HomeScreen = ({navigation}) => {
                   movement(item.created_at.slice(0, 10)).format(
                     'yyyy-MM-DD',
                   ) !== movement().format('yyyy-MM-DD') &&
-                  item.task_status !== 'Completed',
+                  Condition.activeAndReopen(item.task_status),
               ),
             );
             setCompleteData(
-              response.data.data?.data.filter(
-                item =>
-                  item.task_status === 'Completed' ||
-                  item.task_status === 'Approved',
+              response.data.data?.data.filter(item =>
+                Condition.StatusCondition(item.task_status),
               ),
             );
             setLoading(false);
@@ -146,10 +146,8 @@ const HomeScreen = ({navigation}) => {
         .then(response => {
           if (response.status === 200) {
             setAllAssigneeData(
-              response.data.data?.data.filter(
-                item =>
-                  item.task_status === 'Active' ||
-                  item.task_status === 'Reopen',
+              response.data.data?.data.filter(item =>
+                Condition.activeAndReopen(item.task_status),
               ),
             );
             setTodayAssigneeData(
@@ -166,14 +164,12 @@ const HomeScreen = ({navigation}) => {
                   movement(item.created_at.slice(0, 10)).format(
                     'yyyy-MM-DD',
                   ) !== movement().format('yyyy-MM-DD') &&
-                  item.task_status !== 'Completed',
+                  Condition.activeAndReopen(item.task_status),
               ),
             );
             setCompleteAssigneeData(
-              response.data.data?.data.filter(
-                item =>
-                  item.task_status === 'Completed' ||
-                  item.task_status === 'Approved',
+              response.data.data?.data.filter(item =>
+                Condition.StatusCondition(item.task_status),
               ),
             );
 
@@ -207,7 +203,7 @@ const HomeScreen = ({navigation}) => {
             navigation.navigate('approve', {
               taskStatus: task_status,
             });
-            ToastMessage.showMessage(response.data?.message);
+            toastMessage.showMessage(response.data?.message);
           }
         })
         .catch(error => {
@@ -240,7 +236,7 @@ const HomeScreen = ({navigation}) => {
               taskStatus: 'Priority',
             });
             changePriorityRef.current.hide();
-            ToastMessage.showMessage(response.data?.message);
+            toastMessage.showMessage(response.data?.message);
           }
         })
         .catch(error => {
@@ -271,7 +267,7 @@ const HomeScreen = ({navigation}) => {
             navigation.navigate('approve', {
               taskStatus: 'Delete',
             });
-            ToastMessage.showMessage(response.data?.message);
+            toastMessage.showMessage(response.data?.message);
           }
         })
         .catch(error => {
@@ -311,7 +307,7 @@ const HomeScreen = ({navigation}) => {
         new_assignee: searchUser.map(item => item.id).toString(),
       });
       if (response.status === 200) {
-        ToastMessage.showMessage(response.data?.message);
+        toastMessage.showMessage(response.data?.message);
         assigneeOptionRef.current.hide();
       }
       setLoading(false);
@@ -344,248 +340,164 @@ const HomeScreen = ({navigation}) => {
     }, [url]),
   );
 
+  const onRefresh = React.useCallback(() => {
+    setLoading(true);
+    taskData(userId);
+  }, []);
+
   return (
-    
-      <View style={styles.container}>
-        <Appbar.Header children={ <View style={styles.iconList}>
-          <View style={{flex: 1}}>
-            <Label name={`Hi ${get_user.name}`} style={styles.app_bar_title} />
-          </View>
-          {get_user.role_id === 1 ? (
-            <TouchableOpacity onPress={() => {}}>
-              <Feather name={'mail'} color={'black'} size={20} />
-            </TouchableOpacity>
-          ) : (
-            <View />
-          )}
-          <AppSize width={15} />
-          <Feather name={'download'} color={'black'} size={20} />
-          <AppSize width={15} />
-          <TouchableOpacity onPress={() => navigation.navigate('search')}>
-            <SearchIcon height={20} width={20} />
-          </TouchableOpacity>
-          <AppSize width={15} />
-          <TouchableOpacity onPress={() => navigation.navigate('notification')}>
-            <Notification height={20} width={20} />
-          </TouchableOpacity>
-          <AppSize width={15} />
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('my_account', {
-                data: get_user,
-              });
-            }}>
-            <View style={styles.imageContainer}>
-              {get_user.profile_image != null &&
-              get_user.profile_image.split('.').pop() === 'jpg' ? (
-                <Image
-                  style={styles.imageContainer}
-                  source={{uri: get_user.profile_image}}
-                />
-              ) : (
-                <Ionicons
-                  name={'person-sharp'}
-                  size={10}
-                  style={styles.image}
-                />
-              )}
+    <View style={styles.container}>
+      <Appbar.Header
+        children={
+          <View style={styles.iconList}>
+            <View style={{flex: 1}}>
+              <Label
+                name={`Hi ${get_user.name}`}
+                style={styles.app_bar_title}
+              />
             </View>
-          </TouchableOpacity>
-        </View>} />
-        <View style={styles.tab_container}>
-          <TabContainer
-            condition={
-              !side ? ColorConstants.primaryColor : ColorConstants.primaryWhite
-            }
-            textCondition={
-              side ? ColorConstants.primaryColor : ColorConstants.primaryWhite
-            }
-            onPress={() => {
-              setSide(false);
-              taskData(userId);
-            }}
-            buttonName={'My Task'}
-          />
-          <TabContainer
-            condition={
-              !side ? ColorConstants.primaryWhite : ColorConstants.primaryColor
-            }
-            textCondition={
-              side ? ColorConstants.primaryWhite : ColorConstants.primaryColor
-            }
-            onPress={() => {
-              setSide(true);
-              taskData(userId);
-            }}
-            buttonName={'Assigned Task'}
-          />
-        </View>
-        <View
-          style={{
-            height: 30,
-            backgroundColor: ColorConstants.primaryWhite,
-            flexDirection: 'row',
-            marginTop: 10,
-          }}>
-          <InnerTab
-            tabText={'All'}
-            condition={
-              innerSide === 'All'
-                ? ColorConstants.primaryColor
-                : ColorConstants.primaryWhite
-            }
-            textCondition={
-              innerSide === 'All'
-                ? ColorConstants.primaryColor
-                : ColorConstants.teamHiColor
-            }
-            onPress={() => {
-              setInnerSide('All');
-              taskData(userId);
-            }}
-          />
+            {get_user.role_id === 1 ? (
+              <TouchableOpacity onPress={() => {}}>
+                <Feather name={'mail'} color={'black'} size={20} />
+              </TouchableOpacity>
+            ) : (
+              <View />
+            )}
+            <AppSize width={15} />
+            <Feather name={'download'} color={'black'} size={20} />
+            <AppSize width={15} />
+            <TouchableOpacity onPress={() => navigation.navigate('search')}>
+              <SearchIcon height={20} width={20} />
+            </TouchableOpacity>
+            <AppSize width={15} />
+            <TouchableOpacity
+              onPress={() => navigation.navigate('notification')}>
+              <Notification height={20} width={20} />
+            </TouchableOpacity>
+            <AppSize width={15} />
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('my_account', {
+                  data: get_user,
+                });
+              }}>
+              <View style={styles.imageContainer}>
+                {get_user.profile_image != null &&
+                get_user.profile_image.split('.').pop() === 'jpg' ? (
+                  <Image
+                    style={styles.imageContainer}
+                    source={{uri: get_user.profile_image}}
+                  />
+                ) : (
+                  <Ionicons
+                    name={'person-sharp'}
+                    size={10}
+                    style={styles.image}
+                  />
+                )}
+              </View>
+            </TouchableOpacity>
+          </View>
+        }
+      />
+      <View style={styles.tab_container}>
+        <TabContainer
+          condition={
+            !side ? ColorConstants.primaryColor : ColorConstants.primaryWhite
+          }
+          textCondition={
+            side ? ColorConstants.primaryColor : ColorConstants.primaryWhite
+          }
+          onPress={() => {
+            setSide(false);
+            taskData(userId);
+          }}
+          buttonName={'My Task'}
+        />
+        <TabContainer
+          condition={
+            !side ? ColorConstants.primaryWhite : ColorConstants.primaryColor
+          }
+          textCondition={
+            side ? ColorConstants.primaryWhite : ColorConstants.primaryColor
+          }
+          onPress={() => {
+            setSide(true);
+            taskData(userId);
+          }}
+          buttonName={'Assigned Task'}
+        />
+      </View>
+      <View
+        style={{
+          height: 30,
+          backgroundColor: ColorConstants.primaryWhite,
+          flexDirection: 'row',
+          marginTop: 10,
+        }}>
+        <InnerTab
+          tabText={'All'}
+          condition={ColorsCondtion.condition(innerSide, 'All')}
+          textCondition={ColorsCondtion.textCondition(innerSide, 'All')}
+          onPress={() => {
+            setInnerSide('All');
+            taskData(userId);
+          }}
+        />
 
-          <InnerTab
-            tabText={'Today'}
-            condition={
-              innerSide === 'today'
-                ? ColorConstants.primaryColor
-                : ColorConstants.primaryWhite
-            }
-            textCondition={
-              innerSide === 'today'
-                ? ColorConstants.primaryColor
-                : ColorConstants.teamHiColor
-            }
-            onPress={() => {
-              setInnerSide('today');
-              taskData(userId);
-            }}
-          />
+        <InnerTab
+          tabText={'Today'}
+          condition={ColorsCondtion.condition(innerSide, 'today')}
+          textCondition={ColorsCondtion.textCondition(innerSide, 'today')}
+          onPress={() => {
+            setInnerSide('today');
+            taskData(userId);
+          }}
+        />
 
-          <InnerTab
-            tabText={'Due'}
-            condition={
-              innerSide === 'due'
-                ? ColorConstants.primaryColor
-                : ColorConstants.primaryWhite
-            }
-            textCondition={
-              innerSide === 'due'
-                ? ColorConstants.primaryColor
-                : ColorConstants.teamHiColor
-            }
-            onPress={() => {
-              setInnerSide('due');
-              taskData(userId);
-            }}
-          />
+        <InnerTab
+          tabText={'Due'}
+          condition={ColorsCondtion.condition(innerSide, 'due')}
+          textCondition={ColorsCondtion.textCondition(innerSide, 'due')}
+          onPress={() => {
+            setInnerSide('due');
+            taskData(userId);
+          }}
+        />
 
-          <InnerTab
-            tabText={'Completed'}
-            condition={
-              innerSide === 'complete'
-                ? ColorConstants.primaryColor
-                : ColorConstants.primaryWhite
-            }
-            textCondition={
-              innerSide === 'complete'
-                ? ColorConstants.primaryColor
-                : ColorConstants.teamHiColor
-            }
-            onPress={() => {
-              setInnerSide('complete');
-              taskData(userId);
-            }}
-          />
-        </View>
-        <Dividers />
-        {!loading && (
-          <View style={{flex:1}}>
-            {side === false ? (
-              innerSide === 'All' ? (
-                getAddData.length > 0 ? (
-                  <ScrollView>
-                    {getAddData.map((data, index) => (
-                      <AllTask
-                        data={data}
-                        key={index}
-                        navigation={navigation}
-                        iconPress={() => {
-                          setData(data);
-                          taskOptionsRef.current.show();
-                        }}
-                      />
-                    ))}
-                  </ScrollView>
-                ) : (
-                  <NoData />
-                )
-              ) : innerSide === 'today' ? (
-                getTodayData.length > 0 ? (
-                  <ScrollView>
-                    {getTodayData.map((data, index) => (
-                      <AllTask
-                        data={data}
-                        key={index}
-                        navigation={navigation}
-                        iconPress={() => {
-                          setData(data);
-                          taskOptionsRef.current.show();
-                        }}
-                      />
-                    ))}
-                  </ScrollView>
-                ) : (
-                  <NoData />
-                )
-              ) : innerSide === 'due' ? (
-                getDueData.length > 0 ? (
-                  <ScrollView>
-                    {getDueData.map((data, index) => (
-                      <AllTask
-                        data={data}
-                        key={index}
-                        navigation={navigation}
-                        iconPress={() => {
-                          setData(data);
-                          taskOptionsRef.current.show();
-                        }}
-                      />
-                    ))}
-                  </ScrollView>
-                ) : (
-                  <NoData />
-                )
-              ) : innerSide === 'complete' ? (
-                getCompleted.length > 0 ? (
-                  <ScrollView>
-                    {getCompleted.map((data, index) => (
-                      <CompleteTask
-                        data={data}
-                        key={index}
-                        navigation={navigation}
-                        iconPress={() => {
-                          setData(data);
-                          taskOptionsRef.current.show();
-                        }}
-                      />
-                    ))}
-                  </ScrollView>
-                ) : (
-                  <NoData />
-                )
-              ) : (
-                <NoData />
-              )
-            ) : innerSide === 'All' ? (
-              getAssigneeAddData.length > 0 ? (
-                <ScrollView>
-                  {getAssigneeAddData.map((data, index) => (
-                    <AllTask
+        <InnerTab
+          tabText={'Completed'}
+          condition={ColorsCondtion.condition(innerSide, 'complete')}
+          textCondition={ColorsCondtion.textCondition(innerSide, 'complete')}
+          onPress={() => {
+            setInnerSide('complete');
+            taskData(userId);
+          }}
+        />
+      </View>
+      <Dividers />
+      {!loading && (
+        <View style={{flex: 1}}>
+          {side === false ? (
+            innerSide === 'All' ? (
+              getAddData.length > 0 ? (
+                <ScrollView
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={loading}
+                      onRefresh={onRefresh}
+                    />
+                  }>
+                  {getAddData.map((data, index) => (
+                    <TaskTile
+                      index={index}
                       data={data}
                       key={index}
-                      navigation={navigation}
+                      navigation={() => {
+                        navigation.navigate('task_details_screen', {
+                          data: data,
+                        });
+                      }}
                       iconPress={() => {
                         setData(data);
                         taskOptionsRef.current.show();
@@ -597,13 +509,24 @@ const HomeScreen = ({navigation}) => {
                 <NoData />
               )
             ) : innerSide === 'today' ? (
-              getAssigneeTodayData.length > 0 ? (
-                <ScrollView>
-                  {getAssigneeTodayData.map((data, index) => (
-                    <AllTask
+              getTodayData.length > 0 ? (
+                <ScrollView
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={loading}
+                      onRefresh={onRefresh}
+                    />
+                  }>
+                  {getTodayData.map((data, index) => (
+                    <TaskTile
+                      index={index}
                       data={data}
                       key={index}
-                      navigation={navigation}
+                      navigation={() => {
+                        navigation.navigate('task_details_screen', {
+                          data: data,
+                        });
+                      }}
                       iconPress={() => {
                         setData(data);
                         taskOptionsRef.current.show();
@@ -615,13 +538,24 @@ const HomeScreen = ({navigation}) => {
                 <NoData />
               )
             ) : innerSide === 'due' ? (
-              getAssigneeDueData.length > 0 ? (
-                <ScrollView>
-                  {getAssigneeDueData.map((data, index) => (
-                    <AllTask
+              getDueData.length > 0 ? (
+                <ScrollView
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={loading}
+                      onRefresh={onRefresh}
+                    />
+                  }>
+                  {getDueData.map((data, index) => (
+                    <TaskTile
+                      index={index}
                       data={data}
                       key={index}
-                      navigation={navigation}
+                      navigation={() => {
+                        navigation.navigate('task_details_screen', {
+                          data: data,
+                        });
+                      }}
                       iconPress={() => {
                         setData(data);
                         taskOptionsRef.current.show();
@@ -633,16 +567,28 @@ const HomeScreen = ({navigation}) => {
                 <NoData />
               )
             ) : innerSide === 'complete' ? (
-              getAssigneeCompleted.length > 0 ? (
-                <ScrollView>
-                  {getAssigneeCompleted.map((data, index) => (
-                    <CompleteTask
+              getCompleted.length > 0 ? (
+                <ScrollView
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={loading}
+                      onRefresh={onRefresh}
+                    />
+                  }>
+                  {getCompleted.map((data, index) => (
+                    <TaskTile
+                      index={index}
                       data={data}
                       key={index}
-                      navigation={navigation}
+                      navigation={() => {
+                        navigation.navigate('task_details_screen', {
+                          data: data,
+                        });
+                      }}
                       iconPress={() => {
                         setData(data);
-                        taskOptionsRef.current.show();
+                        Condition.Completed(data.task_status) &&
+                          taskOptionsRef.current.show();
                       }}
                     />
                   ))}
@@ -652,352 +598,161 @@ const HomeScreen = ({navigation}) => {
               )
             ) : (
               <NoData />
-            )}
-          </View>
-        )}
-        {/* <BottomSheet
-        refer={taskOptionsRef}
-        nextReff={changePriorityRef}
-        backButton={() => taskOptionsRef.current.hide()}
-        widget={
-          <TaskOption
-            status={getBottomData.task_status}
-            onPressPriority={() => {
-              changePriorityRef.current.show();
-            }}
-            onPressComplete={() => {
-              // taskOptionsRef.current.hide();
-              completeOptionRef.current.show();
-            }}
-            onPressDelete={() => {
-              // taskOptionsRef.current.hide();
-              deleteOptionRef.current.show();
-            }}
-            onPressReopen={() => {
-              // taskOptionsRef.current.hide();
-              reopenOptionRef.current.show();
-            }}
-            onPressChangeAssignee={() => {
-              // taskOptionsRef.current.hide();
-              assigneeOptionRef.current.show();
-            }}
-            onPressApproved={() => {
-              // taskOptionsRef.current.hide();
-              approveTaskRef.current.show();
-            }}
-          />
-
-        }
-      />
-      <BottomSheet
-        refer={completeOptionRef}
-        backButton={() => completeOptionRef.current.hide()}
-        widget={
-          <TaskAlert
-            buttonLabel={'Complete'}
-            label={'Are you sure you want to close the task.'}
-            onBack={() => completeOptionRef.current.hide()}
-            onPress={() => {
-              getCompleteTask('Completed');
-              selectApprovedRef.current.hide();
-            }}
-          />
-        }
-      />
-
-      <BottomSheet
-        refer={selectApprovedRef}
-        backButton={() => selectApprovedRef.current.hide()}
-        widget={
-          <TaskAlert
-            buttonLabel={'Approve'}
-            label={'Are you sure you want to Approved the task.'}
-            onBack={() => selectApprovedRef.current.hide()}
-            onPress={() => {
-              getCompleteTask('Approved');
-              selectApprovedRef.current.hide();
-            }}
-          />
-        }
-      />
-
-      <BottomSheet
-        refer={assigneeOptionRef}
-        backButton={() => assigneeOptionRef.current.hide()}
-        widget={
-          <View>
-            <Label name={'Assignee'} />
-            <View
-              style={{
-                flexDirection: 'column',
-              }}>
-              {assignee.length > 0 && searchUser.length > 0 ? (
-                <ScrollView
-                  horizontal={true}
-                  contentContainerStyle={{
-                    flexGrow: 1,
-                    paddingVertical: 10,
-                  }}>
-                  {searchUser.length > 0 ? (
-                    searchUser.map((userid, i) => (
-                      <View
-                        key={i}
-                        style={{
-                          flexDirection: 'row',
-                        }}>
-                        <View style={styles.assigneeChip}>
-                          <TouchableOpacity
-                            onPress={() => {
-                              handleRemove(userid.id);
-                              checkedItems[userid.id] = false;
-                              console.log(searchUser);
-                            }}
-                            style={styles.cancelButton}>
-                            <MaterialIcons
-                              name={'clear'}
-                              color={ColorConstants.primaryWhite}
-                              size={12}
-                            />
-                          </TouchableOpacity>
-                          <Text style={styles.chipText}>{userid.name}</Text>
-                        </View>
-                        <AppSize width={10} />
-                      </View>
-                    ))
-                  ) : (
-                    <View />
-                  )}
-                </ScrollView>
-              ) : (
-                <View style={{flex: 1, flexDirection: 'column'}} />
-              )}
-            </View>
-            <TouchableOpacity
-              onPress={() => {
-                getAssignee(project_id);
-                selectAssigneeRef.current.show();
-              }}
-              style={styles.add}>
-              <Text style={styles.add_text}>+ Add</Text>
-            </TouchableOpacity>
-            <View style={{paddingVertical: 10}}>
-              <RowButton
-                onPress={() => {
-                  if (searchUser.length === 0) {
-                    ToastMessage.showMessage('Please Select Assignee First');
-                  } else {
-                    updateAssignee();
-                  }
-                }}
-                onback={() => {
-                  assigneeOptionRef.current.hide();
-                }}
-                text={'Select'}
-              />
-            </View>
-          </View>
-        }
-      />
-
-      <BottomSheet
-        refer={selectAssigneeRef}
-        backButton={() => selectAssigneeRef.current.hide()}
-        widget={
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'column',
-              paddingHorizontal: 10,
-              backgroundColor: ColorConstants.primaryWhite,
-            }}>
-            <SearchBox
-              onChangeText={handleSearch}
-              onPress={() => {
-                handleSearch(searchQuery);
-              }}
-            />
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'column',
-              }}>
-              {assignee.length > 0 ? (
-                <ScrollView
-                  contentContainerStyle={{
-                    flexGrow: 1,
-                    paddingVertical: 10,
-                  }}>
-                  {assignee.map((data, index) => (
-                    <View
-                      key={index}
-                      style={{
-                        flex: 1,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                      }}>
-                      <Checkbox.Item
-                        label={data.name}
-                        labelStyle={{
-                          width: '90%',
-                        }}
-                        status={
-                          selectUser.length > 0
-                            ? searchUser.map(e => e === data.id) ===
-                              checkedItems[data.id]
-                              ? 'checked'
-                              : 'unchecked'
-                            : checkedItems[data.id]
-                            ? 'checked'
-                            : 'unchecked'
-                        }
-                        onPress={() => {
-                          setCheckedItems({
-                            ...checkedItems,
-                            [data.id]: !checkedItems[data.id],
-                          });
-                          if (!checkedItems[data.id]) {
-                            searchUser.push({id: data.id, name: data.name});
-                            setSearchData(searchUser);
-                          } else {
-                            searchUser.pop({id: data.id, name: data.name});
-                            setSearchData(searchUser);
-                          }
-                          console.log(checkedItems);
-                        }}
-                      />
-                    </View>
-                  ))}
-                </ScrollView>
-              ) : (
-                <View style={{height: 200, flexDirection: 'column'}}>
-                  <NoData />
-                </View>
-              )}
-            </View>
-            <View
-              style={{
-                paddingVertical: 10,
-              }}>
-              <RowButton
-                onPress={() => {
-                  selectAssigneeRef.current.hide();
-                }}
-                onback={() => {
-                  selectAssigneeRef.current.hide();
-                }}
-                text={'Done'}
-              />
-            </View>
-          </View>
-        }
-      />
-
-      <BottomSheet
-        refer={deleteOptionRef}
-        backButton={() => deleteOptionRef.current.hide()}
-        widget={
-          <TaskAlert
-            label={'Are you sure you want to delete the task.'}
-            buttonLabel={'Delete'}
-            style={{backgroundColor: ColorConstants.highLightColor}}
-            onBack={() => deleteOptionRef.current.hide()}
-            onPress={() => {
-              getDeleteTask();
-              deleteOptionRef.current.hide();
-            }}
-          />
-        }
-      />
-      <BottomSheet
-        refer={reopenOptionRef}
-        backButton={() => reopenOptionRef.current.hide()}
-        widget={
-          <TaskAlert
-            label={'Are you sure you want to Reopen the task.'}
-            buttonLabel={'Reopen'}
-            onBack={() => reopenOptionRef.current.hide()}
-            onPress={() => {
-              getCompleteTask('Reopen');
-              selectApprovedRef.current.hide();
-            }}
-          />
-        }
-      />
-      <BottomSheet
-        refer={changePriorityRef}
-        backButton={() => changePriorityRef.current.hide()}
-        widget={
-          <View style={styles.radioContainerSyle}>
-            <View style={styles.radiobuttonContainer}>
-              <View>
-                <Label name={'Select Priority'} />
-              </View>
-              <RadioButton.Group onValueChange={value => setChecked(value)} value={checked}>
-                <View style={styles.row}>
-                  <RadioButton.Item
-                    color={ColorConstants.highLightColor}
-                    label="High"
-                    value="High"
-                    labelStyle={styles.radioLabel}
+            )
+          ) : innerSide === 'All' ? (
+            getAssigneeAddData.length > 0 ? (
+              <ScrollView
+                refreshControl={
+                  <RefreshControl refreshing={loading} onRefresh={onRefresh} />
+                }>
+                {getAssigneeAddData.map((data, index) => (
+                  <TaskTile
+                    index={index}
+                    data={data}
+                    key={index}
+                    navigation={() => {
+                      navigation.navigate('task_details_screen', {
+                        data: data,
+                      });
+                    }}
+                    iconPress={() => {
+                      setData(data);
+                      taskOptionsRef.current.show();
+                    }}
                   />
-                  <RadioButton.Item
-                    color={ColorConstants.highLightColor}
-                    label="Low"
-                    value="Low"
-                    labelStyle={styles.radioLabel}
+                ))}
+              </ScrollView>
+            ) : (
+              <NoData />
+            )
+          ) : innerSide === 'today' ? (
+            getAssigneeTodayData.length > 0 ? (
+              <ScrollView
+                refreshControl={
+                  <RefreshControl refreshing={loading} onRefresh={onRefresh} />
+                }>
+                {getAssigneeTodayData.map((data, index) => (
+                  <TaskTile
+                    index={index}
+                    data={data}
+                    key={index}
+                    navigation={() => {
+                      navigation.navigate('task_details_screen', {
+                        data: data,
+                      });
+                    }}
+                    iconPress={() => {
+                      setData(data);
+                      taskOptionsRef.current.show();
+                    }}
                   />
-                </View>
-              </RadioButton.Group>
-            </View>
-            <AppButton text={'Change Priority'} onPress={()=> getChangePriority(checked)} />
-          </View>
-        }
-      /> */}
-        <BottomSheetConditions
-          taskData={getBottomData}
-          assigneeOptionRef={assigneeOptionRef}
-          bottomSheetRef={taskOptionsRef}
-          changePriorityRef={changePriorityRef}
-          checked={checked}
-          completeOptionRef={completeOptionRef}
-          approveTaskRef={selectApprovedRef}
-          deleteOptionRef={deleteOptionRef}
-          selectAssigneeRef={selectAssigneeRef}
-          project_id={getBottomData.project_id}
-          onPressApproved={() => {
-            getCompleteTask('Approved');
-            taskOptionsRef.current.hide();
-            selectApprovedRef.current.hide();
-          }}
-          onPressComplete={() => {
-            taskOptionsRef.current.hide();
-            getCompleteTask('Completed');
-            completeOptionRef.current.hide();
-          }}
-          onPressDelete={() => {
-            getDeleteTask();
-            taskOptionsRef.current.hide();
-            deleteOptionRef.current.hide();
-          }}
-          onPressPriority={() => {
-            taskOptionsRef.current.hide(); 
-            getChangePriority(getBottomData.id, checked);
-          }}
-          onPressReopen={() => {
-            getCompleteTask('Reopen');
-            taskOptionsRef.current.hide();
-            reopenOptionRef.current.hide();
-          }}
-          onValueChange={value => {
-            setChecked(value);
-            console.log(value);
-          }}
-          reopenOptionRef={reopenOptionRef}
-          status={getBottomData.task_status}
-        />
-        {loading && <Loading />}
-      </View>
-    
+                ))}
+              </ScrollView>
+            ) : (
+              <NoData />
+            )
+          ) : innerSide === 'due' ? (
+            getAssigneeDueData.length > 0 ? (
+              <ScrollView
+                refreshControl={
+                  <RefreshControl refreshing={loading} onRefresh={onRefresh} />
+                }>
+                {getAssigneeDueData.map((data, index) => (
+                  <TaskTile
+                    index={index}
+                    data={data}
+                    key={index}
+                    navigation={() => {
+                      navigation.navigate('task_details_screen', {
+                        data: data,
+                      });
+                    }}
+                    iconPress={() => {
+                      setData(data);
+                      taskOptionsRef.current.show();
+                    }}
+                  />
+                ))}
+              </ScrollView>
+            ) : (
+              <NoData />
+            )
+          ) : innerSide === 'complete' ? (
+            getAssigneeCompleted.length > 0 ? (
+              <ScrollView
+                refreshControl={
+                  <RefreshControl refreshing={loading} onRefresh={onRefresh} />
+                }>
+                {getAssigneeCompleted.map((data, index) => (
+                  <TaskTile
+                    index={index}
+                    data={data}
+                    key={index}
+                    navigation={() => {
+                      navigation.navigate('task_details_screen', {
+                        data: data,
+                      });
+                    }}
+                    iconPress={() => {
+                      setData(data);
+                      Condition.Completed(data.task_status) &&
+                        taskOptionsRef.current.show();
+                    }}
+                  />
+                ))}
+              </ScrollView>
+            ) : (
+              <NoData />
+            )
+          ) : (
+            <NoData />
+          )}
+        </View>
+      )}
+      <BottomSheetConditions
+        taskData={getBottomData}
+        assigneeOptionRef={assigneeOptionRef}
+        bottomSheetRef={taskOptionsRef}
+        changePriorityRef={changePriorityRef}
+        checked={checked}
+        completeOptionRef={completeOptionRef}
+        approveTaskRef={selectApprovedRef}
+        deleteOptionRef={deleteOptionRef}
+        selectAssigneeRef={selectAssigneeRef}
+        project_id={getBottomData.project_id}
+        onPressApproved={() => {
+          getCompleteTask('Approved');
+          taskOptionsRef.current.hide();
+          selectApprovedRef.current.hide();
+        }}
+        onPressComplete={() => {
+          taskOptionsRef.current.hide();
+          getCompleteTask('Completed');
+          completeOptionRef.current.hide();
+        }}
+        onPressDelete={() => {
+          getDeleteTask();
+          taskOptionsRef.current.hide();
+          deleteOptionRef.current.hide();
+        }}
+        onPressPriority={() => {
+          taskOptionsRef.current.hide();
+          getChangePriority(getBottomData.id, checked);
+        }}
+        onPressReopen={() => {
+          getCompleteTask('Reopen');
+          taskOptionsRef.current.hide();
+          reopenOptionRef.current.hide();
+        }}
+        onValueChange={value => {
+          setChecked(value);
+          console.log(value);
+        }}
+        reopenOptionRef={reopenOptionRef}
+        status={getBottomData.task_status}
+      />
+      {loading && <Loading />}
+    </View>
   );
 };
 

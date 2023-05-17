@@ -15,9 +15,11 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {Loading} from '../components/no_data_found';
 import axios from 'axios';
 import {ApiConstants, BaseUrl1} from '../constants/api_constants';
-import ToastMessage from '../components/toast_message';
+import toastMessage from '../components/toast_message';
+import { useToast } from 'react-native-toast-notifications';
 
 const CreatePassword = ({navigation, route}) => {
+  const toast = useToast();
   const [isLoading, setLoading] = useState(false);
   const [visibility, setVisibility] = useState(false);
   const [confirmvisibility, setConFirmVisibility] = useState(false);
@@ -31,11 +33,11 @@ const CreatePassword = ({navigation, route}) => {
   const getRegister = async () => {
     try {
       if (password === '') {
-        ToastMessage.showMessage('Please enter the password');
+        toastMessage(toast, 'Please enter the password');
       } else if (confirmpassword === '') {
-        ToastMessage.showMessage('Please enter the password');
+        toastMessage(toast, 'Please enter the password');
       } else if (password !== confirmpassword) {
-        ToastMessage.showMessage('Please enter the password');
+        toastMessage(toast, 'Please enter the password');
       } else {
         setLoading(true);
         comeFrom === 'register'
@@ -50,14 +52,14 @@ const CreatePassword = ({navigation, route}) => {
                 if (response.status === 200) {
                   if (response.data.error === 0) {
                     setLoading(false);
-                    ToastMessage.showMessage(response.data?.message);
+                    toastMessage(toast, response.data?.message);
                     navigation.navigate('sign_in');
                   } else {
                     setLoading(false);
                   }
                 } else {
                   setLoading(false);
-                  ToastMessage.showMessage(response.data?.error?.email);
+                  toastMessage(toast, response.data?.error?.email);
                 }
               })
               .catch(error => {
@@ -73,7 +75,7 @@ const CreatePassword = ({navigation, route}) => {
                 if (response.status === 200) {
                   if (response.data.error === 0) {
                     setLoading(false);
-                    ToastMessage.showMessage(response.data?.message);
+                    toastMessage(toast, response.data?.message);
                     navigation.navigate('sign_in');
                   }
                 }

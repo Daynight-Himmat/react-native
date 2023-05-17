@@ -59,40 +59,34 @@ const TeamScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <SearchBox onChangeText={handleSearch} />      
-      {isLoading === false ? (
-        searchUser.length > 0 ? (
-          <ScrollView>
-            {searchUser.length > 0 ? (
-              searchUser.map((data, index) => (
-                <PersonTile
-                  key={index}
-                  image={data.profile_image}
-                  title={data.name}
-                  subTitle={data.designation}
-                  imagePress={() => {
-                    navigation.navigate('team_profile', {
-                      index: index,
-                      data: data,
-                    });
-                  }}
-                  tilePress={() => {
-                    navigation.navigate('team_task_screen', {
-                      data: data,
-                    });
-                  }}
-                />
-              ))
-            ) : (
-              <NoData />
-            )}
-          </ScrollView>
-        ) : (
-          <NoData />
-        )
+      <SearchBox onChangeText={handleSearch} />
+      {searchUser.length > 0 ? (
+        <ScrollView>
+          {searchUser.map((data, index) => (
+              <PersonTile
+                key={index}
+                image={data.profile_image}
+                title={data.name}
+                subTitle={data.designation}
+                imagePress={() => {
+                  navigation.navigate('team_profile', {
+                    index: index,
+                    data: data,
+                  });
+                }}
+                tilePress={() => {
+                  navigation.navigate('team_task_screen', {
+                    data: data,
+                  });
+                }}
+              />
+            ))}
+        </ScrollView>
       ) : (
-        <Loading />
+        <NoData />
       )}
+
+      {isLoading && <Loading />}
     </View>
   );
 };

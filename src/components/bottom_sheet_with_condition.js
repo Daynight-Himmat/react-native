@@ -22,7 +22,8 @@ import AppSize from './size';
 import {NoData} from './no_data_found';
 import SearchBox from './search_box';
 import RowButton from './row_button';
-import ToastMessage from './toast_message';
+import toastMessage from './toast_message';
+import { useToast } from 'react-native-toast-notifications';
 
 const BottomSheetConditions = ({
   bottomSheetRef,
@@ -45,6 +46,7 @@ const BottomSheetConditions = ({
   project_id,
   taskData,
 }) => {
+  const toast = useToast();
   const [assignee, setAssignee] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [searchUser, setSearchData] = useState([]);
@@ -83,7 +85,7 @@ const BottomSheetConditions = ({
         new_assignee: searchUser.map(item => item.id).toString(),
       });
       if (response.status === 200) {
-        ToastMessage.showMessage(response.data?.message);
+        toastMessage(toast, response.data?.message);
         assigneeOptionRef.current.hide();
       }
       setLoading(false);
@@ -240,7 +242,7 @@ const BottomSheetConditions = ({
               <RowButton
                 onPress={() => {
                   if (searchUser.length === 0) {
-                    ToastMessage.showMessage('Please Select Assignee First');
+                    toastMessage(toast, 'Please Select Assignee First');
                   } else {
                     updateAssignee();
                   }

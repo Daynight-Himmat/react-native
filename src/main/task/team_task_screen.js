@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {View, StyleSheet, ScrollView} from 'react-native';
+import {View, StyleSheet, ScrollView, RefreshControl} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,13 +11,18 @@ import movement from 'moment';
 import Dividers from '../../components/divider';
 import AllTask from '../tabs/task_type/all_task';
 import BottomSheetConditions from '../../components/bottom_sheet_with_condition';
-import ToastMessage from '../../components/toast_message';
+import toastMessage from '../../components/toast_message';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import FontConstants from '../../constants/fonts';
+import {useToast} from 'react-native-toast-notifications';
+import Condition from '../../components/conditions';
+import TaskTile from '../../components/task_tile';
+import ColorsCondtion from '../../components/color_condition';
 
 const Tab = createMaterialTopTabNavigator();
 
 const TeamTaskScreen = ({navigation, route}) => {
+  const toast = useToast();
   const {data} = route.params;
   const [token, setToken] = useState([]);
   const [checked, setChecked] = useState('High');
@@ -47,10 +52,10 @@ const TeamTaskScreen = ({navigation, route}) => {
   const deleteTaskUrl = BaseUrl(ApiConstants.changeTaskDelete);
 
   const checking = async ({type}) => {
-    setLoading(true);
     try {
       console.log('this data---', type);
       var token = await AsyncStorage.getItem('token');
+      setLoading(true);
       await axios
         .post(taskListUrl, {
           token: token,
@@ -59,40 +64,33 @@ const TeamTaskScreen = ({navigation, route}) => {
         })
         .then(response => {
           if (response.status === 200) {
-            if (response.status === 200) {
-              setAllTaskList(
-                response.data.data?.data.filter(
-                  item =>
-                    item.task_status === 'Active' ||
-                    item.task_status === 'Reopen',
-                ),
-              );
-              setTodayTaskList(
-                response.data.data?.data.filter(
-                  item =>
-                    movement(item.created_at.slice(0, 10)).format(
-                      'yyyy-MM-DD',
-                    ) === movement().format('yyyy-MM-DD'),
-                ),
-              );
-              setDueTaskList(
-                response.data.data?.data.filter(
-                  item =>
-                    movement(item.created_at.slice(0, 10)).format(
-                      'yyyy-MM-DD',
-                    ) !== movement().format('yyyy-MM-DD') &&
-                    item.task_status !== 'Completed',
-                ),
-              );
-              setCompleteTaskList(
-                response.data.data?.data.filter(
-                  item =>
-                    item.task_status === 'Completed' ||
-                    item.task_status === 'Approved',
-                ),
-              );
-              setLoading(false);
-            }
+            setAllTaskList(
+              response.data.data?.data.filter(item =>
+                Condition.activeAndReopen(item.task_status),
+              ),
+            );
+            setTodayTaskList(
+              response.data.data?.data.filter(
+                item =>
+                  movement(item.created_at.slice(0, 10)).format(
+                    'yyyy-MM-DD',
+                  ) === movement().format('yyyy-MM-DD'),
+              ),
+            );
+            setDueTaskList(
+              response.data.data?.data.filter(
+                item =>
+                  movement(item.created_at.slice(0, 10)).format(
+                    'yyyy-MM-DD',
+                  ) !== movement().format('yyyy-MM-DD') &&
+                  Condition.activeAndReopen(item.task_status),
+              ),
+            );
+            setCompleteTaskList(
+              response.data.data?.data.filter(
+                Condition.StatusCondition(item.task_status),
+              ),
+            );
             setLoading(false);
           }
         })
@@ -123,7 +121,7 @@ const TeamTaskScreen = ({navigation, route}) => {
             navigation.navigate('approve', {
               taskStatus: task_status,
             });
-            ToastMessage.showMessage(response.data?.message);
+            toastMessage(toast, response.data?.message);
           }
         })
         .catch(error => {
@@ -156,7 +154,7 @@ const TeamTaskScreen = ({navigation, route}) => {
               taskStatus: 'Priority',
             });
             changePriorityRef.current.hide();
-            ToastMessage.showMessage(response.data?.message);
+            toastMessage(toast, response.data?.message);
           }
         })
         .catch(error => {
@@ -187,7 +185,7 @@ const TeamTaskScreen = ({navigation, route}) => {
             navigation.navigate('approve', {
               taskStatus: 'Delete',
             });
-            ToastMessage.showMessage(response.data?.message);
+            toastMessage(toast, response.data?.message);
           }
         })
         .catch(error => {
@@ -200,6 +198,11 @@ const TeamTaskScreen = ({navigation, route}) => {
   };
 
   useEffect(() => {
+    checking({type: innerSide});
+  }, []);
+
+  const onRefresh = React.useCallback(() => {
+    setLoading(true);
     checking({type: innerSide});
   }, []);
 
@@ -232,16 +235,8 @@ const TeamTaskScreen = ({navigation, route}) => {
         }}>
         <InnerTab
           tabText={'All'}
-          condition={
-            innerSide === 'All'
-              ? ColorConstants.primaryColor
-              : ColorConstants.primaryWhite
-          }
-          textCondition={
-            innerSide === 'All'
-              ? ColorConstants.primaryColor
-              : ColorConstants.teamHiColor
-          }
+          condition={ColorsCondtion.condition(innerSide, 'All')}
+          textCondition={ColorsCondtion.textCondition(innerSide, 'All')}
           onPress={() => {
             setInnerSide('All');
             checking({type: 'All'});
@@ -250,16 +245,8 @@ const TeamTaskScreen = ({navigation, route}) => {
 
         <InnerTab
           tabText={'Today'}
-          condition={
-            innerSide === 'today'
-              ? ColorConstants.primaryColor
-              : ColorConstants.primaryWhite
-          }
-          textCondition={
-            innerSide === 'today'
-              ? ColorConstants.primaryColor
-              : ColorConstants.teamHiColor
-          }
+          condition={ColorsCondtion.condition(innerSide, 'today')}
+          textCondition={ColorsCondtion.textCondition(innerSide, 'today')}
           onPress={() => {
             setInnerSide('today');
             checking({type: 'today'});
@@ -268,16 +255,8 @@ const TeamTaskScreen = ({navigation, route}) => {
 
         <InnerTab
           tabText={'Due'}
-          condition={
-            innerSide === 'due'
-              ? ColorConstants.primaryColor
-              : ColorConstants.primaryWhite
-          }
-          textCondition={
-            innerSide === 'due'
-              ? ColorConstants.primaryColor
-              : ColorConstants.teamHiColor
-          }
+          condition={ColorsCondtion.condition(innerSide, 'due')}
+          textCondition={ColorsCondtion.textCondition(innerSide, 'due')}
           onPress={() => {
             setInnerSide('due');
             checking({type: 'due'});
@@ -286,16 +265,8 @@ const TeamTaskScreen = ({navigation, route}) => {
 
         <InnerTab
           tabText={'Completed'}
-          condition={
-            innerSide === 'complete'
-              ? ColorConstants.primaryColor
-              : ColorConstants.primaryWhite
-          }
-          textCondition={
-            innerSide === 'complete'
-              ? ColorConstants.primaryColor
-              : ColorConstants.teamHiColor
-          }
+          condition={ColorsCondtion.condition(innerSide, 'complete')}
+          textCondition={ColorsCondtion.textCondition(innerSide, 'complete')}
           onPress={() => {
             setInnerSide('complete');
             checking({type: 'Completed'});
@@ -306,17 +277,22 @@ const TeamTaskScreen = ({navigation, route}) => {
       <View style={{flex: 1, paddingHorizontal: 10}}>
         {innerSide === 'All' ? (
           allTask.length > 0 ? (
-            <ScrollView>
+            <ScrollView
+              refreshControl={
+                <RefreshControl refreshing={loading} onRefresh={onRefresh} />
+              }>
               {allTask.map((data, index) => (
-                <AllTask
+                <TaskTile
+                  index={index}
                   data={data}
                   key={index}
-                  navigation={navigation}
+                  navigation={() => {
+                    navigation.navigate('task_details_screen', {
+                      data: data,
+                    });
+                  }}
                   iconPress={() => {
                     setData(data);
-                    setTaskId(data.id);
-                    setProjectId(data.project_id);
-                    setTaskStatus(data.task_status);
                     taskOptionsRef.current.show();
                   }}
                 />
@@ -327,17 +303,22 @@ const TeamTaskScreen = ({navigation, route}) => {
           )
         ) : innerSide === 'today' ? (
           todayTask.length > 0 ? (
-            <ScrollView>
+            <ScrollView
+              refreshControl={
+                <RefreshControl refreshing={loading} onRefresh={onRefresh} />
+              }>
               {todayTask.map((data, index) => (
-                <AllTask
+                <TaskTile
+                  index={index}
                   data={data}
                   key={index}
-                  navigation={navigation}
+                  navigation={() => {
+                    navigation.navigate('task_details_screen', {
+                      data: data,
+                    });
+                  }}
                   iconPress={() => {
                     setData(data);
-                    setTaskId(data.id);
-                    setProjectId(data.project_id);
-                    setTaskStatus(data.task_status);
                     taskOptionsRef.current.show();
                   }}
                 />
@@ -348,17 +329,23 @@ const TeamTaskScreen = ({navigation, route}) => {
           )
         ) : innerSide === 'due' ? (
           dueTask.length > 0 ? (
-            <ScrollView>
+            <ScrollView
+              refreshControl={
+                <RefreshControl refreshing={loading} onRefresh={onRefresh} />
+              }>
               {dueTask.map((data, index) => (
-                <AllTask
+                <TaskTile
+                  index={index}
                   data={data}
                   key={index}
-                  navigation={navigation}
+                  navigation={() => {
+                    navigation.navigate('task_details_screen', {
+                      data: data,
+                    });
+                  }}
                   iconPress={() => {
                     setData(data);
-                    setTaskId(data.id);
-                    setProjectId(data.project_id);
-                    setTaskStatus(data.task_status);
+
                     taskOptionsRef.current.show();
                   }}
                 />
@@ -369,18 +356,24 @@ const TeamTaskScreen = ({navigation, route}) => {
           )
         ) : innerSide === 'complete' ? (
           completeTask.length > 0 ? (
-            <ScrollView>
+            <ScrollView
+              refreshControl={
+                <RefreshControl refreshing={loading} onRefresh={onRefresh} />
+              }>
               {completeTask.map((data, index) => (
-                <AllTask
+                <TaskTile
+                  index={index}
                   data={data}
                   key={index}
-                  navigation={navigation}
+                  navigation={() => {
+                    navigation.navigate('task_details_screen', {
+                      data: data,
+                    });
+                  }}
                   iconPress={() => {
                     setData(data);
-                    setTaskId(data.id);
-                    setProjectId(data.project_id);
-                    setTaskStatus(data.task_status);
-                    taskOptionsRef.current.show();
+                    Condition.Completed(data.task_status) &&
+                      taskOptionsRef.current.show();
                   }}
                 />
               ))}
@@ -411,7 +404,7 @@ const TeamTaskScreen = ({navigation, route}) => {
           deleteOptionRef.current.hide();
         }}
         onPressApproved={() => {
-          getCompleteTask('Approve');
+          getCompleteTask('Approved');
           approveTaskRef.current.hide();
         }}
         onPressPriority={() => getChangePriority(taskId, checked)}
@@ -421,7 +414,7 @@ const TeamTaskScreen = ({navigation, route}) => {
         }}
         onValueChange={value => setChecked(value)}
         reopenOptionRef={reopenOptionRef}
-        status={taskStatus}
+        status={getBottomData.task_status}
       />
       {loading && <Loading />}
     </View>
@@ -432,7 +425,6 @@ const styles = StyleSheet.create({
   container: {
     height: '100%',
     width: '100%',
-    flexDirection: 'column',
     backgroundColor: ColorConstants.primaryWhite,
   },
   tab_container: {
@@ -453,7 +445,7 @@ const styles = StyleSheet.create({
   app_bar_title: {
     fontWeight: '600',
     fontSize: 17,
-    fontFamily: FontConstants.semiBold
+    fontFamily: FontConstants.semiBold,
   },
 });
 

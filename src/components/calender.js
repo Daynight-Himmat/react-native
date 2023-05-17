@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     indicatorColor: 'blue',
     textDayFontFamily: FontConstants.semiBold,
     textMonthFontFamily: FontConstants.semiBold,
-    textDayHeaderFontFamily: FontConstants.ragular,
+    textDayHeaderFontFamily: FontConstants.semiBold,
     textDayFontWeight: '700',
     textDayHeaderFontWeight: '600',
     textDayFontSize: 12,

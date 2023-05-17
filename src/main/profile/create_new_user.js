@@ -8,7 +8,7 @@ import AppSize from '../../components/size';
 import {ViewProfileButton} from '../../components/text_button';
 import AppButton from '../../components/app_button';
 import {ApiConstants, BaseUrl1} from '../../constants/api_constants';
-import AppHeader from '../../components/app_header';
+import {AppHeader} from '../../components/app_header';
 
 const CreateProfile = ({navigation}) => {
   const [isLoading, setLoading] = useState(false);

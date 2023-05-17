@@ -13,13 +13,13 @@ import {
 import ColorConstants from '../../constants/color_constants';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import AppHeader from '../../components/app_header';
+import {AppHeader} from '../../components/app_header';
 import {ViewProfileButton} from '../../components/text_button';
 import {Label} from '../../components/label';
 import FontConstants from '../../constants/fonts';
 import AppButton from '../../components/app_button';
 import AppSize from '../../components/size';
-import ToastMessage from '../../components/toast_message';
+import toastMessage from '../../components/toast_message';
 import RowButton from '../../components/row_button';
 import axios from 'axios';
 import {
@@ -31,9 +31,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import {Loading} from '../../components/no_data_found';
 import {Avatar} from '@rneui/themed';
+import { useToast } from 'react-native-toast-notifications';
 
 const EditProfile = ({navigation, route}) => {
   // const {data} = route.params;
+  const toast = useToast();
   const [modalVisible, setModalVisible] = useState(false);
   const [data, setData] = useState();
   const [value, setValue] = useState('');
@@ -103,8 +105,8 @@ const EditProfile = ({navigation, route}) => {
       });
       if (response.status === 200) {
         isImagePick === true
-          ? ToastMessage.showMessage(response.data?.message)
-          : ToastMessage.showMessage(show(label));
+          ? toastMessage(toast, response.data?.message)
+          : toastMessage(toast, show(label));
         updateUser();
       }
     } catch (error) {
@@ -212,7 +214,7 @@ const EditProfile = ({navigation, route}) => {
                 onPress={() => {
                   if (label === 'Number') {
                     if (value.length !== 10) {
-                      ToastMessage.showMessage('Enter the valid Number');
+                      toastMessage(toast, 'Enter the valid Number');
                     } else {
                       updateProfile();
                       setModalVisible(!modalVisible);

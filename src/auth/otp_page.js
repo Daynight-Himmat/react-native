@@ -7,11 +7,13 @@ import OTPInput from 'react-native-otp-forminput';
 import AppButton from '../components/app_button';
 import {HighLightLabel, LightText} from '../components/label';
 import axios from 'axios';
-import ToastMessage from '../components/toast_message';
+import toastMessage from '../components/toast_message';
 import {ApiConstants, BaseUrl1} from '../constants/api_constants';
 import {Loading} from '../components/no_data_found';
+import { useToast } from 'react-native-toast-notifications';
 
 const OtpPage = ({navigation, route}) => {
+  const toast = useToast();
   const {email, name, mobile, otp, comeFrom} = route.params;
   const [isLoading, setLoading] = useState(false);
   const [getOtp, setOtp] = useState(false);
@@ -20,8 +22,8 @@ const OtpPage = ({navigation, route}) => {
   const getVerifyOtp = async () => {
     try {
       if (getOtp === '') {
-        ToastMessage.showMessage(`Otp Invalid ${getOtp} ${otp}`);
-        ToastMessage.showMessage('Otp Invalid');
+        toastMessage(toast, `Otp Invalid ${getOtp} ${otp}`);
+        toastMessage(toast, 'Otp Invalid');
       } else {
         setLoading(true);
         await axios
@@ -32,6 +34,7 @@ const OtpPage = ({navigation, route}) => {
           .then(response => {
             if (response.status === 200) {
               setLoading(false);
+              toastMessage(toast, response.data?.message);
               navigation.navigate('create_pass', {
                 email: email,
                 name: name,

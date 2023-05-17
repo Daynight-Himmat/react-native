@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   Modal,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Label} from '../../components/label';
@@ -24,15 +25,20 @@ import {RadioButton, Checkbox} from 'react-native-paper';
 import SearchBox from '../../components/search_box';
 import {Loading, NoData} from '../../components/no_data_found';
 import {MaterialIcons} from '../../components/icons';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import moment from 'moment';
-import AppHeader from '../../components/app_header';
-import ToastMessage from '../../components/toast_message';
+import {AppHeader} from '../../components/app_header';
+import toastMessage from '../../components/toast_message';
 import BottomSheet from '../../components/bottom_sheet';
 import CalenderContainer from '../../components/calender';
+import {useToast} from 'react-native-toast-notifications';
+import {Avatar} from '@rneui/themed';
+import ImageCropPicker from 'react-native-image-crop-picker';
+import TimeCondition from '../../components/time_condition';
+import DropDownMenu from '../../components/dropdown';
 
 const AddTask = ({navigation, route}) => {
   const {data, comeFrom} = route?.params;
+  const toast = useToast();
   const [isLoading, setLoading] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -52,6 +58,7 @@ const AddTask = ({navigation, route}) => {
   const {height, width} = Dimensions.get('screen');
   const selectUser = [];
   const [modalVisible, setModalVisible] = useState(false);
+  const [imageUri, updateImage] = useState();
 
   const url = BaseUrl(ApiConstants.myProjectList);
   const url1 = BaseUrl(ApiConstants.projectWiseMember);
@@ -108,32 +115,83 @@ const AddTask = ({navigation, route}) => {
   const submitTask = async () => {
     try {
       if (!title) {
-        ToastMessage.showMessage('Title is required');
+        toastMessage(toast, 'Title is required');
       } else if (searchUser.length === 0) {
-        ToastMessage.showMessage('Assignee required');
+        toastMessage(toast, 'Assignee required');
       } else if (!getProjectId) {
-        ToastMessage.showMessage('Project is required');
+        toastMessage(toast, 'Project is required');
       } else {
         setLoading(true);
         const token = await AsyncStorage.getItem('token');
         const user_Id = await AsyncStorage.getItem('user_id');
-        const response = await axios.post(addTaskUrl, {
-          token: token,
-          task_title: title,
-          priority: priority,
-          task_deadline: getDeadline,
-          client_view: true,
-          assigned_status: searchUser.length === 0 ? 'No' : 'Yes',
-          self: searchUser.length === 0 ? 'Yes' : 'No',
-          description: description,
-          assined_ids: searchUser.map(data => data.id).toString(),
-          project_id: getProjectId,
-          user_id: user_Id,
-          taskImage: '',
+        const formData = new FormData();
+        // formData.append('token', token);
+        formData.append('priority', priority);
+        formData.append('task_title', title);
+        formData.append('task_deadline', getDeadline);
+        formData.append('client_view', 'No');
+        formData.append(
+          'assigned_status',
+          searchUser.length === 0 ? 'No' : 'Yes',
+        );
+        formData.append('self', searchUser.length === 0 ? 'Yes' : 'No');
+        formData.append('description', description);
+        formData.append(
+          'assined_ids',
+          searchUser.map(data => data.id).toString(),
+        );
+        formData.append('project_id', getProjectId);
+        formData.append('user_id', user_Id);
+      
+        formData.append('task_image', {
+            uri: imageUri,
+            type: 'image/jpg',
+            name: 'image',
+          });
+
+          const data = {
+            token: token,
+            task_title: title,
+            priority: priority,
+            task_deadline: getDeadline,
+            client_view: true,
+            assigned_status: searchUser.length === 0 ? 'No' : 'Yes',
+            self: searchUser.length === 0 ? 'Yes' : 'No',
+            description: description,
+            assined_ids: searchUser.map(data => data.id).toString(),
+            project_id: getProjectId,
+            user_id: user_Id,
+            taskImage: '',
+          };
+
+          console.log({
+            token: token,
+            task_title: title,
+            priority: priority,
+            task_deadline: getDeadline,
+            client_view: true,
+            assigned_status: searchUser.length === 0 ? 'No' : 'Yes',
+            self: searchUser.length === 0 ? 'Yes' : 'No',
+            description: description,
+            assined_ids: searchUser.map(data => data.id).toString(),
+            project_id: getProjectId,
+            user_id: user_Id,
+            taskImage: '',
+          });
+        const response = await axios({
+          method: 'post',
+          url: addTaskUrl,
+          data: formData,
+          headers: {
+            accept: 'application/json',
+            'Content-Type': imageUri !== ''
+              ? 'multipart/form-data'
+              : 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
         });
         if (response.status === 200) {
-          console.log(response.data);
-          ToastMessage.showMessage(response.data?.message);
+          toastMessage(toast, response.data?.message);
           setLoading(false);
           navigation.navigate('dashboard');
         }
@@ -147,7 +205,7 @@ const AddTask = ({navigation, route}) => {
   const updateTask = async () => {
     try {
       if (!title) {
-        ToastMessage.showMessage('Title is required');
+        toastMessage(toast, 'Title is required');
       } else {
         setLoading(true);
         const token = await AsyncStorage.getItem('token');
@@ -166,7 +224,7 @@ const AddTask = ({navigation, route}) => {
         });
         if (response.status === 200) {
           console.log(response.data);
-          ToastMessage.showMessage(response.data?.message);
+          toastMessage(toast, response.data?.message);
           setLoading(false);
           navigation.navigate('task_details_screen', {
             data: data,
@@ -185,11 +243,7 @@ const AddTask = ({navigation, route}) => {
   };
 
   useEffect(() => {
-    const initCheckedItems = {};
-    assignee.forEach(item => {
-      initCheckedItems[item.id] = false;
-    });
-    setCheckedItems(initCheckedItems);
+    
     const updateTask = () => {
       if (comeFrom === 'update_task') {
         setTitle(data.task_title);
@@ -247,14 +301,14 @@ const AddTask = ({navigation, route}) => {
             placeholder="Enter task title"
             placeholderTextColor={ColorConstants.textLightBlack1}
             style={styles.inputText}
-            textAlignVertical='center'
+            textAlignVertical="center"
             onChangeText={text => setTitle(text)}
           />
           <Label name={'Description'} style={styles.labelmargin} />
           <TextInput
             value={description}
             placeholder="Enter task Description"
-            textAlignVertical='center'
+            textAlignVertical="center"
             placeholderTextColor={ColorConstants.textLightBlack1}
             style={styles.inputText}
             onChangeText={text => setDescription(text)}
@@ -263,33 +317,16 @@ const AddTask = ({navigation, route}) => {
           {comeFrom !== 'update_task' && (
             <View>
               <Label name={'Project'} style={styles.labelmargin} />
-              <SelectList
-                data={project.map((data, _index) => data?.project_name)}
-                setSelected={val => {
-                  var id;
-                  for (var i = 0; i < project.length; i++) {
-                    if (project[i].project_name === val) {
-                      id = project[i].id;
-                    }
-                  }
-                  selectProject(val);
-                  console.log('---', val);
-                  console.log('---id ', id);
-                  setProjectId(id);
-                  getAssignee({id: id});
+              <DropDownMenu
+                data={project}
+                placeholder="Select the Project"
+                value={getProjectId}
+                labelField={'project_name'}
+                valueField={'id'}
+                onChange={value => {
+                  setProjectId(value.id);
+                  getAssignee({id: value.id});
                 }}
-                search={false}
-                notFoundText={'No Project Found'}
-                dropdownTextStyles={styles.dropdownTextStyles}
-                placeholder={getProject && 'Select Project'}
-                inputStyles={styles.inputStyles}
-                onSelect={() => {
-                  console.log('---get Project', getProject);
-                }}
-  
-                color={ColorConstants.primaryBlack}
-                placeholderTextColor={ColorConstants.textLightBlack1}
-                boxStyles={styles.boxStyles}
               />
               <Label name={'Assignee'} style={styles.labelmargin} />
               <View
@@ -480,13 +517,39 @@ const AddTask = ({navigation, route}) => {
               <Ionicons name={'calendar'} color={ColorConstants.primaryBlack} />
               <AppSize width={10} />
               <Text style={{color: ColorConstants.primaryBlack}}>
-                {moment(getDeadline).utcOffset('+05:30').format('MMM DD, YYYY')}
+                {TimeCondition.monthDate(getDeadline)}
               </Text>
             </TouchableOpacity>
           </View>
           <AppSize height={10} />
           <View style={styles.attachmentContainer}>
-            <TouchableOpacity style={styles.attachment}>
+            {imageUri && (
+              <Avatar
+                size={40}
+                containerStyle={{
+                  marginHorizontal: 10,
+                }}
+                renderPlaceholderContent={<ActivityIndicator />}
+                placeholderStyle={{
+                  backgroundColor: ColorConstants.primaryWhite,
+                }}
+                source={{
+                  uri: imageUri,
+                }}
+              />
+            )}
+            <TouchableOpacity
+              style={styles.attachment}
+              onPress={() =>
+                ImageCropPicker.openPicker({
+                  compressImageMaxWidth: 300,
+                  compressImageMaxHeight: 300,
+                  cropping: false,
+                  multiple: false,
+                }).then(image => {
+                  updateImage(image.path);
+                })
+              }>
               <Ionicons
                 name={'add'}
                 size={24}
@@ -530,7 +593,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     paddingHorizontal: 10,
     color: ColorConstants.primaryBlack,
-    paddingVertical: 15
+    paddingVertical: 15,
   },
   textInputView: {
     paddingHorizontal: 5,

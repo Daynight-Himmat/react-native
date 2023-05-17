@@ -10,18 +10,20 @@ import {
 import ColorConstants from '../../constants/color_constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Tile} from '../../components/person_tile';
-import AppHeader from '../../components/app_header';
+import {AppHeader} from '../../components/app_header';
 import {Avatar} from '@rneui/themed';
 import ProfileDemo from '../../components/profile_image_demo';
-import ToastMessage from '../../components/toast_message';
+import toastMessage from '../../components/toast_message';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ApiConstants, BaseUrl1} from '../../constants/api_constants';
 import {Loading} from '../../components/no_data_found';
 import {Appbar} from 'react-native-paper';
+import { useToast } from 'react-native-toast-notifications';
 
 const TeamProfile = ({navigation, route}) => {
   const {data} = route.params;
+  const toast = useToast();
   const [isLoading, setLoading] = useState(false);
   const deleteUserUrl = BaseUrl1(ApiConstants.destroyUser);
 
@@ -37,7 +39,7 @@ const TeamProfile = ({navigation, route}) => {
       });
       if (response.status === 200) {
         setLoading(false);
-        ToastMessage.showMessage(response.data?.message);
+        toastMessage(toast, response.data?.message);
         navigation.goBack();
       }
     } catch (error) {
@@ -76,6 +78,7 @@ const TeamProfile = ({navigation, route}) => {
         onPress={() =>
           navigation.navigate('profile_image', {
             data: data,
+            comeFrom : "Profile Image"
           })
         }>
         {data.profile_image != null &&

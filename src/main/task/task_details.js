@@ -7,8 +7,10 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
   Modal,
-  Dimensions 
+  Dimensions,
+  RefreshControl,
 } from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Loading, NoData} from '../../components/no_data_found';
@@ -17,29 +19,38 @@ import AppSize from '../../components/size';
 import {TimeContainer} from '../../components/person_tile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {ApiConstants, BaseUrl} from '../../constants/api_constants';
+import {
+  ApiConstants,
+  BaseUrl,
+  TaskChatImage,
+  TaskIssueImage,
+  TaskImage,
+} from '../../constants/api_constants';
 import {Ionicons, Octicons} from '../../components/icons';
 import {Appbar} from 'react-native-paper';
+import {Avatar} from '@rneui/themed';
 import Comment from '../../../assets/images/comments_icon.svg';
-import ToastMessage from '../../components/toast_message';
+import toastMessage from '../../components/toast_message';
 import movement from 'moment';
-import AppButton from '../../components/app_button';
-import BottomSheetConditions from '../../components/bottom_sheet_with_condition';
 import BottomSheet from '../../components/bottom_sheet';
 import TaskAlert from '../../components/task_alert';
-import CommanFunctions from '../../components/comman_functions';
 import CalenderContainer from '../../components/calender';
+import ImageCropPicker from 'react-native-image-crop-picker';
+import {useToast} from 'react-native-toast-notifications';
+import Condition from '../../components/conditions';
+import TimeCondition from '../../components/time_condition';
 
-const {height, widget} = Dimensions.get('screen'); 
+const {height, widget} = Dimensions.get('screen');
 
 const TaskDetailsScreen = ({navigation, route}) => {
+  const toast = useToast();
   const {data} = route.params;
   const [isLoading, setLoading] = useState(false);
-  const [companyDetails, setCompanyDetails] = useState([]);
   const [userData, setUserData] = useState([]);
   const [projectData, setProjectData] = useState([]);
   const [taskDetails, setTaskDetails] = useState([]);
   const [taskComments, setTaskComments] = useState([]);
+  const [taskIssueImages, getTaskIssueImages] = useState([]);
   const [comment, setComment] = useState('');
   const commentBox = useRef();
   const completeOptionRef = useRef(null);
@@ -52,11 +63,11 @@ const TaskDetailsScreen = ({navigation, route}) => {
   const getUserUrl = BaseUrl(ApiConstants.getUserList);
   const getPermissionUrl = BaseUrl(ApiConstants.taskEditPermission);
   const getTaskDeadline = BaseUrl(ApiConstants.revisedTaskDeadline);
-  const changePriorityUrl = BaseUrl(ApiConstants.changePriority);
   const completeTaskUrl = BaseUrl(ApiConstants.changeTaskStatus);
-  const deleteTaskUrl = BaseUrl(ApiConstants.changeTaskDelete);
-  const taskListUrl = BaseUrl(ApiConstants.myTeamTaskList);
+  const taskIssueImageUrl = BaseUrl(ApiConstants.taskImageIssue);
+  const getTaskIssueImageUrl = BaseUrl(ApiConstants.taskGetIssues);
   const [modalVisible, setModalVisible] = useState(false);
+  const [imageUri, updateImage] = useState();
   const [getDeadline, setTaskDeadline] = useState(
     movement().utcOffset('+05:30').format('YYYY-MM-DD'),
   );
@@ -120,6 +131,7 @@ const TaskDetailsScreen = ({navigation, route}) => {
         .catch(error => {
           setLoading(false);
         });
+      getTaskIssueImage();
     } catch (error) {
       setLoading(false);
     }
@@ -144,7 +156,7 @@ const TaskDetailsScreen = ({navigation, route}) => {
               taskStatus: task_status,
             });
             getTaskDetails();
-            ToastMessage.showMessage(response.data?.message);
+            toastMessage(toast, response.data?.message);
           }
         })
         .catch(error => {
@@ -160,15 +172,22 @@ const TaskDetailsScreen = ({navigation, route}) => {
     setLoading(true);
     var token = await AsyncStorage.getItem('token');
     var userID = await AsyncStorage.getItem('user_id');
+    const formData = new FormData();
+    formData.append('token', token);
+    formData.append('user_id', userID);
+    formData.append('task_id', data.id);
+    formData.append('commets', comment);
+    imageUri === ''
+      ? formData.append('images', '')
+      : formData.append('images', {
+          uri: imageUri,
+          type: 'image/jpg',
+          name: 'image',
+        });
     await axios
-      .post(commentUrl, {
-        token: token,
-        user_id: userID,
-        task_id: data.id,
-        comments: comment,
-      })
+      .post(commentUrl, formData)
       .then(response => {
-        ToastMessage.showMessage(response.data.message);
+        toastMessage(toast, response.data.message);
         getTaskDetails();
         setComment('');
         commentBox.current.clear();
@@ -179,15 +198,30 @@ const TaskDetailsScreen = ({navigation, route}) => {
       });
   };
 
-  const getPermission = async () => {
+  const getPermission = async type => {
     try {
       setLoading(true);
       var token = await AsyncStorage.getItem('token');
       var userID = await AsyncStorage.getItem('user_id');
-      return await axios
+      await axios
         .post(getPermissionUrl, {
           token: token,
           task_id: data.id,
+        })
+        .then(response => {
+          console.log(response.data);
+          if (response.status === 200) {
+            if (response.data?.data) {
+              type === 'task-update'
+                ? navigation.navigate('add_task', {
+                    data: response.data?.data,
+                    comeFrom: 'update_task',
+                  })
+                : setModalVisible(true);
+            }
+            toastMessage(toast, response.data?.message);
+            setLoading(false);
+          }
         })
         .catch(error => {
           setLoading(false);
@@ -219,6 +253,46 @@ const TaskDetailsScreen = ({navigation, route}) => {
     }
   };
 
+  const taskIssueImage = async () => {
+    var token = await AsyncStorage.getItem('token');
+    const formData = new FormData();
+    formData.append('token', token);
+    formData.append('task_id', data.id);
+    imageUri === ''
+      ? formData.append('task_issue_image', '')
+      : formData.append('task_issue_image', {
+          uri: imageUri,
+          type: 'image/jpg',
+          name: 'image',
+        });
+    const response = await axios.post(taskIssueImageUrl, formData);
+    if (response.status === 200) {
+      console.log(imageUri);
+      toastMessage(toast, response.data?.message);
+    }
+  };
+
+  const getTaskIssueImage = async () => {
+    try {
+      var token = await AsyncStorage.getItem('token');
+      const response = await axios.post(getTaskIssueImageUrl, {
+        token: token,
+        task_id: data.id,
+      });
+      if (response.status === 200) {
+        getTaskIssueImages(response.data?.data);
+        toastMessage(toast, response.data?.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onRefresh = React.useCallback(() => {
+    setLoading(true);
+    getTaskDetails();
+  }, []);
+
   useEffect(() => {
     getTaskDetails();
     return () => {};
@@ -233,31 +307,16 @@ const TaskDetailsScreen = ({navigation, route}) => {
           onPress={() => navigation.goBack()}
         />
         <Appbar.Content title="" color={ColorConstants.primaryBlack} />
-        {taskDetails[0]?.task_status !== 'Completed' && (
+        {Condition.BooleanCondition(taskDetails[0]?.task_status) && (
           <Appbar.Action
             icon="pencil"
             size={18}
-            onPress={() => {
-              getPermission().then(response => {
-                setLoading(false);
-                console.log(response.data);
-                if (response.data?.data) {
-                  // console.log('get Permission not null', response.data?.data);
-                  ToastMessage.showMessage(response.data?.message);
-                  navigation.navigate('add_task', {
-                    data: response.data?.data,
-                    comeFrom: 'update_task',
-                  });
-                } else {
-                  ToastMessage.showMessage(response.data?.message);
-                  console.log('get Permission null', response.data?.data);
-                }
-              });
-            }}
+            onPress={() => getPermission('task-update')}
           />
         )}
-        {taskDetails[0]?.task_status === 'Completed' ? (
+        {Condition.Completed(taskDetails[0]?.task_status) ? (
           <Appbar.Action
+            safeAreaInsets={true}
             icon="autorenew"
             size={18}
             color={ColorConstants.primaryBlack}
@@ -266,10 +325,10 @@ const TaskDetailsScreen = ({navigation, route}) => {
             }}
             style={{
               marginLeft: -5,
-              marginRight: -10,
+              marginRight: 10,
             }}
           />
-        ) : (
+        ) : Condition.Approved(taskDetails[0]?.task_status) ? null : (
           <Appbar.Action
             icon="check"
             size={18}
@@ -279,7 +338,7 @@ const TaskDetailsScreen = ({navigation, route}) => {
             }}
             style={{
               marginLeft: -5,
-              marginRight: -10,
+              marginRight: 10,
             }}
           />
         )}
@@ -293,7 +352,7 @@ const TaskDetailsScreen = ({navigation, route}) => {
           setModalVisible(!modalVisible);
         }}>
         <CalenderContainer
-          date={date}
+          date={TimeCondition.current}
           deadline={getDeadline}
           onCancal={() => setModalVisible(!modalVisible)}
           onDayPress={day => {
@@ -304,14 +363,18 @@ const TaskDetailsScreen = ({navigation, route}) => {
             getUpdateDate().then(response => {
               setLoading(false);
               getTaskDetails();
-              ToastMessage.showMessage(response.data?.message);
+              toastMessage.showMessage(response.data?.message);
             });
             setModalVisible(!modalVisible);
           }}
         />
       </Modal>
-      <View style={styles.scroll_styles}>
-        {taskDetails[0]?.task_status === 'Completed' ? (
+      <ScrollView
+        style={styles.scroll_styles}
+        refreshControl={
+          <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
+        }>
+        {Condition.StatusCondition(taskDetails[0]?.task_status) ? (
           <View
             style={{
               width: '100%',
@@ -319,7 +382,10 @@ const TaskDetailsScreen = ({navigation, route}) => {
               justifyContent: 'center',
               alignItems: 'center',
               borderRadius: 5,
-              backgroundColor: ColorConstants.buttonGreenColor,
+              backgroundColor:
+                taskDetails[0]?.task_status === 'Completed'
+                  ? ColorConstants.yellowCompleteColor
+                  : ColorConstants.buttonGreenColor,
             }}>
             <Text
               style={{
@@ -328,18 +394,14 @@ const TaskDetailsScreen = ({navigation, route}) => {
                 fontWeight: '500',
                 color: ColorConstants.primaryWhite,
               }}>
-              Task Completed
+              {Condition.SingleCondition(taskDetails[0]?.task_status)}
             </Text>
           </View>
         ) : (
           <View />
         )}
         <AppSize height={10} />
-        <Label
-          name={
-            taskDetails[0]?.task_title === '' ? '' : taskDetails[0]?.task_title
-          }
-        />
+        <Label name={Condition.Title(taskDetails[0]?.task_title)} margin={5} />
         <LightText1
           lightText1={
             taskDetails[0]?.description === ''
@@ -370,6 +432,7 @@ const TaskDetailsScreen = ({navigation, route}) => {
                   ? projectItems.project_name
                   : '',
               )}
+              margin={5}
             />
           </View>
         </View>
@@ -385,20 +448,16 @@ const TaskDetailsScreen = ({navigation, route}) => {
           <AppSize width={10} />
           <View style={styles.column}>
             <Text style={styles.light_label}>Created By</Text>
-            <Label
-              name={
-                taskDetails[0]?.name === ''
-                  ? 'No Project Found'
-                  : taskDetails[0]?.name
-              }
-            />
+            <Label name={Condition.Title(taskDetails[0]?.name)} margin={5} />
           </View>
         </View>
         <AppSize height={10} />
         <View style={styles.time_container_styles}>
           <TimeContainer
             dateLabel={'Actual Date'}
-            date={taskDetails[0]?.actual_deadline.slice(0, 10)}
+            date={TimeCondition.monthDate(
+              taskDetails[0]?.actual_deadline.slice(0, 10),
+            )}
             color={ColorConstants.buttonGreenColor}
             style={{
               borderColor: ColorConstants.buttonGreenColor,
@@ -409,22 +468,15 @@ const TaskDetailsScreen = ({navigation, route}) => {
 
           <TouchableOpacity
             style={styles.flex}
-            onPress={() => {
-              getPermission().then(response => {
-                setLoading(false);
-                if (response.data?.data) {
-                  console.log('get Permission not null', response.data?.data);
-                  setModalVisible(true);
-                  ToastMessage.showMessage(response.data?.message);
-                } else {
-                  ToastMessage.showMessage(response.data?.message);
-                  console.log('get Permission null', response.data?.data);
-                }
-              });
-            }}>
+            onPress={() =>
+              Condition.BooleanCondition(taskDetails[0]?.task_status) &&
+              getPermission('date-update')
+            }>
             <TimeContainer
               dateLabel={'Deadline'}
-              date={taskDetails[0]?.task_deadline.slice(0, 10)}
+              date={TimeCondition.monthDate(
+                taskDetails[0]?.task_deadline.slice(0, 10),
+              )}
               color={ColorConstants.highLightColor}
               style={{
                 borderColor: ColorConstants.highLightColor,
@@ -435,7 +487,9 @@ const TaskDetailsScreen = ({navigation, route}) => {
           <AppSize width={5} />
           <TimeContainer
             dateLabel={'Created Date'}
-            date={taskDetails[0]?.created_at.slice(0, 10)}
+            date={TimeCondition.monthDate(
+              taskDetails[0]?.created_at.slice(0, 10),
+            )}
             color={ColorConstants.primaryBlack}
             style={{
               borderColor: ColorConstants.primaryBlack,
@@ -444,14 +498,83 @@ const TaskDetailsScreen = ({navigation, route}) => {
           />
         </View>
         <AppSize height={10} />
-        <Label name={'Task Image'} />
-        <TouchableOpacity style={styles.attachment}>
-          <Ionicons
-            name={'add'}
-            color={ColorConstants.textHintColor}
-            size={18}
-          />
-        </TouchableOpacity>
+        <Label name={'Task Image'} margin={5} />
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            padding: 5
+          }}>
+          {taskDetails[0]?.task_image && (
+            <Avatar
+              onPress={()=> {
+                navigation.navigate("taskImage", {
+                  images: TaskImage(taskDetails[0]?.task_image),
+                });
+              }}
+              size={40}
+              containerStyle={{
+                marginHorizontal: 10,
+                borderRadius: 5,
+              }}
+              renderPlaceholderContent={<ActivityIndicator />}
+              placeholderStyle={{
+                backgroundColor: ColorConstants.primaryWhite,
+              }}
+              source={{
+                uri: TaskImage(taskDetails[0]?.task_image),
+              }}
+            />
+          )}
+          {taskIssueImages &&
+            taskIssueImages.map(
+              (data, index) =>
+                data?.task_issue_image.split('.').pop() === 'jpg' && (
+                  <Avatar
+                  onPress={()=> {
+                    navigation.navigate("taskImage", {
+                      images: TaskIssueImage(data.task_issue_image),
+                    });
+                  }}
+                    key={index}
+                    size={40}
+                    containerStyle={{
+                      marginHorizontal: 10,
+                      borderRadius: 5,
+                    }}
+                    renderPlaceholderContent={<ActivityIndicator />}
+                    placeholderStyle={{
+                      backgroundColor: ColorConstants.primaryWhite,
+                    }}
+                    source={{
+                      uri: TaskIssueImage(data.task_issue_image),
+                    }}
+                  />
+                ),
+            )}
+          <TouchableOpacity
+            style={styles.attachment}
+            onPress={() => {
+              Condition.BooleanCondition(taskDetails[0]?.task_status) &&
+                ImageCropPicker.openPicker({
+                  compressImageMaxWidth: 300,
+                  compressImageMaxHeight: 300,
+                  cropping: false,
+                  multiple: false,
+                })
+                  .then(image => {
+                    updateImage(image.path);
+                    taskIssueImage();
+                  })
+                  .catch(error => console.log(error));
+            }}>
+            <Ionicons
+              name={'add'}
+              color={ColorConstants.textHintColor}
+              size={18}
+            />
+          </TouchableOpacity>
+        </View>
         <AppSize height={10} />
         <View style={styles.task_assignee}>
           <View style={styles.task_assignee_row}>
@@ -499,9 +622,9 @@ const TaskDetailsScreen = ({navigation, route}) => {
                       <View style={styles.commect_time_container}>
                         <Text
                           style={{
-                            color: ColorConstants.textLightBlack1,
+                            color: ColorConstants.teamHiColor,
                           }}>
-                          {data.created_at}
+                          {TimeCondition.fullDate(data.created_at)}
                         </Text>
                         <View style={styles.profile_row}>
                           <View
@@ -528,6 +651,34 @@ const TaskDetailsScreen = ({navigation, route}) => {
                           <Comment />
                           <AppSize width={10} />
                           <View style={styles.column}>
+                            {data.images !== '' &&
+                              data?.images.split('.').pop() === 'jpg' && (
+                                <Avatar
+                                  key={index}
+                                  size={35}
+                                  containerStyle={{
+                                    marginHorizontal: 10,
+                                    marginVertical: 10,
+                                    elevation: 10,
+                                    borderRadius: 10,
+                                  }}
+                                  renderPlaceholderContent={
+                                    <ActivityIndicator />
+                                  }
+                                  placeholderStyle={{
+                                    backgroundColor:
+                                      ColorConstants.primaryWhite,
+                                  }}
+                                  onPress={()=> {
+                                    navigation.navigate("taskImage", {
+                                      images: TaskChatImage(data?.images),
+                                    });
+                                  }}
+                                  source={{
+                                    uri: TaskChatImage(data?.images),
+                                  }}
+                                />
+                              )}
                             <Text style={styles.comment_text}>
                               {data.comments}
                             </Text>
@@ -546,13 +697,15 @@ const TaskDetailsScreen = ({navigation, route}) => {
           <AppSize height={10} />
         </View>
         {/* <AppSize height={121} /> */}
-      </View>
+      </ScrollView>
       <View style={styles.bottom_container}>
         <View style={styles.text_input_container}>
           <TextInput
             style={styles.flex}
             underlineColorAndroid="rgba(0,0,0,0)"
             placeholder="comment"
+            editable={Condition.BooleanCondition(data.task_status)}
+            textAlignVertical="center"
             placeholderTextColor={ColorConstants.textLightBlack1}
             multiline={true}
             ref={commentBox}
@@ -562,7 +715,30 @@ const TaskDetailsScreen = ({navigation, route}) => {
               setComment(text);
             }}
           />
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              if (Condition.StatusCondition(data.task_status)) {
+                toastMessage(toast, 'Task Completed');
+              } else {
+                ImageCropPicker.openPicker({
+                  compressImageMaxWidth: 300,
+                  compressImageMaxHeight: 300,
+                  cropping: false,
+                  multiple: false,
+                })
+                  .then(image => {
+                    if (image) {
+                      navigation.navigate('profile_image', {
+                        data: [],
+                        images: image.path,
+                        taskId: data.id,
+                        comeFrom: 'Task Details',
+                      });
+                    }
+                  })
+                  .catch(error => console.log(error));
+              }
+            }}>
             <Ionicons
               name={'attach'}
               color={ColorConstants.textLightBlack1}
@@ -572,9 +748,13 @@ const TaskDetailsScreen = ({navigation, route}) => {
           <AppSize width={10} />
           <TouchableOpacity
             onPress={() => {
-              comment !== ''
-                ? sendComment()
-                : ToastMessage.showMessage('Please enter your comment');
+              if (Condition.StatusCondition(data.task_status)) {
+                toastMessage(toast, 'Task Completed');
+              } else {
+                comment !== ''
+                  ? sendComment()
+                  : toastMessage(toast, 'Please enter the Comments');
+              }
             }}>
             <Ionicons
               name={'send-sharp'}
@@ -594,6 +774,7 @@ const TaskDetailsScreen = ({navigation, route}) => {
             onBack={() => completeOptionRef.current.hide()}
             onPress={() => {
               getCompleteTask('Completed');
+              completeOptionRef.current.hide();
             }}
           />
         }
@@ -608,6 +789,7 @@ const TaskDetailsScreen = ({navigation, route}) => {
             onBack={() => reopenOptionRef.current.hide()}
             onPress={() => {
               getCompleteTask('Reopen');
+              reopenOptionRef.current.hide()
             }}
           />
         }
@@ -631,7 +813,7 @@ const styles = StyleSheet.create({
     left: -10,
   },
   scroll_styles: {
-   paddingHorizontal: 10,
+    paddingHorizontal: 10,
   },
   row: {flexDirection: 'row'},
   column: {flexDirection: 'column'},
@@ -654,7 +836,6 @@ const styles = StyleSheet.create({
     height: 35,
   },
   container: {
-    
     height: height,
     width: widget,
     // width: '100%',
@@ -695,7 +876,7 @@ const styles = StyleSheet.create({
   bottom_container: {
     width: '100%',
     position: 'absolute',
-    bottom: 30,
+    bottom: 10,
     // left: 10,
     paddingHorizontal: 10,
     alignItems: 'center',
@@ -764,7 +945,7 @@ const styles = StyleSheet.create({
   },
   comment_scroll_container: {
     width: '100%',
-    height: 150,
+    height: 200,
     paddingHorizontal: 10,
     paddingVertical: 10,
   },

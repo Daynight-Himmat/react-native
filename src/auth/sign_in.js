@@ -12,15 +12,17 @@ import ColorConstants from '../constants/color_constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DataManager from '../constants/static_data';
 import AppButton from '../components/app_button';
-import ToastMessage from '../components/toast_message';
+import toastMessage from '../components/toast_message';
 import { MaterialIcons } from '../components/icons';
 import AuthImage from '../components/auth_image';
 import AppSize from '../components/size';
 import {HighLightLabel} from '../components/label';
 import {ApiConstants, BaseUrl} from '../constants/api_constants';
 import {Loading} from '../components/no_data_found';
+import { useToast } from 'react-native-toast-notifications';
 
 const SignInScreen = ({navigation}) => {
+  const toast = useToast();
   const [name, setName] = useState('');
   const [isLoading, setLoading] = useState('');
   const [password, setpassword] = useState('');
@@ -42,13 +44,13 @@ const SignInScreen = ({navigation}) => {
   const getUserLogIn = async () => {
     try {
       if (email === '' && password === '') {
-        ToastMessage.showMessage('Please fill the required');
+        toastMessage(toast, 'Please fill the required');
       } else if (email === '') {
-        ToastMessage.showMessage('Please Enter the email');
+        toastMessage(toast, 'Please Enter the email');
       } else if (validateEmail(email) === false) {
-        ToastMessage.showMessage('Please Enter Valid the email');
+        toastMessage(toast, 'Please Enter Valid the email');
       } else if (password === '') {
-        ToastMessage.showMessage('Please Enter the Password');
+        toastMessage(toast, 'Please Enter the Password');
       } else {
         console.log(email);
         console.log(userPassword);
@@ -68,18 +70,19 @@ const SignInScreen = ({navigation}) => {
             navigation.navigate('dashboard', {
               token: response.data.token,
             });
+            toastMessage(toast, response.data?.message );
           } else {
             setLoading(false);
-            ToastMessage.showMessage('Something went wrong, please try again');
+            toastMessage(toast, 'Something went wrong, please try again');
           }
         } else if (response.status === 400) {
           setLoading(false);
-          ToastMessage.showMessage('Something went wrong');
+          toastMessage(toast, 'Something went wrong');
         }
       }
     } catch (error) {
       setLoading(false);
-      ToastMessage.showMessage('Something went wrong');
+      toastMessage(toast, 'Something went wrong');
     }
   };
 

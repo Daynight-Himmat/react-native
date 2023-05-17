@@ -14,7 +14,7 @@ import axios from 'axios';
 import {ApiConstants, BaseUrl} from '../../constants/api_constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Loading} from '../../components/no_data_found';
-import AppHeader from '../../components/app_header';
+import {AppHeader} from '../../components/app_header';
 import {Label} from '../../components/label';
 import {ViewProfileButton} from '../../components/text_button';
 

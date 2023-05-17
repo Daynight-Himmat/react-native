@@ -9,9 +9,11 @@ import {TexTButton} from '../components/text_button';
 import axios from 'axios';
 import {ApiConstants, BaseUrl1} from '../constants/api_constants';
 import {Loading} from '../components/no_data_found';
-import ToastMessage from '../components/toast_message';
+import toastMessage from '../components/toast_message';
+import { useToast } from 'react-native-toast-notifications';
 
 const SignUpScreen = ({navigation}) => {
+  const toast = useToast();
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
@@ -31,19 +33,19 @@ const SignUpScreen = ({navigation}) => {
   const getRegister = async () => {
     try {
       if (email === '' && name === '' && mobile === '') {
-        ToastMessage.showMessage('Please Enter the required');
+        toastMessage(toast, 'Please Enter the required');
       } else if (email === '') {
-        ToastMessage.showMessage('Please Enter the email');
+        toastMessage(toast, 'Please Enter the email');
       } else if (name === '') {
-        ToastMessage.showMessage('Please Enter the name');
+        toastMessage(toast, 'Please Enter the name');
       } else if (mobile === '') {
-        ToastMessage.showMessage('Please Enter the number');
+        toastMessage(toast, 'Please Enter the number');
       } else if (mobile.length !== 10) {
-        ToastMessage.showMessage('Please Enter the valid number');
+        toastMessage(toast, 'Please Enter the valid number');
       } else if (name.length < 3) {
-        ToastMessage.showMessage('Please Enter the valid name');
+        toastMessage(toast, 'Please Enter the valid name');
       } else if (validateEmail(email) === false) {
-        ToastMessage.showMessage('Please Enter the valid email');
+        toastMessage(toast, 'Please Enter the valid email');
       } else {
         setIsLoading(true);
         await axios
@@ -55,7 +57,7 @@ const SignUpScreen = ({navigation}) => {
           .then(response => {
             if (response.status === 200) {
               if (response.data.success === true) {
-                console.log(response.data?.data);
+                toastMessage(toast, response.data?.message);
                 navigation.navigate('otp_page', {
                   email: email,
                   name: name,

@@ -26,6 +26,7 @@ import ProjectPageScreen from '../main/project/project_screen';
 import TaskDetailsScreen from '../main/task/task_details';
 import Approved from './approve';
 import ProfileImage from './profile_image';
+import ImageShow from './task_image';
 
 const screens = [
   {
@@ -139,6 +140,10 @@ const screens = [
   {
     name: 'approve',
     component: Approved,
+  },
+  {
+    name: 'taskImage',
+    component: ImageShow,
   },
 ];
 

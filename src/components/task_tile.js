@@ -7,6 +7,9 @@ import movement from 'moment';
 import {IconButton} from 'react-native-paper';
 import {Label, LightText1} from './label';
 import FontConstants from '../constants/fonts';
+import Condition from './conditions';
+import ColorsCondtion from './color_condition';
+import TimeCondition from './time_condition';
 
 const getColor = data => {
   switch (data.task_status) {
@@ -25,18 +28,18 @@ const getColor = data => {
   }
 };
 
-const TaskTile = ({index, data, onPress, iconPress}) => {
+const TaskTile = ({index, data, navigation, iconPress}) => {
   var currentDate = new movement().format('MMM DD, yyyy');
 
   return (
-    <TouchableOpacity key={data.title} onPress={onPress}>
+    <TouchableOpacity key={data.title} onPress={navigation}>
       <View style={styles.tile}>
         <View
           style={[
             styles.tile_task_indicator,
-            {backgroundColor: getColor(data)},
+            {backgroundColor: ColorsCondtion.getColor(data)},
           ]}>
-          {data.task_status === 'Completed' ? (
+          {Condition.Completed(data.task_status) ? (
             <View>
               <Ionicons
                 name={'checkmark-done-sharp'}
@@ -53,7 +56,7 @@ const TaskTile = ({index, data, onPress, iconPress}) => {
           <Label name={data?.task_title} />
           {data.project_name && <LightText1 lightText1={data.project_name} />}
         </View>
-        {data.task_status === 'Completed' ? (
+        {Condition.Completed(data.task_status) ? (
           <View>
             <View style={styles.row}>
               <Ionicons
@@ -61,31 +64,24 @@ const TaskTile = ({index, data, onPress, iconPress}) => {
                 color={ColorConstants.textLightBlack1}
               />
               <Text style={styles.task_date}>
-                {movement(data.created_at).format('DD MMM')}
+              {TimeCondition.onlyDayMouth(data.created_at)}
               </Text>
             </View>
             <View style={styles.row}>
               <Ionicons
                 name={'checkmark-done-sharp'}
                 color={
-                  currentDate ===
-                  movement(data.updated_at).format('MMM DD, yyyy')
-                    ? ColorConstants.buttonGreenColor
-                    : ColorConstants.highPriorityColor
+                  TimeCondition.currentDateCheck(data.updated_at)
                 }
               />
               <Text
                 style={[
                   styles.task_date,
                   {
-                    color:
-                      currentDate ===
-                      movement(data.updated_at).format('MMM DD, yyyy')
-                        ? ColorConstants.buttonGreenColor
-                        : ColorConstants.highPriorityColor,
+                    color:TimeCondition.currentDateCheck(data.updated_at)
                   },
                 ]}>
-                {movement(data.updated_at).format('DD MMM')}
+                {TimeCondition.onlyDayMouth(data.updated_at)}
               </Text>
             </View>
           </View>
@@ -97,7 +93,7 @@ const TaskTile = ({index, data, onPress, iconPress}) => {
                 color={ColorConstants.textLightBlack1}
               />
               <Text style={styles.task_date}>
-                {movement(data.created_at).format('DD MMM')}
+              {TimeCondition.onlyDayMouth(data.created_at)}
               </Text>
             </View>
           </View>
