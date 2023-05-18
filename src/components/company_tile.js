@@ -1,20 +1,45 @@
 import React from 'react';
-import {View, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ColorConstants from '../constants/color_constants';
 import {Label} from './label';
+import {Avatar} from '@rneui/themed';
+import Condition from './conditions';
 
-const CompanyTile = ({index, name, onPress}) => {
+const CompanyTile = ({index, name, onPress, url}) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
       <View style={styles.inner_row}>
-        <View style={styles.image_container}>
-          <Ionicons
-            name={'business-outline'}
-            size={18}
-            style={styles.icon_style}
-          />
-        </View>
+        {Condition.imageUrl(url) ? (
+           <Avatar
+           containerStyle={{
+             borderRadius: 5
+           }}
+           renderPlaceholderContent={<ActivityIndicator />}
+           placeholderStyle={{
+             backgroundColor: ColorConstants.primaryWhite,
+           }}
+           avatarStyle={{
+              borderRadius: 5
+            }}
+           source={{
+             uri: url,
+           }}
+         />
+        ) : (
+          <View style={styles.image_container}>
+            <Ionicons
+              name={'business-outline'}
+              size={18}
+              style={styles.icon_style}
+            />
+          </View>
+        )}
         <View style={styles.title_container}>
           <Label name={name} />
         </View>

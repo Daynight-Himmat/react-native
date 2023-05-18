@@ -18,11 +18,13 @@ const ProjectScreen = ({navigation}) => {
   const url = BaseUrl(ApiConstants.myProjectList);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const checking = useCallback(async () => {
+  const checking = async () => {
     try {
       setLoading(true);
-      var userId = await AsyncStorage.getItem('user_id');
+      var userId = await AsyncStorage.getItem('user_id'); 
       var tokenValue = await AsyncStorage.getItem('token');
+      console.log(userId);
+      console.log(userId);
       await axios
         .post(url, {
           token: tokenValue,
@@ -37,8 +39,9 @@ const ProjectScreen = ({navigation}) => {
         });
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
-  });
+  };
 
   const handleSearch = text => {
     if (text === '') {
@@ -57,7 +60,10 @@ const ProjectScreen = ({navigation}) => {
 
   useEffect(() => {
     checking();
-  }, []);
+  }, [getprojectData]);
+
+
+  
 
   return (
     <View style={styles.container}>
@@ -68,8 +74,8 @@ const ProjectScreen = ({navigation}) => {
         }}
       />
       <View style={{padding: 5}} />
-      {loading === false ? (
-        getSearchValue.length > 0 ? (
+      
+        {getSearchValue.length > 0 ? (
           <ScrollView>
             {getSearchValue.map((data, index) => (
               <ProjectTile
@@ -87,9 +93,8 @@ const ProjectScreen = ({navigation}) => {
         ) : (
           <NoData />
         )
-      ) : (
-        <Loading />
-      )}
+      }
+      {loading && <Loading/>}
     </View>
   );
 };

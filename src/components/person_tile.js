@@ -15,6 +15,7 @@ import {Divider} from 'react-native-paper';
 import FontConstants from '../constants/fonts';
 import {Avatar} from '@rneui/themed';
 import ProfileDemo from './profile_image_demo';
+import Condition from './conditions';
 
 const PersonTile = ({index, image, title, subTitle, tilePress, imagePress}) => {
   return (
@@ -22,7 +23,7 @@ const PersonTile = ({index, image, title, subTitle, tilePress, imagePress}) => {
       <View key={index} style={styles.container}>
         <View style={styles.lite}>
           <TouchableOpacity onPress={imagePress}>
-            {image != null && image.split('.').pop() === 'jpg' ? (
+            {Condition.imageUrl(image) ? (
               <View>
                 <Avatar
                   size={35}

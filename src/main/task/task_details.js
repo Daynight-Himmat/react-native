@@ -22,6 +22,7 @@ import axios from 'axios';
 import {
   ApiConstants,
   BaseUrl,
+  BaseUrl1,
   TaskChatImage,
   TaskIssueImage,
   TaskImage,
@@ -505,7 +506,7 @@ const TaskDetailsScreen = ({navigation, route}) => {
             flexWrap: 'wrap',
             padding: 5
           }}>
-          {taskDetails[0]?.task_image && (
+          {taskDetails[0]?.task_image.split('.').pop() === 'jpg' && (
             <Avatar
               onPress={()=> {
                 navigation.navigate("taskImage", {

@@ -7,7 +7,7 @@ import AppSize from '../components/size';
 import AppButton from '../components/app_button';
 import {TexTButton} from '../components/text_button';
 import axios from 'axios';
-import {ApiConstants, BaseUrl1} from '../constants/api_constants';
+import {ApiConstants, BaseUrl1, BaseUrl} from '../constants/api_constants';
 import {Loading} from '../components/no_data_found';
 import toastMessage from '../components/toast_message';
 import { useToast } from 'react-native-toast-notifications';
@@ -23,7 +23,7 @@ const SignUpScreen = ({navigation}) => {
   const nameFocus = useRef();
   const mobileFocus = useRef();
 
-  const register = BaseUrl1(ApiConstants.signUp);
+  const register = BaseUrl(ApiConstants.signUp);
 
   const validateEmail = validEmail => {
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;

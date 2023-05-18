@@ -34,6 +34,8 @@ class Condition {
   };
 
   static activeAndReopen = status => status === 'Active' || status === 'Reopen';
+
+  static imageUrl = url => url && url?.split('.').pop() === 'jpg';
 }
 
 export default Condition;

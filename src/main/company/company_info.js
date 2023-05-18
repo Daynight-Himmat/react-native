@@ -5,7 +5,7 @@ import {
   Image,
   StyleSheet,
   ActivityIndicator,
-  Alert
+  Alert,
 } from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Loading} from '../../components/no_data_found';
@@ -27,17 +27,21 @@ import ProfileDemo from '../../components/profile_image_demo';
 import {Avatar} from '@rneui/themed';
 import FontConstants from '../../constants/fonts';
 import toastMessage from '../../components/toast_message';
-import { CommanHeader } from '../../components/app_header';
+import {CommanHeader} from '../../components/app_header';
+import ProjectTile from '../../components/project_tile';
+import Condition from '../../components/conditions';
+import { useToast } from 'react-native-toast-notifications';
 
 const CompanyInfo = ({navigation, route}) => {
   const {company_id} = route.params;
+  const toast = useToast();
   const [isLoading, setLoading] = useState(false);
   const [getCompanyData, setCompanyData] = useState([]);
   const [getProjectListData, setProjectListData] = useState([]);
 
   const getCompanyUrl = BaseUrl(ApiConstants.companyDetails);
   const getCompanyProjectUrl = BaseUrl(ApiConstants.companyProjectList);
-  const deleteCompanyUrl = BaseUrl1(ApiConstants.destroyCompany);
+  const deleteCompanyUrl = BaseUrl(ApiConstants.destroyCompany);
 
   const getCompanyDetails = async () => {
     try {
@@ -86,7 +90,7 @@ const CompanyInfo = ({navigation, route}) => {
       });
       if (response.status === 200) {
         setLoading(false);
-        toastMessage.showMessage(response.data?.message);
+        toastMessage(toast ,response.data?.message);
         navigation.goBack();
       }
     } catch (error) {
@@ -109,40 +113,48 @@ const CompanyInfo = ({navigation, route}) => {
     getCompanyDetails();
   }, []);
 
-  console.log()
+  console.log();
 
   return (
     <View style={styles.container}>
-      <CommanHeader deletePress={() => createTwoButtonAlert()} navigation={navigation} pencilPress={() => {
-            navigation.navigate('create_company', {
-              companyData: getCompanyData,
-              comeFrom: 'Company Update',
-            });
-          }} title={'Company Profile'}/>
+      <CommanHeader
+        deletePress={() => createTwoButtonAlert()}
+        navigation={navigation}
+        pencilPress={() => {
+          navigation.navigate('create_company', {
+            companyData: getCompanyData,
+            comeFrom: 'Company Update',
+          });
+        }}
+        title={'Company Profile'}
+      />
 
       <ScrollView>
         {getCompanyData.map((data, index) => (
           <View key={index}>
-            <View style={styles.imageContain}>
-              <View style={styles.imageContainer}>
-                {data?.profile_picture !== '' &&
-                data?.profile_picture.split('.').pop() === 'jpg' ? (
-                  <Avatar
-                    size={35}
-                    rounded
-                    renderPlaceholderContent={<ActivityIndicator />}
-                    placeholderStyle={{
-                      backgroundColor: ColorConstants.primaryWhite,
-                    }}
-                    source={{
-                      uri: CompanyProfileImage + data?.profile_picture,
-                    }}
-                  />
-                ) : (
+            {Condition.imageUrl(data?.profile_picture) ? (
+              <Avatar
+                size={100}
+                rounded
+                containerStyle={{
+                  alignSelf: 'center',
+                }}
+                renderPlaceholderContent={<ActivityIndicator />}
+                placeholderStyle={{
+                  backgroundColor: ColorConstants.primaryWhite,
+                }}
+                source={{
+                  uri: CompanyProfileImage(data?.profile_picture),
+                }}
+              />
+            ) : (
+              <View style={styles.imageContain}>
+                <View style={styles.imageContainer}>
                   <Ionicons name={'business'} size={35} style={styles.image} />
-                )}
+                </View>
               </View>
-            </View>
+            )}
+
             <View style={{paddingHorizontal: 15}}>
               <Label name={data?.company_name} />
             </View>
@@ -187,10 +199,10 @@ const CompanyInfo = ({navigation, route}) => {
 
             <ScrollView>
               {getProjectListData?.map((data, index) => (
-                <CompanyTile
+                <ProjectTile
+                  project_name={data.project_name}
                   key={index}
                   index={index}
-                  name={data.project_name}
                 />
               ))}
             </ScrollView>
@@ -199,117 +211,6 @@ const CompanyInfo = ({navigation, route}) => {
         <AppSize height={20} />
       </ScrollView>
     </View>
-
-    // <View style={styles.container}>
-    //   <Appbar.Header
-    //     style={{
-    //       width: '100%',
-    //       backgroundColor: ColorConstants.primaryWhite,
-    //     }}>
-    //     <Appbar.BackAction onPress={() => navigation.goBack()} />
-    //     <Appbar.Content
-    //       title="Company Profile"
-    //       color={ColorConstants.primaryBlack}
-    //       titleStyle={{
-    //         fontWeight: '700',
-    //         fontSize: 20,
-    //       }}
-    //     />
-    //     <Appbar.Action
-    //       icon="pencil"
-    //       onPress={() => {
-    //         navigation.navigate('create_company');
-    //       }}
-    //     />
-    //     <Appbar.Action
-    //       icon="delete"
-    //       color={ColorConstants.highLightColor}
-    //       onPress={() => {}}
-    //     />
-    //   </Appbar.Header>
-    //   <ScrollView>
-    //     <AppSize height={20} />
-    //     <View
-    //       style={styles.imageContain}>
-    //       <View style={styles.imageContainer}>
-    //         {getCompanyData[0]?.profile_picture != null &&
-    //         getCompanyData[0]?.profile_picture.split('.').pop() === 'jpg' ? (
-    //           <Avatar
-    //             size={35}
-    //             rounded
-    //             renderPlaceholderContent={<ActivityIndicator />}
-    //             placeholderStyle={{
-    //               backgroundColor: ColorConstants.primaryWhite,
-    //             }}
-    //             source={{
-    //               uri: CompanyProfileImage + getCompanyData[0]?.profile_picture,
-    //             }}
-    //           />
-    //         ) : (
-    //           <Ionicons name={'business'} size={35} style={styles.image} />
-    //         )}
-    //       </View>
-    //     </View>
-    //     <AppSize height={20} />
-
-    //     <View />
-    //     <View
-    //       style={{
-    //         width: '100%',
-    //         flexDirection: 'row',
-    //         justifyContent: 'space-between',
-    //         alignItems: 'center',
-    //         paddingHorizontal: 10,
-    //         backgroundColor: ColorConstants.primaryWhite,
-    //       }}>
-    //       <Label name={getCompanyData[0]?.company_name} />
-    //     </View>
-    //     <View
-    //       style={{
-    //         paddingHorizontal: 10,
-    //         paddingVertical: 5,
-    //       }}>
-    //       <View style={styles.contactName}>
-    //         <Label name={'Contact Name'} />
-    //         <Tile
-    //           image={require('../../../assets/images/business.png')}
-    //           title={
-    //             getCompanyData[0]?.company_details[0]?.contact_name ??
-    //             'No Name Found'
-    //           }
-    //         />
-    //         <Tile
-    //           image={require('../../../assets/images/emails.png')}
-    //           title={
-    //             getCompanyData[0]?.company_details[0]?.contact_email ??
-    //             'No Email Found'
-    //           }
-    //         />
-    //         <Tile
-    //           image={require('../../../assets/images/phone.png')}
-    //           title={
-    //             getCompanyData[0]?.company_details[0]?.contact_number ??
-    //             'No Number Found '
-    //           }
-    //         />
-    //       </View>
-    //     </View>
-    //     {/* <View
-    //       style={{
-    //         paddingHorizontal: 10,
-    //         paddingVertical: 5,
-    //       }}>
-    //       <View style={styles.contactName}>
-    //         <Label name={'Company Project'} />
-
-    //         {getProjectListData?.map((data, index) => (
-    //           <CompanyTile key={index} index={index} name={data.project_name} />
-    //         ))}
-    //       </View>
-    //     </View> */}
-    //   </ScrollView>
-    //   {isLoading && <Loading />}
-    // </View>
   );
 };
 
@@ -338,7 +239,6 @@ const styles = StyleSheet.create({
     width: 100,
     borderRadius: 100,
     justifyContent: 'center',
-    alignContent: 'center',
     alignItems: 'center',
     backgroundColor: ColorConstants.textHintColor,
   },

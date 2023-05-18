@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, ScrollView, ImageBackground} from 'react-native';
 import ColorConstants from '../constants/color_constants';
 import SearchBox from '../components/search_box';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -8,6 +8,7 @@ import {ApiConstants, BaseUrl} from '../constants/api_constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TaskTile from '../components/task_tile';
 import {Loading, NoData} from '../components/no_data_found';
+import { assets } from '../../react-native.config';
 
 const SearchScreen = ({navigation}) => {
   const [getSearchText, setsearchData] = useState([]);
@@ -69,7 +70,10 @@ const SearchScreen = ({navigation}) => {
           />
         </View>
       </View>
-      {isLoading === false ? (
+      <ImageBackground imageStyle={{height: 300, width: 300, alignSelf: 'center', justifyContent: 'center'}} style={{flex: 1}} source={require('../assets/images/search.png')}    >
+        
+      </ImageBackground>
+      {/* {isLoading && 
         getSearchText?.length > 0 ? (
           <ScrollView>
             {getSearchText.map((data, index) => {
@@ -79,9 +83,7 @@ const SearchScreen = ({navigation}) => {
         ) : (
           <NoData />
         )
-      ) : (
-        <Loading />
-      )}
+      } */}
     </View>
   );
 };

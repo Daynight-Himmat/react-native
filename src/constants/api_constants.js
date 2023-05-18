@@ -3,7 +3,7 @@ const BaseUrl = end_Point => `http://143.110.190.217/api/${end_Point}`;
 const BaseUrl1 = end_Point => `https://pm.ankitsisodiya.com/api/${end_Point}`;
 
 const CompanyProfileImage = end_Point =>
-  `http://143.110.190.217/Company/profile_pictures/${end_Point}`;
+  `http://143.110.190.217/public/Company/profile_pictures/${end_Point}`;
 
 const ProfileImage = end_Point =>
   `http://143.110.190.217/public/storage/${end_Point}`;
@@ -32,7 +32,7 @@ class ApiConstants {
   static changeTaskAssignee = 'ChangeTaskAssignee';
   static createProject = 'AddProject';
   static companyList = 'CompanyList';
-  static companyEdit = 'AddCompany';
+  static addCompany = 'AddCompany';
   static updateCompany = 'UpdateCompany';
   static projectSearch = 'SearchProject';
   static companySearch = 'SearchCompany';

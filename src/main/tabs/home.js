@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useRef} from 'react';
 import {
   View,
   StyleSheet,
@@ -12,12 +12,10 @@ import {
 import ColorConstants from '../../constants/color_constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {ApiConstants, BaseUrl, BaseUrl1} from '../../constants/api_constants';
+import {ApiConstants, BaseUrl} from '../../constants/api_constants';
 import {InnerTab, TabContainer} from '../../components/tabs';
 import {Loading, NoData} from '../../components/no_data_found';
 import movement from 'moment';
-import CompleteTask from './task_type/complete_task';
-import AllTask from './task_type/all_task';
 import FontConstants from '../../constants/fonts';
 import toastMessage from '../../components/toast_message';
 import Dividers from '../../components/divider';
@@ -32,9 +30,11 @@ import {Appbar} from 'react-native-paper';
 import TaskTile from '../../components/task_tile';
 import Condition from '../../components/conditions';
 import ColorsCondtion from '../../components/color_condition';
+import { useToast } from 'react-native-toast-notifications';
 const {height, width} = Dimensions.get('screen');
 
 const HomeScreen = ({navigation}) => {
+  const toast = useToast();
   const [checked, setChecked] = useState('High');
   const [loading, setLoading] = useState(false);
   const [side, setSide] = useState(false);
@@ -71,7 +71,7 @@ const HomeScreen = ({navigation}) => {
   const taskAssigneeListUrl = BaseUrl(ApiConstants.taskAssignList);
   const changePriorityUrl = BaseUrl(ApiConstants.changePriority);
   const completeTaskUrl = BaseUrl(ApiConstants.changeTaskStatus);
-  const deleteTaskUrl = BaseUrl1(ApiConstants.changeTaskDelete);
+  const deleteTaskUrl = BaseUrl(ApiConstants.changeTaskDelete);
 
   const checking = async () => {
     try {
@@ -96,6 +96,7 @@ const HomeScreen = ({navigation}) => {
 
   const taskData = async id => {
     try {
+      setLoading(true);
       var asyncStorageRes = await AsyncStorage.getItem('token');
       await axios
         .post(taskListUrl, {
@@ -203,7 +204,7 @@ const HomeScreen = ({navigation}) => {
             navigation.navigate('approve', {
               taskStatus: task_status,
             });
-            toastMessage.showMessage(response.data?.message);
+            toastMessage(toast, response.data?.message);
           }
         })
         .catch(error => {
@@ -236,7 +237,7 @@ const HomeScreen = ({navigation}) => {
               taskStatus: 'Priority',
             });
             changePriorityRef.current.hide();
-            toastMessage.showMessage(response.data?.message);
+            toastMessage(toast, response.data?.message);
           }
         })
         .catch(error => {
@@ -257,7 +258,7 @@ const HomeScreen = ({navigation}) => {
         .post(deleteTaskUrl, {
           token: asyncStorage,
           id: user_id,
-          task_id: taskId,
+          task_id: getBottomData.id,
         })
         .then(response => {
           if (response.status === 200) {
@@ -267,7 +268,7 @@ const HomeScreen = ({navigation}) => {
             navigation.navigate('approve', {
               taskStatus: 'Delete',
             });
-            toastMessage.showMessage(response.data?.message);
+            toastMessage(toast, response.data?.message);
           }
         })
         .catch(error => {
@@ -731,6 +732,7 @@ const HomeScreen = ({navigation}) => {
           completeOptionRef.current.hide();
         }}
         onPressDelete={() => {
+          console.log(getBottomData.id);
           getDeleteTask();
           taskOptionsRef.current.hide();
           deleteOptionRef.current.hide();

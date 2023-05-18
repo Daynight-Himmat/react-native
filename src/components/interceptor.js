@@ -1,42 +1,54 @@
 import axios from 'axios';
-import { useEffect } from 'react'
-import {createNavigationContainerRef } from '@react-navigation/native';
+import { BaseUrl } from '../constants/api_constants';
 
+const axiosInstance = axios.create({
+  baseURL: 'http://143.110.190.217/api/',
+});
 
-const instance = axios.create({
-    baseURL:  'http://143.110.190.217/api/'
-})
+axiosInstance.interceptors.request.use(
+  (config) => {
+    // Modify the request config if needed
+    console.log('Request:', config);
+    return config;
+  },
+  (error) => {
+    // Handle request error
+    console.log('Request error:', error);
+    return Promise.reject(error);
+  }
+);
 
-const AxiosInterceptor = ({ children }) => {
+axiosInstance.interceptors.response.use(
 
-    const navigationRef = createNavigationContainerRef();
+  (response) => {
+    // Process the response data if needed
+    console.log('Response:', response);
+    return response;
+  },
+  (error) => {
+    // Handle response error
+    console.log('Response error:', error);
+    
+    // Print the error response
+    if (error.response) {
+      console.log('Error response:', error.response.data);
+    }
+    return Promise.reject(error);
+  }
+);
 
-    useEffect(() => {
+axiosInstance.interceptors.response.eject(
+    (response) => {
+      // Process the response data if needed
+      console.log('Response:', response);
+      return response;
+    },
 
-        const resInterceptor = response => {
-            console.log(response);
-            return response;
-        }
+    (error) => {
+      // Handle response error
+      console.log('Response error:', error);
+      return Promise.reject(error);
+    }
+  );
 
-        const errInterceptor = error => {
-
-            if (error.response.status === 401) {
-                navigationRef.navigate('sign_in');
-            }
-
-            return Promise.reject(error);
-        }
-
-
-        const interceptor = instance.interceptors.response.use(resInterceptor, errInterceptor);
-
-        return () => instance.interceptors.response.eject(interceptor);
-
-    }, [navigationRef])
-
-    return children;
-}
-
-
-export default instance;
-export { AxiosInterceptor }
+export default axiosInstance;

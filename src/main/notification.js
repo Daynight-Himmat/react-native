@@ -22,10 +22,11 @@ const NotificationPage = ({navigation}) => {
   const checking = useCallback(async () => {
     setLoading(true);
     var token = await AsyncStorage.getItem('token');
+    var userId = await AsyncStorage.getItem('user_id');
     await axios
       .post(url, {
         token: token,
-        id: 2,
+        id: userId,
       })
       .then(response => {
         if (response.status === 200) {

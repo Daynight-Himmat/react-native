@@ -14,7 +14,7 @@ import {
 import {Dropdown} from 'react-native-element-dropdown';
 import ColorConstants from '../../constants/color_constants';
 import {Label} from '../../components/label';
-import {ApiConstants, BaseUrl} from '../../constants/api_constants';
+import {ApiConstants, BaseUrl, BaseUrl1} from '../../constants/api_constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -66,7 +66,7 @@ const CreateProject = ({navigation, route}) => {
   const createProjectUrl = BaseUrl(ApiConstants.createProject);
   const updateProjectUrl = BaseUrl(ApiConstants.updateProject);
   const refRBSheet = useRef();
-  const selectUser = [];
+  const selectUser = []
 
   const getAssignee = async () => {
     try {

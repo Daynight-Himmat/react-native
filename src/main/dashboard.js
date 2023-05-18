@@ -30,28 +30,6 @@ const DashBoard = ({navigation}) => {
   const [get_user, setUserData] = useState('');
   const [index, setIndex] = useState('');
 
-  const url = BaseUrl(ApiConstants.getUser);
-
-  const checking = async () => {
-    try {
-      const asyncStorageRes = await AsyncStorage.getItem('token');
-      setToken(asyncStorageRes);
-      await axios
-        .post(url, {
-          token: asyncStorageRes,
-        })
-        .then(response => {
-          if (response.status === 200) {
-            setUserData(response.data?.user);
-            AsyncStorage.setItem('user_id', `${response.data?.user.id}`);
-            // console.log(response.data);
-          }
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   return (
     <View
       style={{

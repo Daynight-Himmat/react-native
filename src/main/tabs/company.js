@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Loading, NoData} from '../../components/no_data_found';
 import ColorConstants from '../../constants/color_constants';
 import CompanyTile from '../../components/company_tile';
-import {BaseUrl1, ApiConstants} from '../../constants/api_constants';
+import {BaseUrl, BaseUrl1, ApiConstants, CompanyProfileImage} from '../../constants/api_constants';
 import SearchBox from '../../components/search_box';
 
 const CompanyScreen = ({navigation}) => {
@@ -16,10 +16,10 @@ const CompanyScreen = ({navigation}) => {
   const [getCompany, setCompanyData] = useState([]);
   const [getSearchQuery, setSearchQuery] = useState(getCompany);
 
-  const url = BaseUrl1(ApiConstants.companyList);
+  const url = BaseUrl(ApiConstants.companyList);
 
 
-  const getCompanyData = useCallback(async () => {
+  const getCompanyData = async () => {
     try {
       setLoading(true);
       var asyncToken = await AsyncStorage.getItem('token');
@@ -42,11 +42,11 @@ const CompanyScreen = ({navigation}) => {
     } catch (error) {
       setLoading(false);
     }
-  });
+  };
 
   useEffect(() => {
     getCompanyData();
-  }, []);
+  }, [getCompany]);
 
   const handleSearch = text => {
     if (text === '') {
@@ -66,6 +66,7 @@ const CompanyScreen = ({navigation}) => {
         <ScrollView>
           {getSearchQuery.map((data, index) => (
             <CompanyTile
+              url={CompanyProfileImage(data?.profile_picture)}
               key={index}
               name={data.company_name}
               onPress={() => {

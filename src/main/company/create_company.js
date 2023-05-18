@@ -16,13 +16,14 @@ import AppSize from '../../components/size';
 import {ViewProfileButton} from '../../components/text_button';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppButton from '../../components/app_button';
-import {ApiConstants, BaseUrl} from '../../constants/api_constants';
+import {ApiConstants, BaseUrl, BaseUrl1} from '../../constants/api_constants';
 import axios from 'axios';
 import toastMessage from '../../components/toast_message';
 import {AppHeader} from '../../components/app_header';
 import {Avatar} from '@rneui/themed';
 import { useToast } from 'react-native-toast-notifications'; 
 import ImageCropPicker from 'react-native-image-crop-picker';
+import axiosInstance from '../../components/interceptor';
 
 const CreateCompany = ({navigation, route}) => {
   const toast = useToast();
@@ -50,7 +51,7 @@ const CreateCompany = ({navigation, route}) => {
       ? [companyContactEmail]
       : [companyContactEmail, company1ContactEmail];
 
-  const createCompanyUrl = BaseUrl(ApiConstants.companyEdit);
+  const createCompanyUrl = BaseUrl(ApiConstants.addCompany);
   const updateCompanyUrl = BaseUrl(ApiConstants.updateCompany);
 
   const validateEmail = validEmail => {
@@ -124,12 +125,23 @@ const CreateCompany = ({navigation, route}) => {
   const getCompanyDetails = async () => {
     try {
       if (validation()) {
+        var token = await AsyncStorage.getItem('token');
+        console.log(addMore);
         const formData = new FormData();
         formData.append('token', token);
         formData.append('company_name', companyName);
-        formData.append('contact_name', name);
-        formData.append('contact_email', email);
-        formData.append('contact_number', number);
+        name.forEach((value, index) => {
+          formData.append(`contact_name[${index}]`, value);
+        });
+        email.forEach((value, index) => {
+          formData.append(`contact_email[${index}]`, value);
+        });
+        number.forEach((value, index) => {
+          formData.append(`contact_number[${index}]`, value);
+        });
+        // formData.append('contact_name', name);
+        // formData.append('contact_email', email);
+        // formData.append('contact_number', number);
         companyLogo === ''
           ? formData.append('profile_picture', '')
           : formData.append('profile_picture', {
@@ -137,18 +149,29 @@ const CreateCompany = ({navigation, route}) => {
               type: 'image/jpg',
               name: 'image',
             });
-        var token = await AsyncStorage.getItem('token');
         setLoading(true);
-        await axios.post(createCompanyUrl, formData).then(resposne => {
-          if (resposne.status === 200) {
-            setLoading(false);
-            toastMessage(toast, resposne.data?.message);
-            navigation.goBack();
-          }
+        console.log({
+          name: name,
+          email: email,
+          number: number
         });
+        const response = await axiosInstance({
+          method: 'post',
+          url: createCompanyUrl,
+          data: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.status === 200) {
+          setLoading(false);
+          toastMessage(toast, response.data?.message);
+          navigation.goBack();
+        }
       }
     } catch (err) {
-      console.log({error: err});
+      console.log(err);
       setLoading(false);
     }
   };
@@ -160,24 +183,32 @@ const CreateCompany = ({navigation, route}) => {
         const contact =
           addMore === false
             ? comeFrom === 'Company Update'
-              ? companyData[0].company_details[0] !== null
-                ? [companyData[0].company_details[0].id]
+              ? companyData[0]?.company_details[0] !== null
+                ? [companyData[0]?.company_details[0]?.id]
                 : []
-              : companyData[0].company_details[1] !== null
+              : companyData[0]?.company_details[1] !== null
               ? [
-                  companyData[0].company_details[0].id,
-                  companyData[0].company_details[1].id,
+                  companyData[0]?.company_details[0]?.id,
+                  companyData[0]?.company_details[1]?.id,
                 ]
               : []
             : [];
         const formData = new FormData();
         formData.append('token', token);
-        formData.append('id', companyData[0].id);
+        formData.append('id', companyData[0]?.id);
         formData.append('company_name', companyName);
-        formData.append('contact_name', name);
-        formData.append('contact_email', email);
-        formData.append('contact_number', number);
-        formData.append('contact_id', contact);
+        name.forEach((value, index) => {
+          formData.append(`contact_name[${index}]`, value);
+        });
+        email.forEach((value, index) => {
+          formData.append(`contact_email[${index}]`, value);
+        });
+        number.forEach((value, index) => {
+          formData.append(`contact_number[${index}]`, value);
+        });
+        contact.forEach((value, index) => {
+          formData.append(`contact_id[${index}]`, value);
+        });
         companyLogo === ''
           ? formData.append('profile_picture', '')
           : formData.append('profile_picture', {

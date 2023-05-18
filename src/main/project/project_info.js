@@ -13,17 +13,20 @@ import {PersonTile, TimeTile} from '../../components/person_tile';
 import {AppHeader, CommanHeader} from '../../components/app_header';
 import Dividers from '../../components/divider';
 import TimeCondition from '../../components/time_condition';
+import { useToast } from 'react-native-toast-notifications';
+import toastMessage from '../../components/toast_message';
 
 const {height, width} = Dimensions.get('screen');
 
 const ProjectInfo = ({navigation, route}) => {
   const {project_id} = route.params;
+  const toast = useToast();
   const [isLoading, setLoading] = useState(false);
   const [projectInfo, setProjectInfo] = useState([]);
   const [getUserData, setUserData] = useState([]);
   const projectInfoUrl = BaseUrl(ApiConstants.projectDetails);
   const get_user = BaseUrl(ApiConstants.getUserList);
-  const deleteCompanyUrl = BaseUrl1(ApiConstants.destroyCompany);
+  const deleteProjectUrl = BaseUrl(ApiConstants.destroyProject);
 
   const getProjectInfo = async () => {
     try {
@@ -81,15 +84,15 @@ const ProjectInfo = ({navigation, route}) => {
     try {
       setLoading(true);
       const token = await AsyncStorage.getItem('token');
-      const response = await axios.post(deleteCompanyUrl, {
+      const response = await axios.post(deleteProjectUrl, {
         token: token,
-        id: company_id,
+        id: project_id,
         deleted: 'Yes',
       });
       if (response.status === 200) {
         setLoading(false);
-        toastMessage.showMessage(response.data?.message);
-        navigation.goBack();
+        toastMessage(toast,response.data?.message);
+        navigation.navigate('dashboard');
       }
     } catch (error) {
       setLoading(false);

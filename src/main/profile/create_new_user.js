@@ -7,7 +7,7 @@ import {Ionicons} from '../../components/icons';
 import AppSize from '../../components/size';
 import {ViewProfileButton} from '../../components/text_button';
 import AppButton from '../../components/app_button';
-import {ApiConstants, BaseUrl1} from '../../constants/api_constants';
+import {ApiConstants, BaseUrl} from '../../constants/api_constants';
 import {AppHeader} from '../../components/app_header';
 
 const CreateProfile = ({navigation}) => {
@@ -16,9 +16,9 @@ const CreateProfile = ({navigation}) => {
   const [mobile, setMobile] = useState('');
   const [email, setEmail] = useState('');
   const [designation, setDesignation] = useState('');
-  const createMember = BaseUrl1(ApiConstants.signUp);
-  const verifyOtp = BaseUrl1(ApiConstants.verifyOtp);
-  const register = BaseUrl1(ApiConstants.registration);
+  const createMember = BaseUrl(ApiConstants.signUp);
+  const verifyOtp = BaseUrl(ApiConstants.verifyOtp);
+  const register = BaseUrl(ApiConstants.registration);
 
   const createNewMember = () => {
     try {

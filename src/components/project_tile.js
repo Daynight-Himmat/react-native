@@ -15,7 +15,7 @@ const ProjectTile = ({index, onPress, project_name, company_name}) => {
           </View>
           <View style={styles.namespace}>
             <Label name={project_name} />
-            <LightText1 lightText1={company_name} />
+            {company_name && <LightText1 lightText1={company_name} />}
           </View>
         </View>
         <Dividers />
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   },
   namespace: {
     paddingHorizontal: 10,
-    flexDirection: 'column',
+    justifyContent: 'center'
   },
 });
 

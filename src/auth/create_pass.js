@@ -14,7 +14,7 @@ import AppButton from '../components/app_button';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {Loading} from '../components/no_data_found';
 import axios from 'axios';
-import {ApiConstants, BaseUrl1} from '../constants/api_constants';
+import {ApiConstants, BaseUrl, BaseUrl1} from '../constants/api_constants';
 import toastMessage from '../components/toast_message';
 import { useToast } from 'react-native-toast-notifications';
 
@@ -27,8 +27,8 @@ const CreatePassword = ({navigation, route}) => {
   const [confirmpassword, setConfirmPassword] = useState('');
   const {email, name, mobile, comeFrom} = route.params;
 
-  const createPass = BaseUrl1(ApiConstants.registration);
-  const updatePass = BaseUrl1(ApiConstants.updateUserPassword);
+  const createPass = BaseUrl(ApiConstants.registration);
+  const updatePass = BaseUrl(ApiConstants.updateUserPassword);
 
   const getRegister = async () => {
     try {
@@ -50,6 +50,7 @@ const CreatePassword = ({navigation, route}) => {
               })
               .then(response => {
                 if (response.status === 200) {
+                  console.log(response.data);
                   if (response.data.error === 0) {
                     setLoading(false);
                     toastMessage(toast, response.data?.message);

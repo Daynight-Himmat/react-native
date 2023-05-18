@@ -8,7 +8,7 @@ import AppButton from '../components/app_button';
 import {HighLightLabel, LightText} from '../components/label';
 import axios from 'axios';
 import toastMessage from '../components/toast_message';
-import {ApiConstants, BaseUrl1} from '../constants/api_constants';
+import {ApiConstants, BaseUrl1, BaseUrl} from '../constants/api_constants';
 import {Loading} from '../components/no_data_found';
 import { useToast } from 'react-native-toast-notifications';
 
@@ -17,7 +17,7 @@ const OtpPage = ({navigation, route}) => {
   const {email, name, mobile, otp, comeFrom} = route.params;
   const [isLoading, setLoading] = useState(false);
   const [getOtp, setOtp] = useState(false);
-  const verifyOtp = BaseUrl1(ApiConstants.verifyOtp);
+  const verifyOtp = BaseUrl(ApiConstants.verifyOtp);
 
   const getVerifyOtp = async () => {
     try {

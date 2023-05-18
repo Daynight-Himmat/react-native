@@ -16,7 +16,7 @@ import ProfileDemo from '../../components/profile_image_demo';
 import toastMessage from '../../components/toast_message';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {ApiConstants, BaseUrl1} from '../../constants/api_constants';
+import {ApiConstants, BaseUrl} from '../../constants/api_constants';
 import {Loading} from '../../components/no_data_found';
 import {Appbar} from 'react-native-paper';
 import { useToast } from 'react-native-toast-notifications';
@@ -25,7 +25,7 @@ const TeamProfile = ({navigation, route}) => {
   const {data} = route.params;
   const toast = useToast();
   const [isLoading, setLoading] = useState(false);
-  const deleteUserUrl = BaseUrl1(ApiConstants.destroyUser);
+  const deleteUserUrl = BaseUrl(ApiConstants.destroyUser);
 
   const deleteUser = async () => {
     try {

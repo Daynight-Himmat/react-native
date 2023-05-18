@@ -17,9 +17,11 @@ import { MaterialIcons } from '../components/icons';
 import AuthImage from '../components/auth_image';
 import AppSize from '../components/size';
 import {HighLightLabel} from '../components/label';
-import {ApiConstants, BaseUrl} from '../constants/api_constants';
+import {ApiConstants, BaseUrl, BaseUrl1} from '../constants/api_constants';
 import {Loading} from '../components/no_data_found';
 import { useToast } from 'react-native-toast-notifications';
+import axiosInstance from '../components/interceptor';
+
 
 const SignInScreen = ({navigation}) => {
   const toast = useToast();
@@ -52,15 +54,12 @@ const SignInScreen = ({navigation}) => {
       } else if (password === '') {
         toastMessage(toast, 'Please Enter the Password');
       } else {
-        console.log(email);
-        console.log(userPassword);
         setLoading(true);
         const response = await axios.post(logInUrl, {
           email: email,
           password: userPassword,
           firebase_token: email,
         });
-
         if (response.status === 200) {
           if (response.data.success === true) {
             DataManager.token = response.data.token;
@@ -70,19 +69,20 @@ const SignInScreen = ({navigation}) => {
             navigation.navigate('dashboard', {
               token: response.data.token,
             });
-            toastMessage(toast, response.data?.message );
+            toastMessage(toast, "User Log In Successfully");
           } else {
             setLoading(false);
             toastMessage(toast, 'Something went wrong, please try again');
           }
-        } else if (response.status === 400) {
+        } else {
           setLoading(false);
-          toastMessage(toast, 'Something went wrong');
+          console.log(response.data);
         }
+        console.log(response.data.message);
       }
     } catch (error) {
       setLoading(false);
-      toastMessage(toast, 'Something went wrong');
+      toastMessage(toast, `${error.data}`);
     }
   };
 

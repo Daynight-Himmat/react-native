@@ -6,7 +6,7 @@ import AppSize from '../components/size';
 import AppButton from '../components/app_button';
 import {HighLightLabel, LightText} from '../components/label';
 import axios from 'axios';
-import {ApiConstants, BaseUrl1} from '../constants/api_constants';
+import {ApiConstants, BaseUrl, BaseUrl1} from '../constants/api_constants';
 import toastMessage from '../components/toast_message';
 import {Loading} from '../components/no_data_found';
 import { useToast } from 'react-native-toast-notifications';
@@ -15,7 +15,7 @@ const ForgetPassword = ({navigation}) => {
   const toast = useToast();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const forgetPassUrl = BaseUrl1(ApiConstants.signUp);
+  const forgetPassUrl = BaseUrl(ApiConstants.signUp);
 
   const validateEmail = validEmail => {
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
