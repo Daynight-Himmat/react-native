@@ -5,9 +5,10 @@ abstract class TimeCondition{
     static monthDayYear = 'MMM DD, yyyy';
     static dayMonth = 'DD MMM';
     static full = 'DD/MM/YYYY hh:mm:ss a';
+    static ymd = 'yyyy-MM-DD';
     static monthDayYearWithTime = 'MMM DD, yyyy hh:mm:ss a';
     static currentTime = moment().format(this.monthDayYear);
-    static current = moment().utcOffset('+05:30').format('YYYY-MM-DD');
+    static current = moment().utcOffset('+05:30').format(this.ymd);
 
     static monthDate = (date:string) => moment(date).format(this.monthDayYear);
     static onlyDayMouth = (date:string) => moment(date).format(this.dayMonth);
@@ -15,6 +16,9 @@ abstract class TimeCondition{
 
     static currentDateCheck = (date: string) => this.currentTime === moment(date, this.full).format(this.monthDayYear) ? ColorConstants.buttonGreenColor
     : ColorConstants.highPriorityColor;
+
+    static dueDateCheck =(date:string)=> moment(date).format(this.ymd) !== this.current;
+    static todayDateCheck =(date:string)=> moment(date).format(this.ymd) === this.current;
     
 }
 

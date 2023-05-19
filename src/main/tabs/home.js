@@ -31,6 +31,7 @@ import TaskTile from '../../components/task_tile';
 import Condition from '../../components/conditions';
 import ColorsCondtion from '../../components/color_condition';
 import { useToast } from 'react-native-toast-notifications';
+import TimeCondition from '../../components/time_condition';
 const {height, width} = Dimensions.get('screen');
 
 const HomeScreen = ({navigation}) => {
@@ -39,7 +40,6 @@ const HomeScreen = ({navigation}) => {
   const [loading, setLoading] = useState(false);
   const [side, setSide] = useState(false);
   const [userId, setUserId] = useState('');
-  const [taskId, setTaskId] = useState('');
   const [get_user, setUserData] = useState('');
   const [innerSide, setInnerSide] = useState('All');
   const [getAddData, setAllData] = useState([]);
@@ -62,7 +62,6 @@ const HomeScreen = ({navigation}) => {
   const [assignee, setAssignee] = useState([]);
   const [searchUser, setSearchData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [checkedItems, setCheckedItems] = useState([]);
   const [getSearchAssingee, setSearchAssignee] = useState([]);
   const url1 = BaseUrl(ApiConstants.projectWiseMember);
   const changeAssigneeUrl = BaseUrl(ApiConstants.changeTaskAssignee);
@@ -113,17 +112,13 @@ const HomeScreen = ({navigation}) => {
             setTodayData(
               response.data.data?.data.filter(
                 item =>
-                  movement(item.created_at.slice(0, 10)).format(
-                    'yyyy-MM-DD',
-                  ) === movement().format('yyyy-MM-DD'),
+                TimeCondition.todayDateCheck(item.created_at.slice(0, 10))
               ),
             );
             setDueData(
               response.data.data?.data.filter(
                 item =>
-                  movement(item.created_at.slice(0, 10)).format(
-                    'yyyy-MM-DD',
-                  ) !== movement().format('yyyy-MM-DD') &&
+                  TimeCondition.dueDateCheck(item.created_at.slice(0, 10)) &&
                   Condition.activeAndReopen(item.task_status),
               ),
             );
@@ -154,17 +149,13 @@ const HomeScreen = ({navigation}) => {
             setTodayAssigneeData(
               response.data.data?.data.filter(
                 item =>
-                  movement(item.created_at.slice(0, 10)).format(
-                    'yyyy-MM-DD',
-                  ) === movement().format('yyyy-MM-DD'),
+                TimeCondition.todayDateCheck(item.created_at.slice(0, 10))
               ),
             );
             setDueAssigneeData(
               response.data.data?.data.filter(
                 item =>
-                  movement(item.created_at.slice(0, 10)).format(
-                    'yyyy-MM-DD',
-                  ) !== movement().format('yyyy-MM-DD') &&
+                  TimeCondition.dueDateCheck(item.created_at.slice(0, 10)) &&
                   Condition.activeAndReopen(item.task_status),
               ),
             );

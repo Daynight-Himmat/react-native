@@ -16,13 +16,13 @@ import {Loading, NoData} from '../../components/no_data_found';
 import movement from 'moment';
 import BottomSheetConditions from '../../components/bottom_sheet_with_condition';
 import toastMessage from '../../components/toast_message';
-import AllTask from '../tabs/task_type/all_task';
 import Dividers from '../../components/divider';
 import CommanFunctions from '../../components/comman_functions';
 import FontConstants from '../../constants/fonts';
 import TaskTile from '../../components/task_tile';
 import Condition from '../../components/conditions';
 import ColorsCondtion from '../../components/color_condition';
+import TimeCondition from '../../components/time_condition';
 const {height, width} = Dimensions.get('screen');
 
 const ProjectPageScreen = ({navigation, route}) => {
@@ -69,15 +69,13 @@ const ProjectPageScreen = ({navigation, route}) => {
         setProjectTodayTaskList(
           response.data?.data.filter(
             item =>
-              movement(item.created_at.slice(0, 10)).format('yyyy-MM-DD') ===
-              movement().format('yyyy-MM-DD'),
+            TimeCondition.todayDateCheck(item.created_at.slice(0, 10))
           ),
         );
         setProjectDueTaskList(
           response.data?.data.filter(
             item =>
-              movement(item.created_at.slice(0, 10)).format('yyyy-MM-DD') !==
-                movement().format('yyyy-MM-DD') &&
+            TimeCondition.dueDateCheck(item.created_at.slice(0, 10)) &&
               Condition.activeAndReopen(item.task_status),
           ),
         );

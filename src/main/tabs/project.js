@@ -23,8 +23,7 @@ const ProjectScreen = ({navigation}) => {
       setLoading(true);
       var userId = await AsyncStorage.getItem('user_id'); 
       var tokenValue = await AsyncStorage.getItem('token');
-      console.log(userId);
-      console.log(userId);
+      setToken(tokenValue);
       await axios
         .post(url, {
           token: tokenValue,
@@ -60,7 +59,7 @@ const ProjectScreen = ({navigation}) => {
 
   useEffect(() => {
     checking();
-  }, [getprojectData]);
+  }, [token, getprojectData]);
 
 
   

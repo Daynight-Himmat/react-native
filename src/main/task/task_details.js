@@ -41,7 +41,7 @@ import {useToast} from 'react-native-toast-notifications';
 import Condition from '../../components/conditions';
 import TimeCondition from '../../components/time_condition';
 
-const {height, widget} = Dimensions.get('screen');
+const {height, widget} = Dimensions.get('window');
 
 const TaskDetailsScreen = ({navigation, route}) => {
   const toast = useToast();

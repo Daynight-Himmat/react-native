@@ -40,6 +40,12 @@ const DashBoard = ({navigation}) => {
           tabBarActiveTintColor: ColorConstants.primaryColor,
           tabBarInactiveTintColor: ColorConstants.textLightBlack1,
           tabBarShowLabel: false,
+          tabBarStyle:{
+            elevation:0,
+            shadowOffset: {
+              width: 0, height: 0
+          },
+          }
         }}
         screenListeners={{
           state: e => {
@@ -63,6 +69,7 @@ const DashBoard = ({navigation}) => {
           options={{
             title: ({color}) => <Text style={{color: color}}> Project </Text>,
             headerShown: true,
+            headerShadowVisible: false,
             headerTitle: 'Project',
             headerTitleStyle: styles.headerTitleStyle,
             tabBarIcon: ({color, size}) => (
@@ -119,6 +126,7 @@ const DashBoard = ({navigation}) => {
             title: ({color}) => <Text style={{color: color}}> Team </Text>,
             headerShown: true,
             headerTitle: 'Company',
+            headerShadowVisible: false,
             headerTitleStyle: styles.headerTitleStyle,
             tabBarIcon: ({color, size}) => (
               <Ionicons name={'business'} size={size} color={color} />
@@ -130,6 +138,7 @@ const DashBoard = ({navigation}) => {
           component={TeamScreen}
           options={{
             headerShown: true,
+            headerShadowVisible: false,
             headerTitle: 'Team',
             headerTitleStyle: styles.headerTitleStyle,
             tabBarIcon: ({color, size}) => (

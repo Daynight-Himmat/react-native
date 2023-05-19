@@ -106,7 +106,7 @@ const CompanyInfo = ({navigation, route}) => {
         onPress: () => console.log('Cancel Pressed'),
         style: 'cancel',
       },
-      {text: 'Delete Company', onPress: () => deleteCompany()},
+      {text: 'Delete', onPress: () => deleteCompany()},
     ]);
 
   useEffect(() => {

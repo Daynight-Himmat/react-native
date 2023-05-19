@@ -7,9 +7,7 @@ import {ApiConstants, BaseUrl} from '../../constants/api_constants';
 import {InnerTab} from '../../components/tabs';
 import {Loading, NoData} from '../../components/no_data_found';
 import {Appbar} from 'react-native-paper';
-import movement from 'moment';
 import Dividers from '../../components/divider';
-import AllTask from '../tabs/task_type/all_task';
 import BottomSheetConditions from '../../components/bottom_sheet_with_condition';
 import toastMessage from '../../components/toast_message';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
@@ -18,6 +16,7 @@ import {useToast} from 'react-native-toast-notifications';
 import Condition from '../../components/conditions';
 import TaskTile from '../../components/task_tile';
 import ColorsCondtion from '../../components/color_condition';
+import TimeCondition from '../../components/time_condition';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -72,19 +71,12 @@ const TeamTaskScreen = ({navigation, route}) => {
             setTodayTaskList(
               response.data.data?.data.filter(
                 item =>
-                  movement(item.created_at.slice(0, 10)).format(
-                    'yyyy-MM-DD',
-                  ) === movement().format('yyyy-MM-DD'),
+                TimeCondition.todayDateCheck(item.created_at.slice(0, 10))
               ),
             );
             setDueTaskList(
-              response.data.data?.data.filter(
-                item =>
-                  movement(item.created_at.slice(0, 10)).format(
-                    'yyyy-MM-DD',
-                  ) !== movement().format('yyyy-MM-DD') &&
+              TimeCondition.dueDateCheck(item.created_at.slice(0, 10)) &&
                   Condition.activeAndReopen(item.task_status),
-              ),
             );
             setCompleteTaskList(
               response.data.data?.data.filter(
