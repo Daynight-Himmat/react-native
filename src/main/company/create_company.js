@@ -504,7 +504,8 @@ const styles = StyleSheet.create({
   },
   inputText: {
     width: '100%',
-    paddingVertical:15,
+    // paddingVertical:15,
+    height: 48,
     borderColor: ColorConstants.textLightBlack1,
     borderWidth: 1,
     borderRadius: 4,

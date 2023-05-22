@@ -148,36 +148,6 @@ const AddTask = ({navigation, route}) => {
             type: 'image/jpg',
             name: 'image',
           });
-
-          const data = {
-            token: token,
-            task_title: title,
-            priority: priority,
-            task_deadline: getDeadline,
-            client_view: true,
-            assigned_status: searchUser.length === 0 ? 'No' : 'Yes',
-            self: searchUser.length === 0 ? 'Yes' : 'No',
-            description: description,
-            assined_ids: searchUser.map(data => data.id).toString(),
-            project_id: getProjectId,
-            user_id: user_Id,
-            taskImage: '',
-          };
-
-          console.log({
-            token: token,
-            task_title: title,
-            priority: priority,
-            task_deadline: getDeadline,
-            client_view: true,
-            assigned_status: searchUser.length === 0 ? 'No' : 'Yes',
-            self: searchUser.length === 0 ? 'Yes' : 'No',
-            description: description,
-            assined_ids: searchUser.map(data => data.id).toString(),
-            project_id: getProjectId,
-            user_id: user_Id,
-            taskImage: '',
-          });
         const response = await axios({
           method: 'post',
           url: addTaskUrl,
@@ -593,7 +563,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     paddingHorizontal: 10,
     color: ColorConstants.primaryBlack,
-    paddingVertical: 15,
+    height: 48,
+
   },
   textInputView: {
     paddingHorizontal: 5,

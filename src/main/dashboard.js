@@ -1,34 +1,69 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React, {useState, useEffect} from 'react';
-import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  BackHandler,
+  Alert,
+  Modal,
+  Button,
+} from 'react-native';
 import ColorConstants from '../constants/color_constants';
 import HomeScreen from './tabs/home';
-import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Foundation from 'react-native-vector-icons/Foundation';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import TeamScreen from './tabs/team';
 import CompanyScreen from './tabs/company';
 import ProjectScreen from './tabs/project';
-import Notification from '../../assets/images/notification.svg';
-import SearchIcon from '../../assets/images/search.svg';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import {ApiConstants, BaseUrl} from '../constants/api_constants';
 import {FAB} from 'react-native-paper';
 import AddTask from './task/add_task';
 import {Loading} from '../components/no_data_found';
-import {useFocusEffect} from '@react-navigation/native';
 import FontConstants from '../constants/fonts';
 
 const Tab = createBottomTabNavigator();
 
 const DashBoard = ({navigation}) => {
-  const [getToken, setToken] = useState('');
+  const [exitAppModalVisible, setExitAppModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [get_user, setUserData] = useState('');
   const [index, setIndex] = useState('');
+
+  const handleExitAppConfirm = () => {
+    setExitAppModalVisible(false);
+    BackHandler.exitApp();
+  };
+
+  const handleBackPress = () => {
+    navigation.canGoBack(false);
+    console.log(navigation.canGoBack(false));
+    // if () {
+    //   createTwoButtonAlert();
+    //   return true;
+    // }
+  };
+
+  const createTwoButtonAlert = () =>
+    Alert.alert('Exit', 'Are you sure you want to exit?', [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {text: 'Exit', onPress: () => handleExitAppConfirm()},
+    ]);
+
+  // Register the event listener
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+
+    // Unregister the event listener on component unmount
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+    };
+  }, [exitAppModalVisible]);
 
   return (
     <View
@@ -40,12 +75,13 @@ const DashBoard = ({navigation}) => {
           tabBarActiveTintColor: ColorConstants.primaryColor,
           tabBarInactiveTintColor: ColorConstants.textLightBlack1,
           tabBarShowLabel: false,
-          tabBarStyle:{
-            elevation:0,
+          tabBarStyle: {
+            elevation: 0,
             shadowOffset: {
-              width: 0, height: 0
+              width: 0,
+              height: 0,
+            },
           },
-          }
         }}
         screenListeners={{
           state: e => {
@@ -100,7 +136,7 @@ const DashBoard = ({navigation}) => {
                     case 1:
                       return navigation.navigate('create_project', {
                         comeFrom: 'Project Create',
-                        projectInfo: []
+                        projectInfo: [],
                       });
                     case 3:
                       return navigation.navigate('create_company', {

@@ -505,7 +505,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     paddingHorizontal: 10,
     color: ColorConstants.primaryBlack,
-    paddingVertical: 15,
+    height: 48,
+    // paddingVertical: 15,
   },
   dropdownTextStyles: {
     color: ColorConstants.textDarkBlack,

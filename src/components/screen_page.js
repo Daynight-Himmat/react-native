@@ -30,10 +30,6 @@ import ImageShow from './task_image';
 
 const screens = [
   {
-    name: 'logo_page',
-    component: LogoPage,
-  },
-  {
     name: 'splash',
     component: SplashSreen,
   },
