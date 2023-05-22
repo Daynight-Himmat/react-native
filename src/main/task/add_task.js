@@ -35,6 +35,7 @@ import {Avatar} from '@rneui/themed';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import TimeCondition from '../../components/time_condition';
 import DropDownMenu from '../../components/dropdown';
+import axiosInstance from '../../components/interceptor';
 
 const AddTask = ({navigation, route}) => {
   const {data, comeFrom} = route?.params;
@@ -125,7 +126,7 @@ const AddTask = ({navigation, route}) => {
         const token = await AsyncStorage.getItem('token');
         const user_Id = await AsyncStorage.getItem('user_id');
         const formData = new FormData();
-        // formData.append('token', token);
+        formData.append('token', token);
         formData.append('priority', priority);
         formData.append('task_title', title);
         formData.append('task_deadline', getDeadline);
@@ -143,12 +144,16 @@ const AddTask = ({navigation, route}) => {
         formData.append('project_id', getProjectId);
         formData.append('user_id', user_Id);
       
-        formData.append('task_image', {
+        if(imageUri){
+          formData.append('task_image', {
             uri: imageUri,
             type: 'image/jpg',
             name: 'image',
           });
-        const response = await axios({
+        } else{
+          
+        }
+        const response = await axiosInstance({
           method: 'post',
           url: addTaskUrl,
           data: formData,

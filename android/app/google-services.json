@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "115722538253",
+    "project_id": "project-management-f2ae0",
+    "storage_bucket": "project-management-f2ae0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:115722538253:android:ad465696afa3f41dcb7444",
+        "android_client_info": {
+          "package_name": "com.phppoets.project_management"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "115722538253-a2jj2ugfpakvtbi0bpg9vfmsf191q3fm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.phppoets.project_management",
+            "certificate_hash": "ea0c2bdc681fcd7c0647c0b8b31a423037ef9676"
+          }
+        },
+        {
+          "client_id": "115722538253-d6mndstbde6r4kbgrn2v12s0pmgqjbc2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXspIBgWGYicFMSm0-TLLMSyvXQPm2mnw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "115722538253-d6mndstbde6r4kbgrn2v12s0pmgqjbc2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "115722538253-7h8f14c3r03ulfkch800q602hi69t8t8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.phppoets.projectmanagement"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

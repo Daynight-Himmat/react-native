@@ -329,7 +329,7 @@ const HomeScreen = ({navigation}) => {
     React.useCallback(() => {
       checking();
       taskData(userId);
-    }, [url]),
+    }, []),
   );
 
   const onRefresh = React.useCallback(() => {

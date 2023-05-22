@@ -21,6 +21,7 @@ import {ApiConstants, BaseUrl, BaseUrl1} from '../constants/api_constants';
 import {Loading} from '../components/no_data_found';
 import { useToast } from 'react-native-toast-notifications';
 import axiosInstance from '../components/interceptor';
+import { CommonActions } from '@react-navigation/native';
 
 
 const SignInScreen = ({navigation}) => {
@@ -66,9 +67,14 @@ const SignInScreen = ({navigation}) => {
             AsyncStorage.setItem('token', response.data.token);
             AsyncStorage.setItem('loggedIn', 'true');
             setLoading(false);
-            navigation.navigate('dashboard', {
-              token: response.data.token,
-            });
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 1,
+                routes: [{name: 'dashboard',params: {
+                  token: response.data.token
+                }},],
+              }),
+            );
             toastMessage(toast, "User Log In Successfully");
           } else {
             setLoading(false);
