@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.17.11",
     "@react-native-firebase/app": "^17.5.0",
+    "@react-native-firebase/messaging": "^17.5.0",
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/material-top-tabs": "^6.6.2",
     "@react-navigation/native": "^6.1.6",
@@ -27,6 +28,7 @@
     "react-native-app-intro-slider": "^4.0.4",
     "react-native-calendar-picker": "^7.1.4",
     "react-native-calendars": "^1.1294.0",
+    "react-native-device-info": "^10.6.0",
     "react-native-dropdown-select-list": "^2.0.4",
     "react-native-element-dropdown": "^2.9.0",
     "react-native-elements": "^3.4.3",

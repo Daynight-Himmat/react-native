@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -22,6 +22,9 @@ import {Loading} from '../components/no_data_found';
 import { useToast } from 'react-native-toast-notifications';
 import axiosInstance from '../components/interceptor';
 import { CommonActions } from '@react-navigation/native';
+import messaging, { firebase } from '@react-native-firebase/messaging';
+
+
 
 
 const SignInScreen = ({navigation}) => {
@@ -29,6 +32,7 @@ const SignInScreen = ({navigation}) => {
   const [name, setName] = useState('');
   const [isLoading, setLoading] = useState('');
   const [password, setpassword] = useState('');
+  const [getFCMToken, setFCMToken] = useState('');
   const [visibility, setVisibility] = useState(true);
 
   const emailFocus = useRef();
@@ -43,54 +47,68 @@ const SignInScreen = ({navigation}) => {
 
   var email = name;
   var userPassword = password;
+  
+  async function registerAndRetrieveFirebaseToken() {
+    try {
+      
+      const token = await firebase.messaging().getToken();
+      console.log(token);
+    } catch (error) {
+      console.log('Error retrieving Firebase token:', error);
+    }
+  }
 
   const getUserLogIn = async () => {
-    try {
-      if (email === '' && password === '') {
-        toastMessage(toast, 'Please fill the required');
-      } else if (email === '') {
-        toastMessage(toast, 'Please Enter the email');
-      } else if (validateEmail(email) === false) {
-        toastMessage(toast, 'Please Enter Valid the email');
-      } else if (password === '') {
-        toastMessage(toast, 'Please Enter the Password');
-      } else {
-        setLoading(true);
-        const response = await axios.post(logInUrl, {
-          email: email,
-          password: userPassword,
-          firebase_token: email,
-        });
-        if (response.status === 200) {
-          if (response.data.success === true) {
-            DataManager.token = response.data.token;
-            AsyncStorage.setItem('token', response.data.token);
-            AsyncStorage.setItem('loggedIn', 'true');
-            setLoading(false);
-            navigation.dispatch(
-              CommonActions.reset({
-                index: 1,
-                routes: [{name: 'dashboard',params: {
-                  token: response.data.token
-                }},],
-              }),
-            );
-            toastMessage(toast, "User Log In Successfully");
-          } else {
-            setLoading(false);
-            toastMessage(toast, 'Something went wrong, please try again');
-          }
-        } else {
-          setLoading(false);
-          console.log(response.data);
-        }
-        console.log(response.data.message);
-      }
-    } catch (error) {
-      setLoading(false);
-      toastMessage(toast, `${error.data}`);
-    }
+    // try {
+    //   if (email === '' && password === '') {
+    //     toastMessage(toast, 'Please fill the required');
+    //   } else if (email === '') {
+    //     toastMessage(toast, 'Please Enter the email');
+    //   } else if (validateEmail(email) === false) {
+    //     toastMessage(toast, 'Please Enter Valid the email');
+    //   } else if (password === '') {
+    //     toastMessage(toast, 'Please Enter the Password');
+    //   } else {
+    //     setLoading(true);
+        
+    //     const response = await axios.post(logInUrl, {
+    //       email: email,
+    //       password: userPassword,
+    //       firebase_token: email,
+    //     });
+    //     if (response.status === 200) {
+    //       if (response.data.success === true) {
+    //         DataManager.token = response.data.token;
+    //         AsyncStorage.setItem('token', response.data.token);
+    //         AsyncStorage.setItem('loggedIn', 'true');
+    //         setLoading(false);
+    //         navigation.dispatch(
+    //           CommonActions.reset({
+    //             index: 1,
+    //             routes: [{name: 'dashboard',params: {
+    //               token: response.data.token
+    //             }},],
+    //           }),
+    //         );
+    //         toastMessage(toast, "User Log In Successfully");
+    //       } else {
+    //         setLoading(false);
+    //         toastMessage(toast, 'Something went wrong, please try again');
+    //       }
+    //     } else {
+    //       setLoading(false);
+    //       console.log(response.data);
+    //     }
+    //     console.log(response.data.message);
+    //   }
+    // } catch (error) {
+    //   setLoading(false);
+    //   toastMessage(toast, `${error.data}`);
+    // }
   };
+
+  useEffect(()=>{
+  },[]);
 
   return (
     <View style={styles.container}>
