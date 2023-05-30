@@ -1,18 +1,8 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
-import {useRoute} from '@react-navigation/native';
-import {TabNavigationState} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import React, {useState, useEffect} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  BackHandler,
-  Alert,
-  Modal,
-  Button,
-} from 'react-native';
+import React, {useState} from 'react';
+import {View, Text, StyleSheet} from 'react-native';
 import ColorConstants from '../constants/color_constants';
 import HomeScreen from './tabs/home';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -23,14 +13,45 @@ import CompanyScreen from './tabs/company';
 import ProjectScreen from './tabs/project';
 import {FAB} from 'react-native-paper';
 import AddTask from './task/add_task';
-import {Loading} from '../components/no_data_found';
 import FontConstants from '../constants/fonts';
 
 const Tab = createBottomTabNavigator();
 
 const DashBoard = ({navigation}) => {
-  const [loading, setLoading] = useState(false);
   const [index, setIndex] = useState('');
+
+  const fabButton = () => {
+    return (
+      <FAB
+        icon="plus"
+        color="#FFFFFF"
+        onPress={() => {
+          switch (index) {
+            case 0:
+              return navigation.navigate('add_task', {
+                data: [],
+                comeFrom: 'create_Task',
+              });
+            case 1:
+              return navigation.navigate('create_project', {
+                comeFrom: 'Project Create',
+                projectInfo: [],
+              });
+            case 3:
+              return navigation.navigate('create_company', {
+                companyData: [],
+                comeFrom: 'Company Create',
+              });
+            case 4:
+              return navigation.navigate('create_profile');
+            default:
+              console.log('this data');
+          }
+        }}
+        style={styles.fab_style}
+      />
+    );
+  };
 
   return (
     <View
@@ -89,36 +110,7 @@ const DashBoard = ({navigation}) => {
             },
           }}
           options={{
-            tabBarButton: () => (
-              <FAB
-                icon="plus"
-                color="#FFFFFF"
-                onPress={() => {
-                  switch (index) {
-                    case 0:
-                      return navigation.navigate('add_task', {
-                        data: [],
-                        comeFrom: 'create_Task',
-                      });
-                    case 1:
-                      return navigation.navigate('create_project', {
-                        comeFrom: 'Project Create',
-                        projectInfo: [],
-                      });
-                    case 3:
-                      return navigation.navigate('create_company', {
-                        companyData: [],
-                        comeFrom: 'Company Create',
-                      });
-                    case 4:
-                      return navigation.navigate('create_profile');
-                    default:
-                      console.log('this data');
-                  }
-                }}
-                style={styles.fab_style}
-              />
-            ),
+            tabBarButton: () => fabButton,
           }}
         />
 
@@ -150,7 +142,6 @@ const DashBoard = ({navigation}) => {
           }}
         />
       </Tab.Navigator>
-      {loading && <Loading />}
     </View>
   );
 };
