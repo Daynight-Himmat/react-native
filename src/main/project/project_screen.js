@@ -67,15 +67,14 @@ const ProjectPageScreen = ({navigation, route}) => {
           ),
         );
         setProjectTodayTaskList(
-          response.data?.data.filter(
-            item =>
-            TimeCondition.todayDateCheck(item.created_at.slice(0, 10))
+          response.data?.data.filter(item =>
+            TimeCondition.todayDateCheck(item.created_at.slice(0, 10)),
           ),
         );
         setProjectDueTaskList(
           response.data?.data.filter(
             item =>
-            TimeCondition.dueDateCheck(item.created_at.slice(0, 10)) &&
+              TimeCondition.dueDateCheck(item.created_at.slice(0, 10)) &&
               Condition.activeAndReopen(item.task_status),
           ),
         );
@@ -417,6 +416,7 @@ const ProjectPageScreen = ({navigation, route}) => {
         }}
         reopenOptionRef={reopenOptionRef}
         status={getBottomData.task_status}
+        navigation={navigation}
       />
       {isLoading && <Loading />}
     </View>

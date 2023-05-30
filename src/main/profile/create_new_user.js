@@ -1,16 +1,27 @@
 import React, {useState} from 'react';
-import {View, ScrollView, TextInput, Image, StyleSheet} from 'react-native';
+import {
+  View,
+  ScrollView,
+  TextInput,
+  Image,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Loading} from '../../components/no_data_found';
 import {Label} from '../../components/label';
-import {Ionicons} from '../../components/icons';
 import AppSize from '../../components/size';
 import {ViewProfileButton} from '../../components/text_button';
 import AppButton from '../../components/app_button';
 import {ApiConstants, BaseUrl} from '../../constants/api_constants';
 import {AppHeader} from '../../components/app_header';
+import toastMessage from '../../components/toast_message';
+import {useToast} from 'react-native-toast-notifications';
+import CommanFunctions from '../../components/comman_functions';
+import {Avatar} from '@rneui/themed';
 
 const CreateProfile = ({navigation}) => {
+  const toast = useToast();
   const [isLoading, setLoading] = useState(false);
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
@@ -22,12 +33,30 @@ const CreateProfile = ({navigation}) => {
 
   const createNewMember = () => {
     try {
-      console.log({
-        name: name,
-        mobile: mobile,
-        email: email,
-        designation: designation,
-      });
+      if (!email && !name && !mobile && !designation) {
+        toastMessage(toast, 'Please fill the required');
+      } else if (name === '') {
+        toastMessage(toast, 'Please Enter the name');
+      } else if (!email) {
+        toastMessage(toast, 'Please Enter the email');
+      } else if (CommanFunctions.validateEmail(email) === false) {
+        toastMessage(toast, 'Please Enter Valid the email');
+      } else if (!designation) {
+        toastMessage(toast, 'Please Enter the designation');
+      } else if (mobile === '') {
+        toastMessage(toast, 'Please Enter the number');
+      } else if (mobile.length !== 10) {
+        toastMessage(toast, 'Please Enter the valid number');
+      } else {
+        setLoading(true);
+        console.log({
+          name: name,
+          mobile: mobile,
+          email: email,
+          designation: designation,
+        });
+        setLoading(false);
+      }
     } catch (error) {
       setLoading(false);
     }
@@ -43,21 +72,15 @@ const CreateProfile = ({navigation}) => {
         <AppSize height={20} />
         <View
           style={{
-            width: '100%',
-            flexDirection: 'row',
-            justifyContent: 'center',
+            alignSelf: 'center',
           }}>
-          <View style={styles.imageContainer}>
-            {/* {data.profile_image !== null &&
-        data.profile_image.split('.').pop() === 'jpg' ? (
-          <Image
-            style={styles.imageContainer}
-            source={{uri: data.profile_image}}
+          <Avatar
+            size={100}
+            rounded
+            renderPlaceholderContent={<ActivityIndicator />}
+            placeholderStyle={{backgroundColor: ColorConstants.primaryWhite}}
+            source={require('../../assets/images/profiles.png')}
           />
-        ) : ( */}
-            <Ionicons name={'person-sharp'} size={35} style={styles.image} />
-            {/* )} */}
-          </View>
         </View>
         <AppSize height={10} />
 
@@ -67,7 +90,7 @@ const CreateProfile = ({navigation}) => {
         <AppSize height={20} />
 
         <View style={{width: '100%'}}>
-          <Label name={'Name'} margin={10} />
+          <Label name={'Name'} margin={5} />
 
           <View style={styles.inputContainer}>
             <Image
@@ -75,29 +98,16 @@ const CreateProfile = ({navigation}) => {
               style={styles.tile_leading_icon}
               resizeMode="contain"
             />
-            <AppSize width={5} margin={10} />
+            <AppSize width={5} margin={5} />
             <TextInput
+              value={name}
               placeholder="Enter the name"
               placeholderTextColor={ColorConstants.textLightBlack1}
               style={styles.inputText}
               onChangeText={text => setName(text)}
             />
           </View>
-          <Label name={'Mobile Number'} margin={10} />
-          <View style={styles.inputContainer}>
-            <Image
-              source={require('../../../assets/images/phone.png')}
-              style={styles.tile_leading_icon}
-              resizeMode="contain"
-            />
-            <AppSize width={5} margin={10} />
-            <TextInput
-              placeholder="Enter the number"
-              placeholderTextColor={ColorConstants.textLightBlack1}
-              style={styles.inputText}
-            />
-          </View>
-          <Label name={'Email'} margin={10} />
+          <Label name={'Email'} margin={5} />
           <View style={styles.inputContainer}>
             <Image
               source={require('../../../assets/images/emails.png')}
@@ -106,12 +116,30 @@ const CreateProfile = ({navigation}) => {
             />
             <AppSize width={5} />
             <TextInput
+              value={email}
               placeholder="Enter the email-address"
               placeholderTextColor={ColorConstants.textLightBlack1}
               style={styles.inputText}
+              onChangeText={text => setEmail(text)}
             />
           </View>
-          <Label name={'Designation'} margin={10} />
+          <Label name={'Mobile Number'} margin={5} />
+          <View style={styles.inputContainer}>
+            <Image
+              source={require('../../../assets/images/phone.png')}
+              style={styles.tile_leading_icon}
+              resizeMode="contain"
+            />
+            <AppSize width={5} />
+            <TextInput
+              value={mobile}
+              placeholder="Enter the number"
+              placeholderTextColor={ColorConstants.textLightBlack1}
+              style={styles.inputText}
+              onChangeText={text => setMobile(text)}
+            />
+          </View>
+          <Label name={'Designation'} margin={5} />
           <View style={styles.inputContainer}>
             <Image
               source={require('../../../assets/images/designation.png')}
@@ -120,9 +148,11 @@ const CreateProfile = ({navigation}) => {
             />
             <AppSize width={5} />
             <TextInput
+              value={designation}
               placeholder="Enter the Designation"
               placeholderTextColor={ColorConstants.textLightBlack1}
               style={styles.inputText}
+              onChangeText={text => setDesignation(text)}
             />
           </View>
         </View>

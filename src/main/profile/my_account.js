@@ -17,6 +17,7 @@ import {Loading} from '../../components/no_data_found';
 import {AppHeader} from '../../components/app_header';
 import {Label} from '../../components/label';
 import {ViewProfileButton} from '../../components/text_button';
+import CommanFunctions from '../../components/comman_functions';
 
 const MyAccount = ({navigation, route}) => {
   const {data} = route.params;
@@ -42,7 +43,7 @@ const MyAccount = ({navigation, route}) => {
               await AsyncStorage.removeItem('user_id');
               var token = await AsyncStorage.getItem('token');
               console.log(token);
-              navigation.navigate('sign_in');
+              CommanFunctions.routing(navigation, 'sign_in');
               console.log(response.data);
               setLoading(false);
             }

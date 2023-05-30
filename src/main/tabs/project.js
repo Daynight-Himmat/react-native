@@ -17,11 +17,10 @@ const ProjectScreen = ({navigation}) => {
 
   const url = BaseUrl(ApiConstants.myProjectList);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const checking = async () => {
     try {
       setLoading(true);
-      var userId = await AsyncStorage.getItem('user_id'); 
+      var userId = await AsyncStorage.getItem('user_id');
       var tokenValue = await AsyncStorage.getItem('token');
       setToken(tokenValue);
       await axios
@@ -61,9 +60,6 @@ const ProjectScreen = ({navigation}) => {
     checking();
   }, [token, getprojectData]);
 
-
-  
-
   return (
     <View style={styles.container}>
       <SearchBox
@@ -73,27 +69,26 @@ const ProjectScreen = ({navigation}) => {
         }}
       />
       <View style={{padding: 5}} />
-      
-        {getSearchValue.length > 0 ? (
-          <ScrollView>
-            {getSearchValue.map((data, index) => (
-              <ProjectTile
-                key={index}
-                onPress={() => {
-                  navigation.navigate('project_page_screen', {
-                    data: data,
-                  });
-                }}
-                company_name={data.company_name}
-                project_name={data.project_name}
-              />
-            ))}
-          </ScrollView>
-        ) : (
-          <NoData />
-        )
-      }
-      {loading && <Loading/>}
+
+      {getSearchValue.length > 0 ? (
+        <ScrollView>
+          {getSearchValue.map((data, index) => (
+            <ProjectTile
+              key={index}
+              onPress={() => {
+                navigation.navigate('project_page_screen', {
+                  data: data,
+                });
+              }}
+              company_name={data.company_name}
+              project_name={data.project_name}
+            />
+          ))}
+        </ScrollView>
+      ) : (
+        <NoData />
+      )}
+      {loading && <Loading />}
     </View>
   );
 };

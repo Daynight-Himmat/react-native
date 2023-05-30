@@ -378,6 +378,7 @@ const TeamTaskScreen = ({navigation, route}) => {
         )}
       </View>
       <BottomSheetConditions
+        navigation={navigation}
         assigneeOptionRef={assigneeOptionRef}
         selectAssigneeRef={selectAssigneeRef}
         approveTaskRef={approveTaskRef}

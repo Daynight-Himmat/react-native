@@ -1,14 +1,19 @@
-import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, TouchableOpacity, ScrollView, ImageBackground} from 'react-native';
+import React, {useState} from 'react';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+} from 'react-native';
 import ColorConstants from '../constants/color_constants';
 import SearchBox from '../components/search_box';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import {ApiConstants, BaseUrl} from '../constants/api_constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import TaskTile from '../components/task_tile';
 import {Loading, NoData} from '../components/no_data_found';
-import { assets } from '../../react-native.config';
+import TaskTile from '../components/task_tile';
 
 const SearchScreen = ({navigation}) => {
   const [getSearchText, setsearchData] = useState([]);
@@ -34,14 +39,13 @@ const SearchScreen = ({navigation}) => {
             setLoading(false);
             console.log(response.data?.data);
             setsearchData(response.data?.data);
-            getSearchTask.slice(0, 20);
+            // getSearchTask.slice(0, 20);
           });
       }
     } catch (error) {
       setLoading(false);
     }
   };
-
 
   return (
     <View style={styles.container}>
@@ -66,24 +70,48 @@ const SearchScreen = ({navigation}) => {
             searchPress={() => getSearchTask(searchText)}
             onChangeText={value => {
               setsearchText(value);
+              getSearchTask(value);
             }}
           />
         </View>
       </View>
-      <ImageBackground imageStyle={{height: 300, width: 300, alignSelf: 'center', justifyContent: 'center'}} style={{flex: 1}} source={require('../assets/images/search.png')}    >
-        
-      </ImageBackground>
-      {/* {isLoading && 
-        getSearchText?.length > 0 ? (
-          <ScrollView>
-            {getSearchText.map((data, index) => {
-              return <TaskTile key={index} data={data} />;
-            })}
-          </ScrollView>
-        ) : (
-          <NoData />
-        )
-      } */}
+      {searchText === '' ? (
+        <View
+          style={{
+            flex:1,
+            justifyContent: 'center',
+            alignSelf: 'center',
+          }}>
+          <Image
+            source={require('../assets/images/search.png')}
+            style={{
+              height: 300,
+              width: 300,
+            }}
+          />
+        </View>
+      ) : getSearchText?.length > 0 ? (
+        <ScrollView>
+          {getSearchText.map((data, index) => {
+            return (
+              <TaskTile
+                index={index}
+                data={data}
+                key={index}
+                navigation={() => {
+                  navigation.navigate('task_details_screen', {
+                    data: data,
+                  });
+                }}
+                screen={'search'}
+              />
+            );
+          })}
+        </ScrollView>
+      ) : (
+        <NoData />
+      )}
+      {isLoading && <Loading />}
     </View>
   );
 };

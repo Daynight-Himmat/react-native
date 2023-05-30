@@ -21,7 +21,7 @@ import axios from 'axios';
 import toastMessage from '../../components/toast_message';
 import {AppHeader} from '../../components/app_header';
 import {Avatar} from '@rneui/themed';
-import { useToast } from 'react-native-toast-notifications'; 
+import {useToast} from 'react-native-toast-notifications';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import axiosInstance from '../../components/interceptor';
 
@@ -153,7 +153,7 @@ const CreateCompany = ({navigation, route}) => {
         console.log({
           name: name,
           email: email,
-          number: number
+          number: number,
         });
         const response = await axiosInstance({
           method: 'post',
@@ -227,13 +227,13 @@ const CreateCompany = ({navigation, route}) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        
+
         // await axios.post(updateCompanyUrl, formData).then(resposne => {
-          if (response.status === 200) {
-            setLoading(false);
-            toastMessage(toast, response.data?.message);
-            navigation.goBack();
-          }
+        if (response.status === 200) {
+          setLoading(false);
+          toastMessage(toast, response.data?.message);
+          navigation.goBack();
+        }
         // });
       }
     } catch (err) {

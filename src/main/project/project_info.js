@@ -1,6 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
-import {View, ScrollView, StyleSheet, Dimensions, Text, Alert} from 'react-native';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  Dimensions,
+  Text,
+  Alert,
+} from 'react-native';
 import ColorConstants from '../../constants/color_constants';
 import {Appbar} from 'react-native-paper';
 import {ApiConstants, BaseUrl, BaseUrl1} from '../../constants/api_constants';
@@ -13,7 +20,7 @@ import {PersonTile, TimeTile} from '../../components/person_tile';
 import {AppHeader, CommanHeader} from '../../components/app_header';
 import Dividers from '../../components/divider';
 import TimeCondition from '../../components/time_condition';
-import { useToast } from 'react-native-toast-notifications';
+import {useToast} from 'react-native-toast-notifications';
 import toastMessage from '../../components/toast_message';
 
 const {height, width} = Dimensions.get('screen');
@@ -79,7 +86,6 @@ const ProjectInfo = ({navigation, route}) => {
     }
   };
 
-
   const deleteProject = async () => {
     try {
       setLoading(true);
@@ -91,7 +97,7 @@ const ProjectInfo = ({navigation, route}) => {
       });
       if (response.status === 200) {
         setLoading(false);
-        toastMessage(toast,response.data?.message);
+        toastMessage(toast, response.data?.message);
         navigation.navigate('dashboard');
       }
     } catch (error) {
@@ -116,13 +122,16 @@ const ProjectInfo = ({navigation, route}) => {
 
   return (
     <View style={styles.container}>
-      
-      <CommanHeader deletePress={() => createTwoButtonAlert()} navigation={navigation} pencilPress={() => {
-            navigation.navigate('create_project', {
-              projectInfo: projectInfo,
-              comeFrom: 'Project Update',
-            });
-          }}/>
+      <CommanHeader
+        deletePress={() => createTwoButtonAlert()}
+        navigation={navigation}
+        pencilPress={() => {
+          navigation.navigate('create_project', {
+            projectInfo: projectInfo,
+            comeFrom: 'Project Update',
+          });
+        }}
+      />
       <ScrollView style={{paddingHorizontal: 10}}>
         <View>
           <Label name={projectInfo[0]?.project_name} />
@@ -144,7 +153,10 @@ const ProjectInfo = ({navigation, route}) => {
             projectInfo[0]?.team_cordinator !== '' &&
             projectInfo[0]?.team_cordinator !== null
               ? getUserData.map((data, index) =>
-                  data.id.toString() === projectInfo[0]?.team_cordinator.toString() ? data.name : '',
+                  data.id.toString() ===
+                  projectInfo[0]?.team_cordinator.toString()
+                    ? data.name
+                    : '',
                 )
               : 'No Task Assignee found'
           }

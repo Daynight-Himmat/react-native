@@ -3,21 +3,10 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import screens from './src/components/screen_page';
 import SplashScreen from 'react-native-splash-screen';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createNativeStackNavigator();
 
 const AppContext = ({navigation}) => {
-
-  const goRoute = async () => {
-    var userId = await AsyncStorage.getItem('user_id');
-    if (userId !== null) {
-      navigation.navigate('dashboard');
-    } else {
-      navigation.navigate('splash');
-    }
-  };
-
   useEffect(() => {
     SplashScreen.hide();
   }, []);

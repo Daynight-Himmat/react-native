@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   View,
   ScrollView,
@@ -12,7 +12,7 @@ import TaskAlert from './task_alert';
 import {RadioButton, Checkbox} from 'react-native-paper';
 import AppButton from './app_button';
 import ColorConstants from '../constants/color_constants';
-import {MaterialIcons} from '../components/icons';
+import {MaterialIcons} from './icons';
 import {Label} from './label';
 import FontConstants from '../constants/fonts';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -23,7 +23,7 @@ import {NoData} from './no_data_found';
 import SearchBox from './search_box';
 import RowButton from './row_button';
 import toastMessage from './toast_message';
-import { useToast } from 'react-native-toast-notifications';
+import {useToast} from 'react-native-toast-notifications';
 
 const BottomSheetConditions = ({
   bottomSheetRef,
@@ -45,6 +45,7 @@ const BottomSheetConditions = ({
   status,
   project_id,
   taskData,
+  navigation,
 }) => {
   const toast = useToast();
   const [assignee, setAssignee] = useState([]);
@@ -57,36 +58,50 @@ const BottomSheetConditions = ({
   const changeAssigneeUrl = BaseUrl(ApiConstants.changeTaskAssignee);
   const selectUser = [];
 
-  const getAssignee = async projectId => {
-    try {
-      setLoading(true);
-      const token = await AsyncStorage.getItem('token');
-      const response = await axios.post(url1, {
-        token: token,
-        project_id: projectId,
-      });
-      setSearchAssignee(response.data?.data);
-      setAssignee(response.data?.data);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-    }
-  };
+  const getAssignee = useCallback(
+    async projectId => {
+      try {
+        setLoading(true);
+        const token = await AsyncStorage.getItem('token');
+        const response = await axios.post(url1, {
+          token: token,
+          project_id: projectId,
+        });
+        setSearchAssignee(response.data?.data);
+        setAssignee(response.data?.data);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+      }
+    },
+    [url1],
+  );
 
   const updateAssignee = async () => {
     try {
       setLoading(true);
       const token = await AsyncStorage.getItem('token');
+      console.log({
+        id: taskData.user_id,
+        task_id: taskData.id,
+        assined_ids: searchUser.map(item => item.id).toString(),
+        new_assignee: searchUser.map(item => item.id).toString(),
+      });
       const response = await axios.post(changeAssigneeUrl, {
         token: token,
         id: taskData.user_id,
         task_id: taskData.id,
-        assined_ids: '',
+        assined_ids: searchUser.map(item => item.id).toString(),
         new_assignee: searchUser.map(item => item.id).toString(),
       });
       if (response.status === 200) {
         toastMessage(toast, response.data?.message);
         assigneeOptionRef.current.hide();
+        bottomSheetRef.current.hide();
+        navigation.navigate('approve', {
+          taskStatus: 'assignee',
+        });
+        console.log(response.data);
       }
       setLoading(false);
     } catch (error) {
@@ -113,11 +128,8 @@ const BottomSheetConditions = ({
   useEffect(() => {
     getAssignee(project_id);
     const initCheckedItems = {};
-    assignee.forEach(item => {
-      initCheckedItems[item.id] = false;
-    });
     setCheckedItems(initCheckedItems);
-  }, []);
+  }, [getAssignee, project_id]);
 
   return (
     <View>
@@ -126,286 +138,262 @@ const BottomSheetConditions = ({
         backButton={() => bottomSheetRef.current.hide()}
         widget={
           <View>
-          <TaskOption
-            status={status}
-            onPressPriority={() => {
-              // bottomSheetRef.current.hide();
-              changePriorityRef.current.show();
-            }}
-            onPressComplete={() => {
-              // bottomSheetRef.current.hide();
-              completeOptionRef.current.show();
-            }}
-            onPressDelete={() => {
-              // bottomSheetRef.current.hide();
-              deleteOptionRef.current.show();
-            }}
-            onPressReopen={() => {
-              // bottomSheetRef.current.hide();
-              reopenOptionRef.current.show();
-            }}
-            onPressChangeAssignee={() => {
-              // bottomSheetRef.current.hide();
-              assigneeOptionRef.current.show();
-            }}
-            onPressApproved={() => {
-              // bottomSheetRef.current.hide();
-              approveTaskRef.current.show();
-            }}
-          />
-          <BottomSheet
-        refer={completeOptionRef}
-        backButton={() => completeOptionRef.current.hide()}
-        widget={
-          <TaskAlert
-            buttonLabel={'Complete'}
-            label={'Are you sure you want to close the task.'}
-            onBack={() => completeOptionRef.current.hide()}
-            onPress={onPressComplete}
-          />
-        }
-      />
-
-      <BottomSheet
-        refer={approveTaskRef}
-        backButton={() => approveTaskRef.current.hide()}
-        widget={
-          <TaskAlert
-            buttonLabel={'Approve'}
-            label={'Are you sure you want to Approved the task.'}
-            onBack={() => approveTaskRef.current.hide()}
-            onPress={onPressApproved}
-          />
-        }
-      />
-
-      <BottomSheet
-        refer={assigneeOptionRef}
-        backButton={() => assigneeOptionRef.current.hide()}
-        widget={
-          <View>
-            <Label name={'Assignee'} />
-            <View
-              style={{
-                flexDirection: 'column',
-              }}>
-              {assignee.length > 0 && searchUser.length > 0 ? (
-                <ScrollView
-                  horizontal={true}
-                  contentContainerStyle={{
-                    flexGrow: 1,
-                    paddingVertical: 10,
-                  }}>
-                  {searchUser.length > 0 ? (
-                    searchUser.map((userid, i) => (
-                      <View
-                        key={i}
-                        style={{
-                          flexDirection: 'row',
-                        }}>
-                        <View style={styles.assigneeChip}>
-                          <TouchableOpacity
-                            onPress={() => {
-                              handleRemove(userid.id);
-                              checkedItems[userid.id] = false;
-                              console.log(searchUser);
-                            }}
-                            style={styles.cancelButton}>
-                            <MaterialIcons
-                              name={'clear'}
-                              color={ColorConstants.primaryWhite}
-                              size={12}
-                            />
-                          </TouchableOpacity>
-                          <Text style={styles.chipText}>{userid.name}</Text>
-                        </View>
-                        <AppSize width={10} />
-                      </View>
-                    ))
-                  ) : (
-                    <View />
-                  )}
-                </ScrollView>
-              ) : (
-                <View style={{flex: 1, flexDirection: 'column'}} />
-              )}
-            </View>
-            <TouchableOpacity
-              onPress={() => {
-                getAssignee(project_id);
-                selectAssigneeRef.current.show();
+            <TaskOption
+              status={status}
+              onPressPriority={() => {
+                // bottomSheetRef.current.hide();
+                changePriorityRef.current.show();
               }}
-              style={styles.add}>
-              <Text style={styles.add_text}>+ Add</Text>
-            </TouchableOpacity>
-            <View style={{paddingVertical: 10}}>
-              <RowButton
-                onPress={() => {
-                  if (searchUser.length === 0) {
-                    toastMessage(toast, 'Please Select Assignee First');
-                  } else {
-                    updateAssignee();
-                  }
-                }}
-                onback={() => {
-                  assigneeOptionRef.current.hide();
-                }}
-                text={'Select'}
-              />
-            </View>
-          </View>
-        }
-      />
-
-      <BottomSheet
-        refer={selectAssigneeRef}
-        backButton={() => selectAssigneeRef.current.hide()}
-        widget={
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'column',
-              paddingHorizontal: 10,
-              backgroundColor: ColorConstants.primaryWhite,
-            }}>
-            <SearchBox
-              onChangeText={handleSearch}
-              onPress={() => {
-                handleSearch(searchQuery);
+              onPressComplete={() => {
+                // bottomSheetRef.current.hide();
+                completeOptionRef.current.show();
+              }}
+              onPressDelete={() => {
+                // bottomSheetRef.current.hide();
+                deleteOptionRef.current.show();
+              }}
+              onPressReopen={() => {
+                // bottomSheetRef.current.hide();
+                reopenOptionRef.current.show();
+              }}
+              onPressChangeAssignee={() => {
+                // bottomSheetRef.current.hide();
+                assigneeOptionRef.current.show();
+              }}
+              onPressApproved={() => {
+                // bottomSheetRef.current.hide();
+                approveTaskRef.current.show();
               }}
             />
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'column',
-              }}>
-              {assignee.length > 0 ? (
-                <ScrollView
-                  contentContainerStyle={{
-                    flexGrow: 1,
-                    paddingVertical: 10,
-                  }}>
-                  {assignee.map((data, index) => (
-                    <View
-                      key={index}
-                      style={{
-                        flex: 1,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                      }}>
-                      <Checkbox.Item
-                        label={data.name}
-                        labelStyle={{
-                          width: '90%',
-                        }}
-                        status={
-                          selectUser.length > 0
-                            ? searchUser.map(e => e === data.id) ===
-                              checkedItems[data.id]
-                              ? 'checked'
-                              : 'unchecked'
-                            : checkedItems[data.id]
-                            ? 'checked'
-                            : 'unchecked'
-                        }
-                        onPress={() => {
-                          setCheckedItems({
-                            ...checkedItems,
-                            [data.id]: !checkedItems[data.id],
-                          });
-                          if (!checkedItems[data.id]) {
-                            searchUser.push({id: data.id, name: data.name});
-                            setSearchData(searchUser);
-                          } else {
-                            searchUser.pop({id: data.id, name: data.name});
-                            setSearchData(searchUser);
-                          }
-                          console.log(checkedItems);
-                        }}
-                      />
-                    </View>
-                  ))}
-                </ScrollView>
-              ) : (
-                <View style={{height: 200, flexDirection: 'column'}}>
-                  <NoData />
-                </View>
-              )}
-            </View>
-            <View
-              style={{
-                paddingVertical: 10,
-              }}>
-              <RowButton
-                onPress={() => {
-                  selectAssigneeRef.current.hide();
-                }}
-                onback={() => {
-                  selectAssigneeRef.current.hide();
-                }}
-                text={'Done'}
-              />
-            </View>
-          </View>
-        }
-      />
+            <BottomSheet
+              refer={completeOptionRef}
+              backButton={() => completeOptionRef.current.hide()}
+              widget={
+                <TaskAlert
+                  buttonLabel={'Complete'}
+                  label={'Are you sure you want to close the task.'}
+                  onBack={() => completeOptionRef.current.hide()}
+                  onPress={onPressComplete}
+                />
+              }
+            />
 
-      <BottomSheet
-        refer={deleteOptionRef}
-        backButton={() => deleteOptionRef.current.hide()}
-        widget={
-          <TaskAlert
-            label={'Are you sure you want to delete the task.'}
-            buttonLabel={'Delete'}
-            style={{backgroundColor: ColorConstants.highLightColor}}
-            onBack={() => deleteOptionRef.current.hide()}
-            onPress={onPressDelete}
-          />
-        }
-      />
-      <BottomSheet
-        refer={reopenOptionRef}
-        backButton={() => reopenOptionRef.current.hide()}
-        widget={
-          <TaskAlert
-            label={'Are you sure you want to Reopen the task.'}
-            buttonLabel={'Reopen'}
-            onBack={() => reopenOptionRef.current.hide()}
-            onPress={onPressReopen}
-          />
-        }
-      />
-      <BottomSheet
-        refer={changePriorityRef}
-        backButton={() => changePriorityRef.current.hide()}
-        widget={
-          <View style={styles.radioContainerSyle}>
-            <View style={styles.radiobuttonContainer}>
-              <View>
-                <Label name={'Select Priority'} />
-              </View>
-              <RadioButton.Group onValueChange={onValueChange} value={checked}>
-                <View style={styles.row}>
-                  <RadioButton.Item
-                    color={ColorConstants.highLightColor}
-                    label="High"
-                    value="High"
-                    labelStyle={styles.radioLabel}
+            <BottomSheet
+              refer={approveTaskRef}
+              backButton={() => approveTaskRef.current.hide()}
+              widget={
+                <TaskAlert
+                  buttonLabel={'Approve'}
+                  label={'Are you sure you want to Approved the task.'}
+                  onBack={() => approveTaskRef.current.hide()}
+                  onPress={onPressApproved}
+                />
+              }
+            />
+
+            <BottomSheet
+              refer={assigneeOptionRef}
+              backButton={() => assigneeOptionRef.current.hide()}
+              widget={
+                <View>
+                  <Label name={'Assignee'} />
+                  <View>
+                    {assignee.length > 0 && searchUser.length > 0 ? (
+                      <ScrollView
+                        horizontal={true}
+                        contentContainerStyle={styles.padding}>
+                        {searchUser.length > 0 ? (
+                          searchUser.map((userid, i) => (
+                            <View key={i} style={styles.row}>
+                              <View style={styles.assigneeChip}>
+                                <TouchableOpacity
+                                  onPress={() => {
+                                    handleRemove(userid.id);
+                                    checkedItems[userid.id] = false;
+                                    console.log(searchUser);
+                                  }}
+                                  style={styles.cancelButton}>
+                                  <MaterialIcons
+                                    name={'clear'}
+                                    color={ColorConstants.primaryWhite}
+                                    size={12}
+                                  />
+                                </TouchableOpacity>
+                                <Text style={styles.chipText}>
+                                  {userid.name}
+                                </Text>
+                              </View>
+                              <AppSize width={10} />
+                            </View>
+                          ))
+                        ) : (
+                          <View />
+                        )}
+                      </ScrollView>
+                    ) : (
+                      <View style={{flex: 1, flexDirection: 'column'}} />
+                    )}
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      getAssignee(project_id);
+                      selectAssigneeRef.current.show();
+                    }}
+                    style={styles.add}>
+                    <Text style={styles.add_text}>+ Add</Text>
+                  </TouchableOpacity>
+                  <View style={styles.padding}>
+                    <RowButton
+                      onPress={() => {
+                        if (searchUser.length === 0) {
+                          toastMessage(toast, 'Please Select Assignee First');
+                        } else {
+                          updateAssignee();
+                        }
+                      }}
+                      onback={() => {
+                        assigneeOptionRef.current.hide();
+                      }}
+                      text={'Select'}
+                    />
+                  </View>
+                </View>
+              }
+            />
+
+            <BottomSheet
+              refer={selectAssigneeRef}
+              backButton={() => selectAssigneeRef.current.hide()}
+              widget={
+                <View style={styles.searchBox}>
+                  <SearchBox
+                    onChangeText={handleSearch}
+                    onPress={() => {
+                      handleSearch(searchQuery);
+                    }}
                   />
-                  <RadioButton.Item
-                    color={ColorConstants.highLightColor}
-                    label="Low"
-                    value="Low"
-                    labelStyle={styles.radioLabel}
+                  <View style={styles.flex}>
+                    {assignee.length > 0 ? (
+                      <ScrollView contentContainerStyle={styles.padding}>
+                        {assignee.map((data, index) => (
+                          <View key={index} style={styles.check_container}>
+                            <Checkbox.Item
+                              label={data.name}
+                              labelStyle={styles.width}
+                              status={
+                                selectUser.length > 0
+                                  ? searchUser.map(e => e === data.id) ===
+                                    checkedItems[data.id]
+                                    ? 'checked'
+                                    : 'unchecked'
+                                  : checkedItems[data.id]
+                                  ? 'checked'
+                                  : 'unchecked'
+                              }
+                              onPress={() => {
+                                setCheckedItems({
+                                  ...checkedItems,
+                                  [data.id]: !checkedItems[data.id],
+                                });
+                                if (!checkedItems[data.id]) {
+                                  searchUser.push({
+                                    id: data.id,
+                                    name: data.name,
+                                  });
+                                  setSearchData(searchUser);
+                                } else {
+                                  searchUser.pop({
+                                    id: data.id,
+                                    name: data.name,
+                                  });
+                                  setSearchData(searchUser);
+                                }
+                                console.log(checkedItems);
+                              }}
+                            />
+                          </View>
+                        ))}
+                      </ScrollView>
+                    ) : (
+                      <NoData />
+                    )}
+                  </View>
+                  <View style={styles.padding}>
+                    <RowButton
+                      onPress={() => {
+                        selectAssigneeRef.current.hide();
+                      }}
+                      onback={() => {
+                        selectAssigneeRef.current.hide();
+                      }}
+                      text={'Done'}
+                    />
+                  </View>
+                </View>
+              }
+            />
+
+            <BottomSheet
+              refer={deleteOptionRef}
+              backButton={() => deleteOptionRef.current.hide()}
+              widget={
+                <TaskAlert
+                  label={'Are you sure you want to delete the task.'}
+                  buttonLabel={'Delete'}
+                  style={{backgroundColor: ColorConstants.highLightColor}}
+                  onBack={() => deleteOptionRef.current.hide()}
+                  onPress={onPressDelete}
+                />
+              }
+            />
+            <BottomSheet
+              refer={reopenOptionRef}
+              backButton={() => reopenOptionRef.current.hide()}
+              widget={
+                <TaskAlert
+                  label={'Are you sure you want to Reopen the task.'}
+                  buttonLabel={'Reopen'}
+                  onBack={() => reopenOptionRef.current.hide()}
+                  onPress={onPressReopen}
+                />
+              }
+            />
+            <BottomSheet
+              refer={changePriorityRef}
+              backButton={() => changePriorityRef.current.hide()}
+              widget={
+                <View style={styles.radioContainerSyle}>
+                  <View style={styles.radiobuttonContainer}>
+                    <View>
+                      <Label name={'Select Priority'} />
+                    </View>
+                    <RadioButton.Group
+                      onValueChange={onValueChange}
+                      value={checked}>
+                      <View style={styles.row}>
+                        <RadioButton.Item
+                          color={ColorConstants.highLightColor}
+                          label="High"
+                          value="High"
+                          labelStyle={styles.radioLabel}
+                        />
+                        <RadioButton.Item
+                          color={ColorConstants.highLightColor}
+                          label="Low"
+                          value="Low"
+                          labelStyle={styles.radioLabel}
+                        />
+                      </View>
+                    </RadioButton.Group>
+                  </View>
+                  <AppButton
+                    text={'Change Priority'}
+                    onPress={onPressPriority}
                   />
                 </View>
-              </RadioButton.Group>
-            </View>
-            <AppButton text={'Change Priority'} onPress={onPressPriority} />
+              }
+            />
           </View>
-        }
-      />
-      </View>
         }
       />
     </View>
@@ -481,6 +469,29 @@ const styles = StyleSheet.create({
   add_text: {
     fontWeight: '600',
     color: ColorConstants.primaryWhite,
+  },
+  padding: {
+    paddingVertical: 10,
+  },
+  width: {
+    width: '90%',
+  },
+  check_container: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  paddingVertical: {
+    paddingVertical: 10,
+  },
+  searchBox: {
+    flex: 1,
+    flexDirection: 'column',
+    paddingHorizontal: 10,
+    backgroundColor: ColorConstants.primaryWhite,
+  },
+  flex: {
+    flex: 1,
   },
 });
 

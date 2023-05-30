@@ -40,6 +40,7 @@ import ImageCropPicker from 'react-native-image-crop-picker';
 import {useToast} from 'react-native-toast-notifications';
 import Condition from '../../components/conditions';
 import TimeCondition from '../../components/time_condition';
+import Counter from '../../components/counter';
 
 const {height, widget} = Dimensions.get('window');
 
@@ -504,12 +505,12 @@ const TaskDetailsScreen = ({navigation, route}) => {
           style={{
             flexDirection: 'row',
             flexWrap: 'wrap',
-            padding: 5
+            padding: 5,
           }}>
           {taskDetails[0]?.task_image.split('.').pop() === 'jpg' && (
             <Avatar
-              onPress={()=> {
-                navigation.navigate("taskImage", {
+              onPress={() => {
+                navigation.navigate('taskImage', {
                   images: TaskImage(taskDetails[0]?.task_image),
                 });
               }}
@@ -532,11 +533,11 @@ const TaskDetailsScreen = ({navigation, route}) => {
               (data, index) =>
                 data?.task_issue_image.split('.').pop() === 'jpg' && (
                   <Avatar
-                  onPress={()=> {
-                    navigation.navigate("taskImage", {
-                      images: TaskIssueImage(data.task_issue_image),
-                    });
-                  }}
+                    onPress={() => {
+                      navigation.navigate('taskImage', {
+                        images: TaskIssueImage(data.task_issue_image),
+                      });
+                    }}
                     key={index}
                     size={40}
                     containerStyle={{
@@ -579,40 +580,38 @@ const TaskDetailsScreen = ({navigation, route}) => {
         <AppSize height={10} />
         <View style={styles.task_assignee}>
           <View style={styles.task_assignee_row}>
-            <View style={styles.task_assignee_container}>
-              <View style={styles.task_assignee_container_column}>
-                <Text style={styles.task_assignee_text}>Task Assignee</Text>
-              </View>
-              <View style={styles.counter_container}>
-                <Text style={styles.counter_text}>
-                  {taskDetails[0]?.assined_ids !== ''
-                    ? taskDetails[0]?.assined_ids.replaceAll(',', '').length
-                    : ''}
-                </Text>
-              </View>
-            </View>
-            <View
-              style={[
-                styles.task_assignee_container,
-                {
-                  borderTopRightRadius: 5,
-                  borderTopLeftRadius: 0,
-                },
-              ]}>
-              <View style={styles.task_assignee_container_column}>
-                <Text style={styles.task_assignee_text}>Project Assignee</Text>
-              </View>
-              <View style={styles.counter_container}>
-                <Text style={styles.counter_text}>
-                  {projectData.map(projectItems =>
-                    projectItems.id === data.project_id
-                      ? projectItems.project_cordinator_id.replaceAll(',', '')
-                          .length
-                      : '',
-                  )}
-                </Text>
-              </View>
-            </View>
+            <Counter
+              onTap={() => {
+                navigation.navigate('task_assignee', {
+                  header: 'Task Assignee',
+                  taskId: taskDetails[0]?.assined_ids,
+                });
+              }}
+              counterLabel="Task Assignee"
+              counter={
+                taskDetails[0]?.assined_ids !== ''
+                  ? taskDetails[0]?.assined_ids.split(',').length
+                  : ''
+              }
+            />
+            <Counter
+              style={{
+                borderTopRightRadius: 5,
+                borderTopLeftRadius: 0,
+              }}
+              onTap={() => {
+                  navigation.navigate('task_assignee', {
+                    header: 'Project Assignee',
+                    projectId: data.project_id,
+                  });
+              }}
+              counterLabel="Project Assignee"
+              counter={projectData.map(projectItems =>
+                projectItems.id === data.project_id
+                  ? projectItems.project_cordinator_id.split(',').length
+                  : '',
+              )}
+            />
           </View>
           <View style={styles.comment_scroll_container}>
             {taskComments.length > 0 ? (
@@ -670,8 +669,8 @@ const TaskDetailsScreen = ({navigation, route}) => {
                                     backgroundColor:
                                       ColorConstants.primaryWhite,
                                   }}
-                                  onPress={()=> {
-                                    navigation.navigate("taskImage", {
+                                  onPress={() => {
+                                    navigation.navigate('taskImage', {
                                       images: TaskChatImage(data?.images),
                                     });
                                   }}
@@ -697,7 +696,7 @@ const TaskDetailsScreen = ({navigation, route}) => {
 
           <AppSize height={10} />
         </View>
-        {/* <AppSize height={121} /> */}
+        <AppSize height={10} />
       </ScrollView>
       <View style={styles.bottom_container}>
         <View style={styles.text_input_container}>
@@ -790,7 +789,7 @@ const TaskDetailsScreen = ({navigation, route}) => {
             onBack={() => reopenOptionRef.current.hide()}
             onPress={() => {
               getCompleteTask('Reopen');
-              reopenOptionRef.current.hide()
+              reopenOptionRef.current.hide();
             }}
           />
         }
@@ -837,11 +836,7 @@ const styles = StyleSheet.create({
     height: 35,
   },
   container: {
-    height: height,
-    width: widget,
-    // width: '100%',
-    justifyContent: 'flex-start',
-    // paddingHorizontal: 10,
+    flex: 1,
     backgroundColor: ColorConstants.primaryWhite,
   },
   time_container_styles: {
@@ -876,10 +871,8 @@ const styles = StyleSheet.create({
   },
   bottom_container: {
     width: '100%',
-    position: 'absolute',
-    bottom: 10,
-    // left: 10,
     paddingHorizontal: 10,
+    marginBottom: 10,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 5,

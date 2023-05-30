@@ -1,5 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
+import {useRoute} from '@react-navigation/native';
+import {TabNavigationState} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React, {useState, useEffect} from 'react';
 import {
@@ -27,43 +29,8 @@ import FontConstants from '../constants/fonts';
 const Tab = createBottomTabNavigator();
 
 const DashBoard = ({navigation}) => {
-  const [exitAppModalVisible, setExitAppModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [index, setIndex] = useState('');
-
-  const handleExitAppConfirm = () => {
-    setExitAppModalVisible(false);
-    BackHandler.exitApp();
-  };
-
-  const handleBackPress = () => {
-    navigation.canGoBack(false);
-    console.log(navigation.canGoBack(false));
-    // if () {
-    //   createTwoButtonAlert();
-    //   return true;
-    // }
-  };
-
-  const createTwoButtonAlert = () =>
-    Alert.alert('Exit', 'Are you sure you want to exit?', [
-      {
-        text: 'Cancel',
-        onPress: () => console.log('Cancel Pressed'),
-        style: 'cancel',
-      },
-      {text: 'Exit', onPress: () => handleExitAppConfirm()},
-    ]);
-
-  // Register the event listener
-  useEffect(() => {
-    BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-
-    // Unregister the event listener on component unmount
-    return () => {
-      BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
-    };
-  }, [exitAppModalVisible]);
 
   return (
     <View

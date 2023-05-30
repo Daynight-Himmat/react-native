@@ -8,7 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import ColorConstants from '../../constants/color_constants';
-import {Loading} from '../../components/no_data_found';
+import {Loading, NoData} from '../../components/no_data_found';
 import {Label} from '../../components/label';
 import {Ionicons} from '../../components/icons';
 import AppSize from '../../components/size';
@@ -30,7 +30,7 @@ import toastMessage from '../../components/toast_message';
 import {CommanHeader} from '../../components/app_header';
 import ProjectTile from '../../components/project_tile';
 import Condition from '../../components/conditions';
-import { useToast } from 'react-native-toast-notifications';
+import {useToast} from 'react-native-toast-notifications';
 
 const CompanyInfo = ({navigation, route}) => {
   const {company_id} = route.params;
@@ -90,7 +90,7 @@ const CompanyInfo = ({navigation, route}) => {
       });
       if (response.status === 200) {
         setLoading(false);
-        toastMessage(toast ,response.data?.message);
+        toastMessage(toast, response.data?.message);
         navigation.goBack();
       }
     } catch (error) {
@@ -128,75 +128,68 @@ const CompanyInfo = ({navigation, route}) => {
         }}
         title={'Company Profile'}
       />
-
-      <ScrollView>
-        {getCompanyData.map((data, index) => (
-          <View key={index}>
-            {Condition.imageUrl(data?.profile_picture) ? (
-              <Avatar
-                size={100}
-                rounded
-                containerStyle={{
-                  alignSelf: 'center',
-                }}
-                renderPlaceholderContent={<ActivityIndicator />}
-                placeholderStyle={{
-                  backgroundColor: ColorConstants.primaryWhite,
-                }}
-                source={{
-                  uri: CompanyProfileImage(data?.profile_picture),
-                }}
-              />
-            ) : (
-              <View style={styles.imageContain}>
-                <View style={styles.imageContainer}>
-                  <Ionicons name={'business'} size={35} style={styles.image} />
-                </View>
+      {getCompanyData.map((data, index) => (
+        <View key={index}>
+          {Condition.imageUrl(data?.profile_picture) ? (
+            <Avatar
+              size={100}
+              rounded
+              containerStyle={{
+                alignSelf: 'center',
+              }}
+              renderPlaceholderContent={<ActivityIndicator />}
+              placeholderStyle={{
+                backgroundColor: ColorConstants.primaryWhite,
+              }}
+              source={{
+                uri: CompanyProfileImage(data?.profile_picture),
+              }}
+            />
+          ) : (
+            <View style={styles.imageContain}>
+              <View style={styles.imageContainer}>
+                <Ionicons name={'business'} size={35} style={styles.image} />
               </View>
-            )}
-
-            <View style={{paddingHorizontal: 15}}>
-              <Label name={data?.company_name} />
             </View>
+          )}
 
-            <View
-              style={{
-                paddingHorizontal: 10,
-                paddingVertical: 5,
-              }}>
-              <View style={styles.contactName}>
-                <Label name={'Contact Name'} />
-                <Tile
-                  image={require('../../../assets/images/business.png')}
-                  title={
-                    data?.company_details[0]?.contact_name ?? 'No Name Found'
-                  }
-                />
-                <Tile
-                  image={require('../../../assets/images/emails.png')}
-                  title={
-                    data?.company_details[0]?.contact_email ?? 'No Email Found'
-                  }
-                />
-                <Tile
-                  image={require('../../../assets/images/phone.png')}
-                  title={
-                    data?.company_details[0]?.contact_number ??
-                    'No Number Found '
-                  }
-                />
-              </View>
+          <View style={{paddingHorizontal: 15}}>
+            <Label name={data?.company_name} />
+          </View>
+
+          <View
+            style={{
+              paddingHorizontal: 10,
+              paddingVertical: 5,
+            }}>
+            <View style={styles.contactName}>
+              <Label name={'Contact Name'} />
+              <Tile
+                image={require('../../../assets/images/business.png')}
+                title={
+                  data?.company_details[0]?.contact_name ?? 'No Name Found'
+                }
+              />
+              <Tile
+                image={require('../../../assets/images/emails.png')}
+                title={
+                  data?.company_details[0]?.contact_email ?? 'No Email Found'
+                }
+              />
+              <Tile
+                image={require('../../../assets/images/phone.png')}
+                title={
+                  data?.company_details[0]?.contact_number ?? 'No Number Found '
+                }
+              />
             </View>
           </View>
-        ))}
-        <View
-          style={{
-            paddingHorizontal: 10,
-            paddingVertical: 5,
-          }}>
-          <View style={styles.contactName}>
-            <Label name={'Company Project'} />
-
+        </View>
+      ))}
+      <View style={styles.projectList}>
+        <View style={styles.contactName}>
+          <Label name={'Company Project'} />
+          {getProjectListData.length > 0 ? (
             <ScrollView>
               {getProjectListData?.map((data, index) => (
                 <ProjectTile
@@ -206,18 +199,19 @@ const CompanyInfo = ({navigation, route}) => {
                 />
               ))}
             </ScrollView>
-          </View>
+          ) : (
+            <NoData />
+          )}
         </View>
-        <AppSize height={20} />
-      </ScrollView>
+      </View>
+      <AppSize height={20} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
-    width: '100%',
+    flex: 1,
     backgroundColor: ColorConstants.primaryWhite,
   },
   headerWidth: {
@@ -249,9 +243,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   contactName: {
-    width: '100%',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
     backgroundColor: ColorConstants.primaryWhite,
     borderRadius: 10,
     shadowColor: '#000',
@@ -260,6 +251,11 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 12,
     padding: 10,
+  },
+  projectList: {
+    flex: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
   },
 });
 export default CompanyInfo;

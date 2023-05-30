@@ -7,7 +7,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Loading, NoData} from '../../components/no_data_found';
 import ColorConstants from '../../constants/color_constants';
 import CompanyTile from '../../components/company_tile';
-import {BaseUrl, BaseUrl1, ApiConstants, CompanyProfileImage} from '../../constants/api_constants';
+import {
+  BaseUrl,
+  BaseUrl1,
+  ApiConstants,
+  CompanyProfileImage,
+} from '../../constants/api_constants';
 import SearchBox from '../../components/search_box';
 
 const CompanyScreen = ({navigation}) => {
@@ -17,7 +22,6 @@ const CompanyScreen = ({navigation}) => {
   const [getSearchQuery, setSearchQuery] = useState(getCompany);
 
   const url = BaseUrl(ApiConstants.companyList);
-
 
   const getCompanyData = async () => {
     try {
