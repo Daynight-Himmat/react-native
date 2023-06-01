@@ -49,6 +49,8 @@ const BottomSheetConditions = ({
 }) => {
   const toast = useToast();
   const [assignee, setAssignee] = useState([]);
+  const [userId, setUserId] = useState();
+  const [roleId, setRoleId] = useState();
   const [isLoading, setLoading] = useState(false);
   const [searchUser, setSearchData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -62,7 +64,11 @@ const BottomSheetConditions = ({
     async projectId => {
       try {
         setLoading(true);
+        const userId = await AsyncStorage.getItem('user_id');
+        const roleId = await AsyncStorage.getItem('role_id');
         const token = await AsyncStorage.getItem('token');
+        setUserId(userId);
+        setRoleId(roleId);
         const response = await axios.post(url1, {
           token: token,
           project_id: projectId,
@@ -139,7 +145,10 @@ const BottomSheetConditions = ({
         widget={
           <View>
             <TaskOption
+              roleId={roleId}
               status={status}
+              data={taskData}
+              userId={userId}
               onPressPriority={() => {
                 // bottomSheetRef.current.hide();
                 changePriorityRef.current.show();

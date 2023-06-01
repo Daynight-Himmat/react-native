@@ -22,7 +22,6 @@ if linkage != nil
 end
 
 target 'project_management' do
-  config = use_native_modules!
 
   # Flags change depending on the env values.
   flags = get_default_flags()
@@ -33,6 +32,7 @@ target 'project_management' do
   pod 'FirebaseMessagingInterop', :modular_headers => true
   pod 'GTMSessionFetcher', :modular_headers => true
   pod 'GoogleUtilities', :modular_headers => true
+  config = use_native_modules!
 
   use_react_native!(
     :path => config[:reactNativePath],

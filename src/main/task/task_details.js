@@ -81,6 +81,10 @@ const TaskDetailsScreen = ({navigation, route}) => {
       setLoading(true);
       var token = await AsyncStorage.getItem('token');
       var userID = await AsyncStorage.getItem('user_id');
+      console.log({
+        id: data.user_id,
+        task_id: data.id,
+      });
       await axios
         .post(taskDetailsUrl, {
           token: token,
@@ -89,6 +93,7 @@ const TaskDetailsScreen = ({navigation, route}) => {
         })
         .then(response => {
           setTaskDetails(response.data?.data);
+          console.log(response.data?.data);
           setLoading(false);
         })
         .catch(error => {

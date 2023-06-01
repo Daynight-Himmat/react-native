@@ -69,7 +69,7 @@ const PersonTile: FunctionComponent<Props> = ({
             {subTitle !== null && <LightText1 lightText1={subTitle!} />}
           </View>
         </View>
-        <Dividers h1={1} w1={undefined} mv={0} />
+        <Dividers h1={1} w1={undefined} mv={5} />
       </View>
     </TouchableOpacity>
   );
@@ -236,7 +236,8 @@ const styles = StyleSheet.create({
     color: ColorConstants.primaryBlack,
   },
   lite: {
-    height: 60,
+    flex:1,
+    paddingVertical: 5,
     backgroundColor: ColorConstants.primaryWhite,
     flexDirection: 'row',
     justifyContent: 'flex-start',

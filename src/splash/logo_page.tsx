@@ -1,13 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {FunctionComponent, useEffect, useState} from 'react';
-import {View, StyleSheet, Modal, Linking, BackHandler} from 'react-native';
+import {View, StyleSheet, Modal, Linking, BackHandler, Platform} from 'react-native';
 import ColorConstants from '../constants/color_constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CommanFunctions from '../components/comman_functions';
-
-import axios from 'axios';
+import axiosInstance from '../components/interceptor';
 import {ApiConstants, BaseUrl} from '../constants/api_constants';
-import DeviceInfo from 'react-native-device-info';
 import ModelView from '../components/model';
 import {HighLightLabel, Label} from '../components/label';
 import RowButton from '../components/row_button';
@@ -49,11 +47,15 @@ const LogoPage: FunctionComponent<Props> = ({navigation}) => {
 
   const getVersion = async () => {
     try {
-      const response = await axios.get(getVersionCheck);
+      const response = await axiosInstance.get(getVersionCheck);
       if (response.status === 200) {
         setUpdateData(response.data?.data.messege);
         console.log(response.data?.data.Version);
-        if (response.data?.data.Version > 19) {
+        if(Platform.OS === 'ios'){
+          setTimeout(() => {
+            goRoute();
+          }, 1000);
+        }else if (response.data?.data.Version > 19) {
           setVersionData(true);
         } else {
           console.log('Your app is up to date');

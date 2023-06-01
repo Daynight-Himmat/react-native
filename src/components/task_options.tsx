@@ -12,6 +12,9 @@ import Assignee from '../../assets/images/assignee.svg';
 
 type Props = {
   status: any;
+  data:any;
+  userId:any;
+  roleId: any;
   scrollHandlers: any;
   navigation: any;
   onPressPriority: any;
@@ -24,6 +27,9 @@ type Props = {
 
 const TaskOption: FunctionComponent<Props> = ({
   status,
+  data,
+  userId,
+  roleId,
   onPressPriority,
   onPressChangeAssignee,
   onPressComplete,
@@ -33,7 +39,7 @@ const TaskOption: FunctionComponent<Props> = ({
 }) => {
   return (
     <View>
-      <Label name={'Task Options'} style={undefined} margin={undefined} />
+      <Label name={'Task Options'} style={undefined} margin={0} />
       {status !== 'Completed' && (
         <Tile
           widget={<Priority height={15} width={15} />}
@@ -93,8 +99,7 @@ const TaskOption: FunctionComponent<Props> = ({
           color={undefined}
         />
       )}
-
-      <Tile
+      {roleId === '1' ? <Tile
         widget={<DeleteSvg height={15} width={15} />}
         title={'Delete Task'}
         textStyle={{color: ColorConstants.highLightColor}}
@@ -103,7 +108,16 @@ const TaskOption: FunctionComponent<Props> = ({
         color={ColorConstants.highLightColor}
         onPress={onPressDelete}
         image={undefined}
-      />
+      /> : data.user_id.toString() === userId ? <Tile
+        widget={<DeleteSvg height={15} width={15} />}
+        title={'Delete Task'}
+        textStyle={{color: ColorConstants.highLightColor}}
+        divider={0.5}
+        tailer={true}
+        color={ColorConstants.highLightColor}
+        onPress={onPressDelete}
+        image={undefined}
+      /> :  <View/>}
     </View>
   );
 };

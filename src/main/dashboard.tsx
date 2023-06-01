@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import React, {useState} from 'react';
+import React, {FunctionComponent, useEffect, useState} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import ColorConstants from '../constants/color_constants';
 import HomeScreen from './tabs/home';
@@ -14,11 +14,45 @@ import ProjectScreen from './tabs/project';
 import {FAB} from 'react-native-paper';
 import AddTask from './task/add_task';
 import FontConstants from '../constants/fonts';
+import axios from 'axios';
+import { ApiConstants, BaseUrl } from '../constants/api_constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import toastMessage from '../components/toast_message';
+import { useToast } from 'react-native-toast-notifications';
 
 const Tab = createBottomTabNavigator();
 
-const DashBoard = ({navigation}) => {
-  const [index, setIndex] = useState('');
+type Props = {
+  navigation: any;
+};
+
+const DashBoard: FunctionComponent<Props> = ({navigation}) => {
+  const [index, setIndex] = useState(0);
+  const toast = useToast();
+  const [getRoleId, setRoleId] = useState('2');
+  const url = BaseUrl(ApiConstants.getUser);
+
+  const getId = async () =>{
+    try {
+      var asyncStorageRes = await AsyncStorage.getItem('token');
+      await axios
+        .post(url, {
+          token: asyncStorageRes,
+        })
+        .then(response => {
+          if (response.status === 200) {
+            AsyncStorage.setItem('user_id', `${response.data?.user.id}`);
+            AsyncStorage.setItem('role_id', `${response.data?.user.role_id}`);
+            setRoleId(response.data?.user.role_id.toString());
+          }
+        });
+    } catch (error) {
+    }
+  }
+
+  useEffect(()=> { 
+    getId();
+  },[]);
 
   const fabButton = () => {
     return (
@@ -33,17 +67,17 @@ const DashBoard = ({navigation}) => {
                 comeFrom: 'create_Task',
               });
             case 1:
-              return navigation.navigate('create_project', {
+              return getRoleId === '2'? toastMessage(toast,'You are not Autherized')  : navigation.navigate('create_project', {
                 comeFrom: 'Project Create',
                 projectInfo: [],
               });
             case 3:
-              return navigation.navigate('create_company', {
+              return getRoleId === '2'? toastMessage(toast,'You are not Autherized') : navigation.navigate('create_company', {
                 companyData: [],
                 comeFrom: 'Company Create',
               });
             case 4:
-              return navigation.navigate('create_profile');
+              return getRoleId === '2'? toastMessage(toast,'You are not Autherized') : navigation.navigate('create_profile');
             default:
               console.log('this data');
           }
@@ -72,9 +106,8 @@ const DashBoard = ({navigation}) => {
           },
         }}
         screenListeners={{
-          state: e => {
+          state: (e:any) => {
             setIndex(e.data.state.index);
-            // console.log('state changed', e.data.state.index);
           },
         }}>
         <Tab.Screen
@@ -91,7 +124,6 @@ const DashBoard = ({navigation}) => {
           name="project_page"
           component={ProjectScreen}
           options={{
-            title: ({color}) => <Text style={{color: color}}> Project </Text>,
             headerShown: true,
             headerShadowVisible: false,
             headerTitle: 'Project',
@@ -104,13 +136,13 @@ const DashBoard = ({navigation}) => {
         <Tab.Screen
           name="add_task"
           component={AddTask}
-          Listeners={{
-            state: e => {
+          listeners={{
+            state: (e:any) => {
               setIndex(e.data.state.index);
             },
           }}
           options={{
-            tabBarButton: () => fabButton,
+            tabBarButton: () => fabButton(),
           }}
         />
 
@@ -118,7 +150,6 @@ const DashBoard = ({navigation}) => {
           name="company_page"
           component={CompanyScreen}
           options={{
-            title: ({color}) => <Text style={{color: color}}> Team </Text>,
             headerShown: true,
             headerTitle: 'Company',
             headerShadowVisible: false,
@@ -131,6 +162,17 @@ const DashBoard = ({navigation}) => {
         <Tab.Screen
           name="team_page"
           component={TeamScreen}
+          listeners={{
+            tabPress: (e: any)=>{
+              if(getRoleId === '2'){
+                toastMessage(toast,'You are not Autherized');
+                e.preventDefault(); 
+              }
+              else{
+
+              }
+            }
+          }}
           options={{
             headerShown: true,
             headerShadowVisible: false,

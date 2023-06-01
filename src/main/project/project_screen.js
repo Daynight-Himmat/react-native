@@ -23,13 +23,17 @@ import TaskTile from '../../components/task_tile';
 import Condition from '../../components/conditions';
 import ColorsCondtion from '../../components/color_condition';
 import TimeCondition from '../../components/time_condition';
+import {useToast} from 'react-native-toast-notifications';
 const {height, width} = Dimensions.get('screen');
 
 const ProjectPageScreen = ({navigation, route}) => {
   const {data} = route.params;
+  const toast = useToast();
   const [innerSide, setInnerSide] = useState('All');
   const [checked, setChecked] = useState('High');
   const [isLoading, setLoading] = useState(false);
+  const [userId, setUserId] = useState('');
+  const [roleId, setRoleId] = useState('');
   const [taskId, setTaskId] = useState('');
   const [getBottomData, setData] = useState([]);
   const [projectId, setProjectId] = useState('');
@@ -56,6 +60,10 @@ const ProjectPageScreen = ({navigation, route}) => {
     try {
       setLoading(true);
       const token = await AsyncStorage.getItem('token');
+      const userId = await AsyncStorage.getItem('user_id');
+      const roleId = await AsyncStorage.getItem('role_id');
+      setUserId(userId);
+      setRoleId(roleId);
       const response = await axios.post(projectTaskListUrl, {
         token: token,
         id: data.id,
@@ -178,8 +186,42 @@ const ProjectPageScreen = ({navigation, route}) => {
     }
   };
 
+  const iconPress = data => {
+    if (roleId === '1') {
+      setData(data);
+      console.log(data);
+      taskOptionsRef.current.show();
+    } else {
+      if (userId !== data.user_id.toString()) {
+        toastMessage(toast, 'You are not Autherized');
+      } else {
+        setData(data);
+        console.log(data);
+        taskOptionsRef.current.show();
+      }
+    }
+  };
+
+  const titlePress = data => {
+    console.log(data);
+    if (roleId === '1') {
+      navigation.navigate('task_details_screen', {
+        data: data,
+      });
+    } else {
+      if (userId !== data.user_id.toString()) {
+        toastMessage(toast, 'You are not Autherized');
+      } else {
+        navigation.navigate('task_details_screen', {
+          data: data,
+        });
+      }
+    }
+  };
+
   const onRefresh = React.useCallback(() => {
     setLoading(true);
+
     getProjectsTaskList();
   }, []);
 
@@ -276,15 +318,8 @@ const ProjectPageScreen = ({navigation, route}) => {
                   index={index}
                   data={all}
                   key={index}
-                  navigation={() => {
-                    navigation.navigate('task_details_screen', {
-                      data: all,
-                    });
-                  }}
-                  iconPress={() => {
-                    setData(all);
-                    taskOptionsRef.current.show();
-                  }}
+                  navigation={() => titlePress(all)}
+                  iconPress={() => iconPress(all)}
                 />
               ))}
             </ScrollView>
@@ -302,15 +337,8 @@ const ProjectPageScreen = ({navigation, route}) => {
                   index={index}
                   data={today}
                   key={index}
-                  navigation={() => {
-                    navigation.navigate('task_details_screen', {
-                      data: today,
-                    });
-                  }}
-                  iconPress={() => {
-                    setData(today);
-                    taskOptionsRef.current.show();
-                  }}
+                  navigation={() => titlePress(today)}
+                  iconPress={() => iconPress(today)}
                 />
               ))}
             </ScrollView>
@@ -328,15 +356,8 @@ const ProjectPageScreen = ({navigation, route}) => {
                   index={index}
                   data={due}
                   key={index}
-                  navigation={() => {
-                    navigation.navigate('task_details_screen', {
-                      data: due,
-                    });
-                  }}
-                  iconPress={() => {
-                    setData(due);
-                    taskOptionsRef.current.show();
-                  }}
+                  navigation={() => titlePress(due)}
+                  iconPress={() => iconPress(due)}
                 />
               ))}
             </ScrollView>
@@ -354,15 +375,21 @@ const ProjectPageScreen = ({navigation, route}) => {
                   index={index}
                   data={complete}
                   key={index}
-                  navigation={() => {
-                    navigation.navigate('task_details_screen', {
-                      data: complete,
-                    });
-                  }}
+                  navigation={() => titlePress(complete)}
                   iconPress={() => {
-                    setData(complete);
-                    Condition.Completed(complete.task_status) &&
-                      taskOptionsRef.current.show();
+                    if (roleId === '1') {
+                      setData(complete);
+                      Condition.Completed(complete.task_status) &&
+                        taskOptionsRef.current.show();
+                    } else {
+                      if (userId !== complete.user_id.toString()) {
+                        toastMessage(toast, 'You are not Autherized');
+                      } else {
+                        setData(complete);
+                        Condition.Completed(complete.task_status) &&
+                          taskOptionsRef.current.show();
+                      }
+                    }
                   }}
                 />
               ))}

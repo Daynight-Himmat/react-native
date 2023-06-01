@@ -38,11 +38,9 @@ const MyAccount = ({navigation, route}) => {
           })
           .then(async response => {
             if (response.status === 200) {
-              await AsyncStorage.clear();
+              // await AsyncStorage.clear();
               await AsyncStorage.removeItem('token');
               await AsyncStorage.removeItem('user_id');
-              var token = await AsyncStorage.getItem('token');
-              console.log(token);
               CommanFunctions.routing(navigation, 'sign_in');
               console.log(response.data);
               setLoading(false);

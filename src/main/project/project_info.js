@@ -5,19 +5,16 @@ import {
   ScrollView,
   StyleSheet,
   Dimensions,
-  Text,
   Alert,
 } from 'react-native';
 import ColorConstants from '../../constants/color_constants';
-import {Appbar} from 'react-native-paper';
-import {ApiConstants, BaseUrl, BaseUrl1} from '../../constants/api_constants';
+import {ApiConstants, BaseUrl} from '../../constants/api_constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Loading} from '../../components/no_data_found';
-import {Label, LightText1, LightText} from '../../components/label';
-import moment from 'moment';
+import {Label, LightText1} from '../../components/label';
 import {PersonTile, TimeTile} from '../../components/person_tile';
-import {AppHeader, CommanHeader} from '../../components/app_header';
+import {CommanHeader} from '../../components/app_header';
 import Dividers from '../../components/divider';
 import TimeCondition from '../../components/time_condition';
 import {useToast} from 'react-native-toast-notifications';

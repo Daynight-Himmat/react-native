@@ -30,8 +30,7 @@ import Condition from '../../components/conditions';
 import ColorsCondtion from '../../components/color_condition';
 import {useToast} from 'react-native-toast-notifications';
 import TimeCondition from '../../components/time_condition';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import PushNotification from 'react-native-push-notification';
+// import PushNotification from 'react-native-push-notification';
 
 const HomeScreen = ({navigation}) => {
   const toast = useToast();
@@ -83,6 +82,7 @@ const HomeScreen = ({navigation}) => {
           if (response.status === 200) {
             setUserData(response.data?.user);
             AsyncStorage.setItem('user_id', `${response.data?.user.id}`);
+            AsyncStorage.setItem('role_id', `${response.data?.user.role_id}`);
             setUserId(response.data?.user.id);
             taskData(response.data?.user.id);
           }
@@ -268,45 +268,44 @@ const HomeScreen = ({navigation}) => {
     }
   };
 
-  const PushNotificationUser = () => {
-    PushNotification.configure({
-      // (optional) Called when Token is generated (iOS and Android)
-      onRegister: function (token) {
-        console.log('Push Notification:', token);
-      },
+  // const PushNotificationUser = () => {
+  //   PushNotification.configure({
+  //     // (optional) Called when Token is generated (iOS and Android)
+  //     onRegister: function (token) {
+  //       console.log('Push Notification:', token);
+  //     },
 
-      // (required) Called when a remote is received or opened, or local notification is opened
-      onNotification: function (notification) {
-        console.log('onNotification:', notification);
-        // navigation.navigate('Notification');
-        notification.finish(PushNotificationIOS.FetchResult.NoData);
-      },
+  //     // (required) Called when a remote is received or opened, or local notification is opened
+  //     onNotification: function (notification) {
+  //       console.log('onNotification:', notification);
+  //       // navigation.navigate('Notification');
+  //     },
 
-      onAction: function (notification) {
-        console.log('ACTION:', notification.action);
-        console.log('onAction:', notification);
-      },
+  //     onAction: function (notification) {
+  //       console.log('ACTION:', notification.action);
+  //       console.log('onAction:', notification);
+  //     },
 
-      onRegistrationError: function (err) {
-        console.error(err.message, err);
-      },
+  //     onRegistrationError: function (err) {
+  //       console.error(err.message, err);
+  //     },
 
-      permissions: {
-        alert: true,
-        badge: true,
-        sound: true,
-      },
+  //     permissions: {
+  //       alert: true,
+  //       badge: true,
+  //       sound: true,
+  //     },
 
-      popInitialNotification: true,
+  //     popInitialNotification: true,
 
-      requestPermissions: true,
-    });
-  };
+  //     requestPermissions: true,
+  //   });
+  // };
 
   useFocusEffect(
     React.useCallback(() => {
       checking();
-      PushNotificationUser();
+      // PushNotificationUser();
       taskData(userId);
     }, []),
   );

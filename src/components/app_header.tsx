@@ -1,8 +1,9 @@
-import React, {FunctionComponent} from 'react';
+import React, {FunctionComponent, useEffect, useState} from 'react';
 import {StyleSheet, Dimensions} from 'react-native';
 import ColorConstants from '../constants/color_constants';
 import {Appbar} from 'react-native-paper';
 import FontConstants from '../constants/fonts';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const {width} = Dimensions.get('screen');
 
 type Props = {
@@ -38,6 +39,17 @@ const CommanHeader: FunctionComponent<Props1> = ({
   deletePress,
   navigation,
 }) => {
+
+  const [getRoleId, setRoleId] = useState('2');
+  const getId = async () =>{
+    const roleId = await AsyncStorage.getItem('role_id');
+    setRoleId(`${roleId}`);
+  }
+
+  useEffect(()=>{
+    getId();
+  },[]);
+
   return (
     <Appbar.Header style={styles.headerStyles}>
       <Appbar.BackAction onPress={() => navigation.goBack()} />
@@ -46,12 +58,12 @@ const CommanHeader: FunctionComponent<Props1> = ({
         color={ColorConstants.primaryBlack}
         titleStyle={styles.headerText}
       />
-      <Appbar.Action icon="pencil" onPress={pencilPress} />
-      <Appbar.Action
+      {getRoleId === '1' && <Appbar.Action icon="pencil" onPress={pencilPress} />}
+      {getRoleId === '1' && <Appbar.Action
         icon="delete"
         color={ColorConstants.highLightColor}
         onPress={deletePress}
-      />
+      />}
     </Appbar.Header>
   );
 };
