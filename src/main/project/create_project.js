@@ -1,5 +1,4 @@
 import React, {useEffect, useState, useRef} from 'react';
-import {SelectList} from 'react-native-dropdown-select-list';
 import {
   View,
   TextInput,
@@ -8,31 +7,27 @@ import {
   TouchableOpacity,
   Modal,
   Alert,
-  ScrollView,
-  RefreshControl,
+  ScrollView
 } from 'react-native';
-import {Dropdown} from 'react-native-element-dropdown';
 import ColorConstants from '../../constants/color_constants';
 import {Label} from '../../components/label';
-import {ApiConstants, BaseUrl, BaseUrl1} from '../../constants/api_constants';
+import {ApiConstants, BaseUrl} from '../../constants/api_constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AppButton from '../../components/app_button';
 import AppSize from '../../components/size';
 import {AppHeader} from '../../components/app_header';
-import {MaterialIcons} from '../../components/icons';
 import moment from 'moment';
-import {Loading, NoData} from '../../components/no_data_found';
-import BottomSheet from '../../components/bottom_sheet';
-import SearchBox from '../../components/search_box';
-import {Checkbox} from 'react-native-paper';
+import {Loading} from '../../components/no_data_found';
 import toastMessage from '../../components/toast_message';
 import CalenderContainer from '../../components/calender';
 import {useToast} from 'react-native-toast-notifications';
 import TimeCondition from '../../components/time_condition';
 import FontConstants from '../../constants/fonts';
 import DropDownMenu from '../../components/dropdown';
+import MultiSelect from 'react-native-multiple-select';
+
 
 const CreateProject = ({navigation, route}) => {
   const {comeFrom, projectInfo} = route.params;
@@ -58,6 +53,8 @@ const CreateProject = ({navigation, route}) => {
   const [getDeadline, setTaskDeadline] = useState(
     moment().utcOffset('+05:30').format('YYYY-MM-DD'),
   );
+
+  const [teamSelect, setTeamSelect] = useState([]);
   const [checkedItems, setCheckedItems] = useState([]);
   var date = moment().utcOffset('+05:30').format('YYYY-MM-DD');
 
@@ -70,46 +67,50 @@ const CreateProject = ({navigation, route}) => {
 
   const getAssignee = async () => {
     try {
+      setLoading(true);
       const token = await AsyncStorage.getItem('token');
       const user_Id = await AsyncStorage.getItem('user_id');
       const response = await axios.post(getAssigneeTeam, {
         token: token,
       });
       setAssignee(response.data?.data);
-      if (comeFrom === 'Project Update') {
-        if(projectInfo[0].project_cordinator_id){
-          response.data?.data
-        .filter(
-          data =>
-            data.id.toString() ===
-            projectInfo[0].project_cordinator_id.toString(),
-        )
-        .map(data => {
-          setCheckedItems({
-            ...checkedItems,
-            [data.id]: !checkedItems[data.id],
-          });
-          searchUser.push({id: data.id, name: data.name});
-          setSearchData(searchUser);
-          if (selectUser.length > 0) {
-            const checkV =
-              searchUser.map(e => e === data.id) === checkedItems[data.id];
-            if (checkV) {
-              return 'checked';
-            } else {
-              return 'unchecked';
-            }
-          } else {
-            if (checkedItems[data.id]) {
-              return 'checked';
-            } else {
-              return 'unchecked';
-            }
-          }
-        });
-        }
-      }
-      setSearchAssignee(response.data?.data);
+      // if (comeFrom === 'Project Update') {
+      //   console.log(projectInfo[0].project_cordinator_id)
+      //   if(projectInfo[0].project_cordinator_id){
+      //     response.data?.data
+      //   .filter(
+      //     data =>
+      //       data.id.toString() ===
+      //       projectInfo[0].project_cordinator_id.toString(),
+      //   )
+      //   .map(data => {
+      //     setCheckedItems({
+      //       ...checkedItems,
+      //       [data.id]: !checkedItems[data.id],
+      //     });
+      //     searchUser.push(projectInfo[0].project_cordinator_id);
+      //     setTeamSelect(searchUser);
+      //     // setSearchData(searchUser);
+      //     // if (selectUser.length > 0) {
+      //     //   const checkV =
+      //     //     searchUser.map(e => e === data.id) === checkedItems[data.id];
+      //     //   if (checkV) {
+      //     //     return 'checked';
+      //     //   } else {
+      //     //     return 'unchecked';
+      //     //   }
+      //     // } else {
+      //     //   if (checkedItems[data.id]) {
+      //     //     return 'checked';
+      //     //   } else {
+      //     //     return 'unchecked';
+      //     //   }
+      //     // }
+      //   });
+      //   }
+      // }
+      setLoading();
+      // setSearchAssignee(response.data?.data);
     } catch (error) {
       console.log(error);
     }
@@ -207,6 +208,8 @@ const CreateProject = ({navigation, route}) => {
         selectTeamCoordinator(projectInfo[0]?.team_cordinator);
         setCompanySelect(projectInfo[0]?.company_id);
         setProjectId(projectInfo[0]?.id);
+         var value = projectInfo[0].project_cordinator_id;
+        setTeamSelect(projectInfo[0].project_cordinator_id.split(',').map(e => parseInt(e)));
         setLoading(false);
       }
     }
@@ -263,7 +266,48 @@ const CreateProject = ({navigation, route}) => {
         />
         <AppSize height={10} />
         <Label name={'Project Member'} margin={10} />
-        <View
+        
+        <View style={{flex:1, marginBottom: 20,}}>
+        <MultiSelect 
+          tagBorderColor={ColorConstants.primaryBlack}
+          tagRemoveIconColor={ColorConstants.primaryBlack}
+          tagTextColor={ColorConstants.primaryBlack}
+          fontFamily={FontConstants.semiBold}
+           fixedHeight={false} 
+          styleItemsContainer={{
+            margin: 10,
+            borderColor: ColorConstants.primaryBlack,
+          }}
+          styleListContainer={{
+            marginVertical: 0,
+            borderColor: ColorConstants.primaryBlack
+          }}
+          flatListProps={{scrollEnabled:false}}
+          items={getAssigne}
+          uniqueKey='id'
+          displayKey='name'
+          hideTags={false}
+          
+          selectedItems={teamSelect}
+          onSelectedItemsChange={(value)=>
+            {console.log(value) 
+            setTeamSelect(value)}
+          }
+          submitButtonColor={ColorConstants.primaryColor}
+          submitButtonText='select'
+          selectedText='Assignee'
+          selectedItemTextColor={ColorConstants.primaryBlack}
+          selectedItemFontFamily={FontConstants.ragular}
+          selectedItemIconColor={ColorConstants.primaryBlack}
+          styleInputGroup={{ display: 'none', }} 
+          hideDropdown={true}
+        />
+        </View>
+        
+
+
+
+        {/* <View
           style={{
             flexDirection: 'column',
           }}>
@@ -412,7 +456,7 @@ const CreateProject = ({navigation, route}) => {
               />
             </View>
           }
-        />
+        /> */}
         <AppSize height={10} />
         <Label name={'Team Coordinator'} margin={10} />
         <DropDownMenu
@@ -463,7 +507,7 @@ const CreateProject = ({navigation, route}) => {
           onPress={() => createProject()}
         />
         <AppSize height={20} />
-      </ScrollView>
+        </ScrollView>
       {isLoading && <Loading />}
     </View>
   );
@@ -471,10 +515,7 @@ const CreateProject = ({navigation, route}) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
-    elevation: 0,
-    width: '100%',
-    flexDirection: 'column',
+    flex:1,
     backgroundColor: ColorConstants.primaryWhite,
     paddingHorizontal: 10,
   },

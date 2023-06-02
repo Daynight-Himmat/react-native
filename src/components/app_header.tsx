@@ -58,8 +58,8 @@ const CommanHeader: FunctionComponent<Props1> = ({
         color={ColorConstants.primaryBlack}
         titleStyle={styles.headerText}
       />
-      {getRoleId === '1' && <Appbar.Action icon="pencil" onPress={pencilPress} />}
-      {getRoleId === '1' && <Appbar.Action
+      {getRoleId === '2' && <Appbar.Action icon="pencil" onPress={pencilPress} />}
+      {getRoleId === '2' && <Appbar.Action
         icon="delete"
         color={ColorConstants.highLightColor}
         onPress={deletePress}
