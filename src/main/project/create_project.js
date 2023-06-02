@@ -73,46 +73,14 @@ const CreateProject = ({navigation, route}) => {
       const response = await axios.post(getAssigneeTeam, {
         token: token,
       });
-      setAssignee(response.data?.data);
-      // if (comeFrom === 'Project Update') {
-      //   console.log(projectInfo[0].project_cordinator_id)
-      //   if(projectInfo[0].project_cordinator_id){
-      //     response.data?.data
-      //   .filter(
-      //     data =>
-      //       data.id.toString() ===
-      //       projectInfo[0].project_cordinator_id.toString(),
-      //   )
-      //   .map(data => {
-      //     setCheckedItems({
-      //       ...checkedItems,
-      //       [data.id]: !checkedItems[data.id],
-      //     });
-      //     searchUser.push(projectInfo[0].project_cordinator_id);
-      //     setTeamSelect(searchUser);
-      //     // setSearchData(searchUser);
-      //     // if (selectUser.length > 0) {
-      //     //   const checkV =
-      //     //     searchUser.map(e => e === data.id) === checkedItems[data.id];
-      //     //   if (checkV) {
-      //     //     return 'checked';
-      //     //   } else {
-      //     //     return 'unchecked';
-      //     //   }
-      //     // } else {
-      //     //   if (checkedItems[data.id]) {
-      //     //     return 'checked';
-      //     //   } else {
-      //     //     return 'unchecked';
-      //     //   }
-      //     // }
-      //   });
-      //   }
-      // }
-      setLoading();
-      // setSearchAssignee(response.data?.data);
+      if(response.status === 200){
+        setAssignee(response.data?.data);
+        setLoading(false);
+      }
+      
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   };
 
@@ -267,7 +235,7 @@ const CreateProject = ({navigation, route}) => {
         <AppSize height={10} />
         <Label name={'Project Member'} margin={10} />
         
-        <View style={{flex:1, marginBottom: 20,}}>
+        <View style={{flex:1,}}>
         <MultiSelect 
           tagBorderColor={ColorConstants.primaryBlack}
           tagRemoveIconColor={ColorConstants.primaryBlack}

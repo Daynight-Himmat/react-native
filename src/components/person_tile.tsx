@@ -69,7 +69,7 @@ const PersonTile: FunctionComponent<Props> = ({
             {subTitle !== null && <LightText1 lightText1={subTitle!} />}
           </View>
         </View>
-        <Dividers h1={1} w1={undefined} mv={5} />
+        <Dividers h1={1} w1={undefined} mv={15} />
       </View>
     </TouchableOpacity>
   );

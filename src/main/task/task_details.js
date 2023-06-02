@@ -107,6 +107,9 @@ const TaskDetailsScreen = ({navigation, route}) => {
         })
         .then(response => {
           setProjectData(response.data?.data?.data);
+          console.log({
+            id: response.data?.data?.data
+          });
           setLoading(false);
         })
         .catch(error => {
@@ -174,6 +177,7 @@ const TaskDetailsScreen = ({navigation, route}) => {
       setLoading(false);
     }
   };
+  
 
   const sendComment = async () => {
     setLoading(true);

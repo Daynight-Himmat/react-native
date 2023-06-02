@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {FunctionComponent, useEffect, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 import ColorConstants from '../constants/color_constants';
 import {AppHeader} from './app_header';
 import {PersonTile} from './person_tile';
@@ -9,6 +9,8 @@ import {ApiConstants, BaseUrl} from '../constants/api_constants';
 import {ScrollView} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NoData} from './no_data_found';
+import { Label, LightText } from './label';
+import ProfileDemo from './profile_image_demo';
 
 type Props = {
   route: any;
@@ -70,23 +72,16 @@ const TaskAssigee: FunctionComponent<Props> = ({navigation, route}) => {
         text={header}
         action={undefined}
       />
-      {getUser.length > 0 ? (
-        <ScrollView style={styles.padding}>
-          {getUser.map((item, _index) => (
-            <PersonTile
-              key={_index}
-              title={item?.name ?? ''}
-              image={null}
-              index={undefined}
-              tilePress={undefined}
-              imagePress={undefined}
-              subTitle={undefined}
-            />
-          ))}
-        </ScrollView>
-      ) : (
-        <NoData />
-      )}
+      {getUser.map((item, _index) => (
+          <View style={{
+            padding: 10,
+            flexDirection: 'row',
+            alignItems: 'center'
+          }}>
+            <ProfileDemo containerSize={undefined} iconSize={17}/>
+            <Label name={item!.name} style={styles.text} margin={0}/>
+          </View>
+        ))}
     </View>
   );
 };
@@ -99,6 +94,9 @@ const styles = StyleSheet.create({
   padding: {
     paddingHorizontal: 10,
   },
+  text: {
+    paddingHorizontal: 10
+  }
 });
 
 export default TaskAssigee;
