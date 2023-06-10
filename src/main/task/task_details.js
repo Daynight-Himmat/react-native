@@ -81,10 +81,7 @@ const TaskDetailsScreen = ({navigation, route}) => {
       setLoading(true);
       var token = await AsyncStorage.getItem('token');
       var userID = await AsyncStorage.getItem('user_id');
-      console.log({
-        id: data.user_id,
-        task_id: data.id,
-      });
+     
       await axios
         .post(taskDetailsUrl, {
           token: token,
@@ -93,7 +90,6 @@ const TaskDetailsScreen = ({navigation, route}) => {
         })
         .then(response => {
           setTaskDetails(response.data?.data);
-          console.log(response.data?.data);
           setLoading(false);
         })
         .catch(error => {
@@ -107,9 +103,6 @@ const TaskDetailsScreen = ({navigation, route}) => {
         })
         .then(response => {
           setProjectData(response.data?.data?.data);
-          console.log({
-            id: response.data?.data?.data
-          });
           setLoading(false);
         })
         .catch(error => {
@@ -187,7 +180,7 @@ const TaskDetailsScreen = ({navigation, route}) => {
     formData.append('token', token);
     formData.append('user_id', userID);
     formData.append('task_id', data.id);
-    formData.append('commets', comment);
+    formData.append('comments', comment);
     imageUri === ''
       ? formData.append('images', '')
       : formData.append('images', {
@@ -279,7 +272,6 @@ const TaskDetailsScreen = ({navigation, route}) => {
     const response = await axios.post(taskIssueImageUrl, formData);
     if (response.status === 200) {
       console.log(imageUri);
-      toastMessage(toast, response.data?.message);
     }
   };
 
@@ -292,7 +284,6 @@ const TaskDetailsScreen = ({navigation, route}) => {
       });
       if (response.status === 200) {
         getTaskIssueImages(response.data?.data);
-        toastMessage(toast, response.data?.message);
       }
     } catch (error) {
       console.log(error);

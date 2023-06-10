@@ -50,7 +50,7 @@ const CompanyScreen = ({navigation}) => {
 
   useEffect(() => {
     getCompanyData();
-  }, [getCompany]);
+  }, []);
 
   const handleSearch = text => {
     if (text === '') {

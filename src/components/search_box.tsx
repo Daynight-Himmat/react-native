@@ -5,7 +5,7 @@ import ColorConstants from '../constants/color_constants';
 
 type Props = {
   value: string;
-  onChangeText: any;
+  onChangeText: ((text: string) => void);
   searchPress: any;
 };
 

@@ -76,7 +76,7 @@ const ProfileImage: FunctionComponent<Props> = ({route, navigation}) => {
           <Image
             style={styles.imageContainer}
             source={{uri: images}}
-            resizeMode="cover"
+            resizeMode='center'
           />
         ) : data.profile_image != null &&
           data.profile_image.split('.').pop() === 'jpg' ? (
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    backgroundColor: ColorConstants.primaryWhite,
+    backgroundColor: ColorConstants.primaryBlack,
   },
   imageContainer: {
     height: height * 0.9,

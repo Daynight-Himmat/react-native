@@ -517,6 +517,7 @@ const AddTask = ({navigation, route}) => {
               style={styles.attachment}
               onPress={() =>
                 ImageCropPicker.openPicker({
+                  mediaType: 'photo',
                   compressImageMaxWidth: 300,
                   compressImageMaxHeight: 300,
                   cropping: false,

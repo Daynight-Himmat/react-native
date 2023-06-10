@@ -58,7 +58,7 @@ const ProjectScreen = ({navigation}) => {
 
   useEffect(() => {
     checking();
-  }, [token, getprojectData]);
+  }, [token]);
 
   return (
     <View style={styles.container}>
