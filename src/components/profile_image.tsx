@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {useToast} from 'react-native-toast-notifications';
 import toastMessage from './toast_message';
+import axiosInstance from './interceptor';
 const {height, width} = Dimensions.get('window');
 
 type Props = {
@@ -48,17 +49,40 @@ const ProfileImage: FunctionComponent<Props> = ({route, navigation}) => {
             type: 'image/jpg',
             name: 'image',
           });
-      await axios
-        .post(commentUrl, formData)
-        .then(response => {
-          toastMessage(toast, response.data.message);
-          console.log(response.data.message);
-          setLoading(false);
-          navigation.goBack();
+      await axiosInstance({
+        method: 'post',
+        url: commentUrl,
+        data: formData,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then(res => {
+          if (res.status === 200) {
+            toastMessage(toast, res?.data.message);
+            console.log(res?.data.message);
+            setLoading(false);
+            navigation.goBack();
+          }
         })
-        .catch(_error => {
+        .catch(error => {
+          console.log(error);
           setLoading(false);
         });
+
+      // await axios
+      //   .post(commentUrl, formData)
+      //   .then(response => {
+      //     toastMessage(toast, response.data.message);
+      //     console.log(response.data.message);
+      //     setLoading(false);
+      //     navigation.goBack();
+      //   })
+      //   .catch(_error => {
+      //     setLoading(false);
+      //   });
     } catch (error) {
       console.log(error);
     }
@@ -76,7 +100,7 @@ const ProfileImage: FunctionComponent<Props> = ({route, navigation}) => {
           <Image
             style={styles.imageContainer}
             source={{uri: images}}
-            resizeMode='center'
+            resizeMode="cover"
           />
         ) : data.profile_image != null &&
           data.profile_image.split('.').pop() === 'jpg' ? (
@@ -132,6 +156,7 @@ const styles = StyleSheet.create({
   flex: {
     flex: 1,
     textAlignVertical: 'center',
+    color: ColorConstants.primaryBlack 
   },
   container: {
     height: '100%',

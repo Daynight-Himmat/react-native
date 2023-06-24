@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.17.11",
+    "@react-native-community/push-notification-ios": "^1.11.0",
     "@react-native-firebase/app": "^17.5.0",
     "@react-native-firebase/messaging": "^17.5.0",
     "@react-navigation/bottom-tabs": "^6.5.7",
@@ -33,8 +34,8 @@
     "react-native-elements": "^3.4.3",
     "react-native-gesture-handler": "^2.9.0",
     "react-native-image-crop-picker": "^0.39.0",
-    "react-native-multiple-select": "^0.5.12",
     "react-native-modal": "^13.0.1",
+    "react-native-multiple-select": "^0.5.12",
     "react-native-otp-forminput": "^1.0.2",
     "react-native-pager-view": "^6.2.0",
     "react-native-paper": "^5.5.1",

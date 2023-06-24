@@ -41,8 +41,12 @@ import {useToast} from 'react-native-toast-notifications';
 import Condition from '../../components/conditions';
 import TimeCondition from '../../components/time_condition';
 import Counter from '../../components/counter';
+import axiosInstance from '../../components/interceptor';
+import { useIsFocused } from '@react-navigation/native';
 
 const {height, widget} = Dimensions.get('window');
+
+
 
 const TaskDetailsScreen = ({navigation, route}) => {
   const toast = useToast();
@@ -75,13 +79,14 @@ const TaskDetailsScreen = ({navigation, route}) => {
   );
   var currentDate = new movement().format('MMM DD, yyyy');
   var date = movement().utcOffset('+05:30').format('YYYY-MM-DD');
+  const isFocuse = useIsFocused();
 
   const getTaskDetails = async () => {
     try {
       setLoading(true);
       var token = await AsyncStorage.getItem('token');
       var userID = await AsyncStorage.getItem('user_id');
-     
+
       await axios
         .post(taskDetailsUrl, {
           token: token,
@@ -170,36 +175,41 @@ const TaskDetailsScreen = ({navigation, route}) => {
       setLoading(false);
     }
   };
-  
 
   const sendComment = async () => {
-    setLoading(true);
+    try{
+      setLoading(true);
     var token = await AsyncStorage.getItem('token');
     var userID = await AsyncStorage.getItem('user_id');
-    const formData = new FormData();
-    formData.append('token', token);
-    formData.append('user_id', userID);
-    formData.append('task_id', data.id);
-    formData.append('comments', comment);
-    imageUri === ''
-      ? formData.append('images', '')
-      : formData.append('images', {
-          uri: imageUri,
-          type: 'image/jpg',
-          name: 'image',
-        });
-    await axios
-      .post(commentUrl, formData)
-      .then(response => {
-        toastMessage(toast, response.data.message);
-        getTaskDetails();
-        setComment('');
-        commentBox.current.clear();
-        setLoading(false);
-      })
-      .catch(error => {
-        setLoading(false);
-      });
+    const response = await axiosInstance({
+      method: 'post',
+      data: {
+        user_id: userID,
+        task_id: data.id,
+        comments: comment
+      },
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      url: commentUrl,
+    });
+    console.log(response);
+    if (response.status === 200) {
+      toastMessage(toast, response?.data.message);
+      getTaskDetails();
+      setComment('');
+      commentBox.current.clear();
+      console.log(error);
+      setLoading(false);
+    }else{
+      toastMessage(toast, response?.data.message);
+    }
+    }
+    catch(error){
+      setLoading(false);
+      console.log(error);
+    }
   };
 
   const getPermission = async type => {
@@ -298,7 +308,7 @@ const TaskDetailsScreen = ({navigation, route}) => {
   useEffect(() => {
     getTaskDetails();
     return () => {};
-  }, []);
+  }, [isFocuse]);
 
   return (
     <View style={styles.container}>
@@ -600,10 +610,10 @@ const TaskDetailsScreen = ({navigation, route}) => {
                 borderTopLeftRadius: 0,
               }}
               onTap={() => {
-                  navigation.navigate('task_assignee', {
-                    header: 'Project Assignee',
-                    projectId: data.project_id,
-                  });
+                navigation.navigate('task_assignee', {
+                  header: 'Project Assignee',
+                  projectId: data.project_id,
+                });
               }}
               counterLabel="Project Assignee"
               counter={projectData.map(projectItems =>
